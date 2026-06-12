@@ -62,6 +62,20 @@
 - Database fields: camelCase (userId, topicId)
 - Environment variables: SCREAMING_SNAKE_CASE
 
+## Learning Documentation
+
+As you build each feature, update LEARNINGS.md with:
+
+1. What was just built and how it works technically
+2. Why this approach was chosen over alternatives
+3. Any errors or issues encountered and how they were fixed
+4. Key concepts a beginner should understand about this code
+5. Anything that connects to other parts of the app
+
+Write it as if explaining to someone learning Next.js for the first time.
+Update LEARNINGS.md at the end of every completed task, not at the end
+of the session.
+
 ## What Not To Build (MVP Scope)
 Do not build these unless explicitly asked:
 - Social/study rooms
@@ -71,3 +85,4 @@ Do not build these unless explicitly asked:
 - Payment system
 - User-uploaded notes or RAG pipeline
 - Instructor dashboard
+
