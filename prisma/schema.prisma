@@ -1,0 +1,245 @@
+// Learning Loop AI — Prisma schema
+// Docs: https://pris.ly/d/prisma-schema
+//
+// Prisma 7 notes:
+//  - The generator is the new `prisma-client` provider (ESM, query compiler).
+//  - The client is generated to ../src/generated/prisma (gitignored) instead of
+//    node_modules, so import it from "@/generated/prisma".
+//  - The datasource block has no `url`; the connection string is configured in
+//    prisma.config.ts (which loads .env.local). See lib/db.ts for runtime usage.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Enums — give us type-safe, fixed sets of values (vs. free-form strings).
+// ---------------------------------------------------------------------------
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum ProgressStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  NEEDS_REVIEW
+  MASTERED
+}
+
+enum TimerMode {
+  POMODORO
+  DEEP_WORK
+  CUSTOM
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  SHORT_ANSWER
+  CODE_READING
+  DEBUGGING
+}
+
+enum AiInteractionType {
+  TUTOR_QUESTION
+  QUIZ_GENERATION
+  ANSWER_FEEDBACK
+  STUDY_SUMMARY
+  RECOMMENDATION
+}
+
+// ---------------------------------------------------------------------------
+// Models
+// ---------------------------------------------------------------------------
+
+// A signed-in person. `clerkId` links our row to the Clerk account; everything
+// else in the app hangs off this User via relations.
+model User {
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Theme preferences (PLANNING.md /settings). Defaults match the dark/teal preset.
+  accentColor String @default("teal")
+  themeMode   String @default("dark")
+
+  topicProgress  UserTopicProgress[]
+  studySessions  StudySession[]
+  quizzes        Quiz[]
+  quizAttempts   QuizAttempt[]
+  aiInteractions AiInteraction[]
+}
+
+// A structured ordered list of topics, e.g. "Frontend Fundamentals".
+model LearningPath {
+  id          String     @id @default(cuid())
+  title       String
+  description String
+  level       Difficulty
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  topics Topic[]
+}
+
+// One unit of study inside a learning path.
+model Topic {
+  id               String     @id @default(cuid())
+  learningPathId   String
+  title            String
+  description      String
+  difficulty       Difficulty
+  orderIndex       Int
+  estimatedMinutes Int
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  learningPath   LearningPath        @relation(fields: [learningPathId], references: [id], onDelete: Cascade)
+  userProgress   UserTopicProgress[]
+  studySessions  StudySession[]
+  quizzes        Quiz[]
+  aiInteractions AiInteraction[]
+
+  @@index([learningPathId])
+}
+
+// Per-user mastery tracking for a single topic. One row per (user, topic).
+model UserTopicProgress {
+  id                String         @id @default(cuid())
+  userId            String
+  topicId           String
+  status            ProgressStatus @default(NOT_STARTED)
+  masteryScore      Float          @default(0)
+  totalStudyMinutes Int            @default(0)
+  quizzesCompleted  Int            @default(0)
+  averageQuizScore  Float          @default(0)
+  lastStudiedAt     DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic Topic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, topicId])
+  @@index([userId])
+  @@index([topicId])
+}
+
+// A completed (or in-progress) focus session from the study timer.
+model StudySession {
+  id              String    @id @default(cuid())
+  userId          String
+  topicId         String?
+  durationMinutes Int
+  timerMode       TimerMode
+  notes           String?
+  startedAt       DateTime
+  endedAt         DateTime?
+  createdAt       DateTime  @default(now())
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic Topic? @relation(fields: [topicId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([topicId])
+}
+
+// An AI-generated quiz for a topic.
+model Quiz {
+  id            String     @id @default(cuid())
+  userId        String
+  topicId       String
+  title         String
+  difficulty    Difficulty
+  questionCount Int
+  createdAt     DateTime   @default(now())
+
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic     Topic          @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  questions QuizQuestion[]
+  attempts  QuizAttempt[]
+
+  @@index([userId])
+  @@index([topicId])
+}
+
+// A single question within a quiz. `options` holds choices for multiple-choice
+// questions (empty for short-answer / code questions).
+model QuizQuestion {
+  id            String       @id @default(cuid())
+  quizId        String
+  questionText  String
+  questionType  QuestionType
+  options       String[]
+  correctAnswer String
+  explanation   String
+  orderIndex    Int
+
+  quiz    Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  answers QuizAnswer[]
+
+  @@index([quizId])
+}
+
+// One run of a quiz by a user, with the resulting score.
+model QuizAttempt {
+  id             String    @id @default(cuid())
+  quizId         String
+  userId         String
+  score          Float
+  totalQuestions Int
+  startedAt      DateTime  @default(now())
+  completedAt    DateTime?
+
+  quiz    Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  answers QuizAnswer[]
+
+  @@index([quizId])
+  @@index([userId])
+}
+
+// A user's answer to one question within a single attempt.
+model QuizAnswer {
+  id            String  @id @default(cuid())
+  quizAttemptId String
+  questionId    String
+  userAnswer    String
+  isCorrect     Boolean
+  feedback      String?
+
+  attempt  QuizAttempt  @relation(fields: [quizAttemptId], references: [id], onDelete: Cascade)
+  question QuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@index([quizAttemptId])
+  @@index([questionId])
+}
+
+// An audit log of every AI call, for debugging, analytics, and future eval.
+model AiInteraction {
+  id              String            @id @default(cuid())
+  userId          String
+  topicId         String?
+  interactionType AiInteractionType
+  prompt          String
+  response        String
+  modelUsed       String
+  tokenCount      Int?
+  createdAt       DateTime          @default(now())
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic Topic? @relation(fields: [topicId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([topicId])
+}
