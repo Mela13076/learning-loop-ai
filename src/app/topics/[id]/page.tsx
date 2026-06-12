@@ -5,6 +5,7 @@ import { redirect, notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/topics/ProgressBar";
+import { AiTutorChat } from "@/components/ai/AiTutorChat";
 import type { ProgressStatus, Difficulty } from "@/generated/prisma/enums";
 
 // ---------------------------------------------------------------------------
@@ -201,23 +202,12 @@ export default async function TopicPage({
               <p className="text-base leading-relaxed">{topic.description}</p>
             </div>
 
-            {/* Key concepts placeholder — will be populated by AI in Step 9 */}
-            <div className="rounded-xl border border-border bg-card p-6">
-              <h2 className="mb-3 font-semibold text-sm uppercase tracking-wider text-muted-foreground">
-                Key Concepts
+            {/* AI Tutor Chat */}
+            <div id="ai-tutor" className="rounded-xl border border-border bg-card p-6">
+              <h2 className="mb-4 font-semibold text-sm uppercase tracking-wider text-muted-foreground">
+                AI Tutor
               </h2>
-              <p className="text-sm text-muted-foreground">
-                Use the AI Tutor to explore specific concepts, ask questions,
-                and get guided explanations for this topic.
-              </p>
-              <Button
-                variant="outline"
-                size="sm"
-                className="mt-4"
-                disabled
-              >
-                AI Tutor coming soon
-              </Button>
+              <AiTutorChat topicId={topic.id} topicTitle={topic.title} />
             </div>
 
             {/* Prev / Next navigation */}
@@ -261,12 +251,9 @@ export default async function TopicPage({
               <Button
                 variant="outline"
                 className="w-full"
-                disabled
+                asChild
               >
-                Ask AI Tutor
-                <span className="ml-2 rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium">
-                  soon
-                </span>
+                <a href="#ai-tutor">Ask AI Tutor</a>
               </Button>
 
               <Button

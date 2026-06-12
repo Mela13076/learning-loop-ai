@@ -76,6 +76,12 @@ Write it as if explaining to someone learning Next.js for the first time.
 Update LEARNINGS.md at the end of every completed task, not at the end
 of the session.
 
+## Key Project Files
+- PLANNING.md — full project spec, features, data models, user flows
+- TASKS.md — current build progress and active tasks
+- AI_SPEC.md — AI feature specs, prompt shapes, mock strategy, model config
+- LEARNINGS.md — technical documentation written as features are built
+
 ## What Not To Build (MVP Scope)
 Do not build these unless explicitly asked:
 - Social/study rooms
