@@ -21,6 +21,7 @@ interface StudyTimerProps {
 type TimerMode = "POMODORO" | "DEEP_WORK" | "CUSTOM";
 type Phase = "focus" | "break";
 type SessionState = "idle" | "running" | "paused" | "break" | "ended";
+type SaveState = "idle" | "saving" | "saved" | "error";
 
 interface ModeConfig {
   label: string;
@@ -71,12 +72,17 @@ export function StudyTimer({ topics }: StudyTimerProps) {
   const [notes, setNotes] = useState("");
   const [pomodoroCount, setPomodoroCount] = useState(0);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [saveState, setSaveState] = useState<SaveState>("idle");
+  const [saveError, setSaveError] = useState<string>("");
 
   // Custom mode input values (in minutes)
   const [customFocus, setCustomFocus] = useState(30);
   const [customBreak, setCustomBreak] = useState(5);
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Timestamps recorded at session start/end — not state so they don't trigger re-renders
+  const startedAtRef = useRef<Date | null>(null);
+  const endedAtRef = useRef<Date | null>(null);
 
   const activeConfig: ModeConfig =
     mode === "CUSTOM"
@@ -89,19 +95,14 @@ export function StudyTimer({ topics }: StudyTimerProps) {
       setSecondsLeft(activeConfig.focusMinutes * 60);
       setPhase("focus");
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, customFocus, customBreak, sessionState]);
 
   // Countdown tick
   useEffect(() => {
     if (sessionState === "running") {
       intervalRef.current = setInterval(() => {
-        setSecondsLeft((prev) => {
-          if (prev <= 1) {
-            return 0;
-          }
-          return prev - 1;
-        });
+        setSecondsLeft((prev) => (prev <= 1 ? 0 : prev - 1));
         setElapsedSeconds((prev) => prev + 1);
       }, 1000);
     } else {
@@ -115,7 +116,7 @@ export function StudyTimer({ topics }: StudyTimerProps) {
     };
   }, [sessionState]);
 
-  // Handle phase transition when timer hits zero
+  // Phase transition when timer hits zero
   useEffect(() => {
     if (secondsLeft === 0 && sessionState === "running") {
       if (phase === "focus") {
@@ -124,36 +125,32 @@ export function StudyTimer({ topics }: StudyTimerProps) {
         setSessionState("break");
         setSecondsLeft(activeConfig.breakMinutes * 60);
       } else {
-        // Break ended — go back to focus
         setPhase("focus");
         setSessionState("running");
         setSecondsLeft(activeConfig.focusMinutes * 60);
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [secondsLeft]);
 
   const handleStart = useCallback(() => {
+    startedAtRef.current = new Date();
+    endedAtRef.current = null;
     setSessionState("running");
     setPhase("focus");
     setSecondsLeft(activeConfig.focusMinutes * 60);
     setElapsedSeconds(0);
     setPomodoroCount(0);
+    setSaveState("idle");
+    setSaveError("");
   }, [activeConfig.focusMinutes]);
 
-  const handlePause = useCallback(() => {
-    setSessionState("paused");
-  }, []);
-
-  const handleResume = useCallback(() => {
-    setSessionState("running");
-  }, []);
-
-  const handleStartBreak = useCallback(() => {
-    setSessionState("running");
-  }, []);
+  const handlePause = useCallback(() => setSessionState("paused"), []);
+  const handleResume = useCallback(() => setSessionState("running"), []);
+  const handleStartBreak = useCallback(() => setSessionState("running"), []);
 
   const handleEndSession = useCallback(() => {
+    endedAtRef.current = new Date();
     setSessionState("ended");
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -162,16 +159,50 @@ export function StudyTimer({ topics }: StudyTimerProps) {
   }, []);
 
   const handleReset = useCallback(() => {
+    startedAtRef.current = null;
+    endedAtRef.current = null;
     setSessionState("idle");
     setPhase("focus");
     setSecondsLeft(activeConfig.focusMinutes * 60);
     setElapsedSeconds(0);
     setPomodoroCount(0);
     setNotes("");
+    setSaveState("idle");
+    setSaveError("");
   }, [activeConfig.focusMinutes]);
 
-  const elapsedMinutes = Math.floor(elapsedSeconds / 60);
+  const handleSave = useCallback(async () => {
+    if (!startedAtRef.current || !endedAtRef.current) return;
+    setSaveState("saving");
+    setSaveError("");
 
+    try {
+      const res = await fetch("/api/study-sessions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          durationMinutes: Math.max(1, Math.floor(elapsedSeconds / 60)),
+          timerMode: mode,
+          topicId: selectedTopicId || undefined,
+          notes: notes.trim() || undefined,
+          startedAt: startedAtRef.current.toISOString(),
+          endedAt: endedAtRef.current.toISOString(),
+        }),
+      });
+
+      if (!res.ok) {
+        const data = (await res.json()) as { error?: string };
+        throw new Error(data.error ?? "Failed to save session");
+      }
+
+      setSaveState("saved");
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Something went wrong");
+      setSaveState("error");
+    }
+  }, [elapsedSeconds, mode, notes, selectedTopicId]);
+
+  const elapsedMinutes = Math.floor(elapsedSeconds / 60);
   const selectedTopic = topics.find((t) => t.id === selectedTopicId);
 
   // Ring progress
@@ -179,12 +210,8 @@ export function StudyTimer({ topics }: StudyTimerProps) {
     phase === "focus"
       ? activeConfig.focusMinutes * 60
       : activeConfig.breakMinutes * 60;
-  const progress =
-    sessionState === "idle"
-      ? 0
-      : 1 - secondsLeft / totalSeconds;
-
-  const circumference = 2 * Math.PI * 110; // radius=110
+  const progress = sessionState === "idle" ? 0 : 1 - secondsLeft / totalSeconds;
+  const circumference = 2 * Math.PI * 110;
   const strokeDash = circumference * progress;
 
   // ---------------------------------------------------------------------------
@@ -194,7 +221,6 @@ export function StudyTimer({ topics }: StudyTimerProps) {
   if (sessionState === "idle") {
     return (
       <div className="max-w-xl mx-auto space-y-8">
-        {/* Mode selector */}
         <div>
           <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-3">
             Timer Mode
@@ -219,7 +245,6 @@ export function StudyTimer({ topics }: StudyTimerProps) {
             ))}
           </div>
 
-          {/* Custom inputs */}
           {mode === "CUSTOM" && (
             <div className="mt-4 grid grid-cols-2 gap-4">
               <div>
@@ -256,7 +281,6 @@ export function StudyTimer({ topics }: StudyTimerProps) {
           )}
         </div>
 
-        {/* Topic selector */}
         <div>
           <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-3">
             Topic (optional)
@@ -279,7 +303,6 @@ export function StudyTimer({ topics }: StudyTimerProps) {
           </select>
         </div>
 
-        {/* Start */}
         <Button
           size="lg"
           className="w-full bg-teal-600 hover:bg-teal-700 text-white text-base py-6"
@@ -297,7 +320,8 @@ export function StudyTimer({ topics }: StudyTimerProps) {
 
   if (sessionState === "ended") {
     return (
-      <div className="max-w-xl mx-auto space-y-8 text-center">
+      <div className="max-w-xl mx-auto space-y-6 text-center">
+        {/* Summary card */}
         <div className="rounded-2xl border-2 border-teal-500 bg-teal-50 dark:bg-teal-900/20 p-8">
           <div className="text-4xl mb-3">🎉</div>
           <h2 className="text-2xl font-bold mb-1">Session Complete!</h2>
@@ -308,22 +332,40 @@ export function StudyTimer({ topics }: StudyTimerProps) {
             </span>
             {selectedTopic && (
               <>
-                {" "}on <span className="font-semibold">{selectedTopic.title}</span>
+                {" "}on{" "}
+                <span className="font-semibold">{selectedTopic.title}</span>
               </>
             )}
-            .{pomodoroCount > 0 && ` ${pomodoroCount} focus block${pomodoroCount !== 1 ? "s" : ""} completed.`}
+            .
+            {pomodoroCount > 0 &&
+              ` ${pomodoroCount} focus block${pomodoroCount !== 1 ? "s" : ""} completed.`}
           </p>
         </div>
 
-        {/* Notes (shown even after ended, for reference) */}
+        {/* Saved confirmation */}
+        {saveState === "saved" && (
+          <div className="rounded-lg border border-green-300 bg-green-50 dark:bg-green-900/20 dark:border-green-700 px-4 py-3 text-sm text-green-700 dark:text-green-300">
+            Session saved successfully!
+          </div>
+        )}
+
+        {/* Error */}
+        {saveState === "error" && (
+          <div className="rounded-lg border border-red-300 bg-red-50 dark:bg-red-900/20 dark:border-red-700 px-4 py-3 text-sm text-red-700 dark:text-red-300">
+            {saveError}
+          </div>
+        )}
+
+        {/* Notes */}
         <div className="text-left">
           <label className="block text-sm font-medium mb-2">Session Notes</label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
+            disabled={saveState === "saved"}
             rows={4}
             placeholder="What did you learn? Any questions? Notes for next time…"
-            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm resize-none"
+            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm resize-none disabled:opacity-50"
           />
         </div>
 
@@ -331,13 +373,20 @@ export function StudyTimer({ topics }: StudyTimerProps) {
           <Button variant="outline" onClick={handleReset}>
             Start New Session
           </Button>
-          <Button className="bg-teal-600 hover:bg-teal-700 text-white">
-            Save Session
+          <Button
+            className="bg-teal-600 hover:bg-teal-700 text-white disabled:opacity-60"
+            onClick={handleSave}
+            disabled={saveState === "saving" || saveState === "saved"}
+          >
+            {saveState === "saving"
+              ? "Saving…"
+              : saveState === "saved"
+              ? "Saved ✓"
+              : saveState === "error"
+              ? "Try Again"
+              : "Save Session"}
           </Button>
         </div>
-        <p className="text-xs text-gray-400">
-          Session saving will be available in the next step.
-        </p>
       </div>
     );
   }
@@ -384,7 +433,6 @@ export function StudyTimer({ topics }: StudyTimerProps) {
       <div className="flex justify-center">
         <div className="relative">
           <svg width="280" height="280" className="-rotate-90">
-            {/* Track */}
             <circle
               cx="140"
               cy="140"
@@ -394,7 +442,6 @@ export function StudyTimer({ topics }: StudyTimerProps) {
               strokeWidth="8"
               className="text-gray-200 dark:text-gray-700"
             />
-            {/* Progress */}
             <circle
               cx="140"
               cy="140"
@@ -415,7 +462,6 @@ export function StudyTimer({ topics }: StudyTimerProps) {
             />
           </svg>
 
-          {/* Time display (centered inside circle) */}
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="text-6xl font-mono font-bold tracking-tight tabular-nums">
               {formatTime(secondsLeft)}
