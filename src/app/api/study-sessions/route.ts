@@ -66,6 +66,33 @@ export async function POST(request: Request) {
     },
   });
 
+  // Update topic progress when a session has an associated topic
+  if (topicId) {
+    const sessionEndedAt = new Date(endedAt);
+    await db.$transaction([
+      db.userTopicProgress.upsert({
+        where: { userId_topicId: { userId: dbUser.id, topicId } },
+        create: {
+          userId: dbUser.id,
+          topicId,
+          status: "IN_PROGRESS",
+          totalStudyMinutes: durationMinutes,
+          lastStudiedAt: sessionEndedAt,
+        },
+        update: {
+          totalStudyMinutes: { increment: durationMinutes },
+          lastStudiedAt: sessionEndedAt,
+        },
+      }),
+      // Promote NOT_STARTED → IN_PROGRESS. No-op if status is already
+      // IN_PROGRESS, NEEDS_REVIEW, or MASTERED (those are preserved).
+      db.userTopicProgress.updateMany({
+        where: { userId: dbUser.id, topicId, status: "NOT_STARTED" },
+        data: { status: "IN_PROGRESS" },
+      }),
+    ]);
+  }
+
   return Response.json({ session }, { status: 201 });
 }
 

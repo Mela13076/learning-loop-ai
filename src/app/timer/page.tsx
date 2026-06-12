@@ -5,7 +5,11 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { StudyTimer } from "@/components/timer/StudyTimer";
 
-export default async function TimerPage() {
+export default async function TimerPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ topic?: string }>;
+}) {
   const clerkUser = await currentUser();
   if (!clerkUser) redirect("/login");
 
@@ -19,6 +23,8 @@ export default async function TimerPage() {
     create: { clerkId: clerkUser.id, email, name },
     update: { email, name },
   });
+
+  const { topic: initialTopicId } = await searchParams;
 
   // Fetch all topics with their learning path title
   const topicRows = await db.topic.findMany({
@@ -61,7 +67,7 @@ export default async function TimerPage() {
           </p>
         </div>
 
-        <StudyTimer topics={topics} />
+        <StudyTimer topics={topics} initialTopicId={initialTopicId} />
       </main>
     </div>
   );

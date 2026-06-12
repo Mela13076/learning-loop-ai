@@ -16,6 +16,7 @@ interface Topic {
 
 interface StudyTimerProps {
   topics: Topic[];
+  initialTopicId?: string;
 }
 
 type TimerMode = "POMODORO" | "DEEP_WORK" | "CUSTOM";
@@ -61,14 +62,14 @@ function formatTime(seconds: number): string {
 // Component
 // ---------------------------------------------------------------------------
 
-export function StudyTimer({ topics }: StudyTimerProps) {
+export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
   const [mode, setMode] = useState<TimerMode>("POMODORO");
   const [sessionState, setSessionState] = useState<SessionState>("idle");
   const [phase, setPhase] = useState<Phase>("focus");
   const [secondsLeft, setSecondsLeft] = useState(
     MODE_CONFIGS.POMODORO.focusMinutes * 60
   );
-  const [selectedTopicId, setSelectedTopicId] = useState<string>("");
+  const [selectedTopicId, setSelectedTopicId] = useState<string>(initialTopicId ?? "");
   const [notes, setNotes] = useState("");
   const [pomodoroCount, setPomodoroCount] = useState(0);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
