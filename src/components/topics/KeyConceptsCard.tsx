@@ -14,7 +14,7 @@ export function KeyConceptsCard({
 
   return (
     <section className="rounded-xl border border-primary/50 bg-card p-6">
-      <details className="group" open>
+      <details className="group">
         <summary className="flex cursor-pointer list-none items-start justify-between gap-3">
           <div className="space-y-2">
             <h2 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { currentUser } from "@clerk/nextjs/server";
 import { UserButton } from "@clerk/nextjs";
+import { ChevronDown } from "lucide-react";
 import { redirect, notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
@@ -168,19 +169,19 @@ export default async function TopicPage({
           <div className="flex items-center gap-3 sm:gap-4">
             <Link
               href="/dashboard"
-              className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="hidden sm:block text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               Dashboard
             </Link>
             <Link
               href="/paths"
-              className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="hidden sm:block text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               Learning Paths
             </Link>
             <Link
               href="/settings"
-              className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="hidden sm:block text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               Settings
             </Link>
@@ -194,19 +195,19 @@ export default async function TopicPage({
         <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
           <Link
             href="/paths"
-            className="hover:text-foreground transition-colors"
+            className="hover:text-primary transition-colors"
           >
             Learning Paths
           </Link>
           <span>/</span>
           <Link
             href={`/paths/${topic.learningPath.id}`}
-            className="hover:text-foreground transition-colors"
+            className="hover:text-primary transition-colors"
           >
             {topic.learningPath.title}
           </Link>
           <span>/</span>
-          <span className="text-foreground font-medium">{topic.title}</span>
+          <span className="text-primary font-medium">{topic.title}</span>
         </nav>
 
         <div className="grid gap-8 lg:grid-cols-3">
@@ -243,12 +244,26 @@ export default async function TopicPage({
 
             {/* Session Notes */}
             {sessionNotes.length > 0 && (
-              <div className="rounded-xl border border-primary/50 bg-card p-6">
-                <h2 className="mb-4 font-semibold text-sm uppercase tracking-wider text-muted-foreground">
-                  Session Notes
-                </h2>
-                <SessionNotesList initialNotes={sessionNotes} />
-              </div>
+              <section className="rounded-xl border border-primary/50 bg-card p-6">
+                <details className="group">
+                  <summary className="flex cursor-pointer list-none items-start justify-between gap-3">
+                    <div className="space-y-2">
+                      <h2 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">
+                        Session Notes
+                      </h2>
+                      <p className="text-sm leading-relaxed text-muted-foreground">
+                        Review notes from prior study sessions. Open this section
+                        to browse, edit, or remove saved notes.
+                      </p>
+                    </div>
+                    <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
+                  </summary>
+
+                  <div className="mt-4">
+                    <SessionNotesList initialNotes={sessionNotes} />
+                  </div>
+                </details>
+              </section>
             )}
 
             {/* AI Tutor Chat */}
@@ -264,7 +279,7 @@ export default async function TopicPage({
               {prevTopic ? (
                 <Link
                   href={`/topics/${prevTopic.id}`}
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   ← {prevTopic.title}
                 </Link>
@@ -274,7 +289,7 @@ export default async function TopicPage({
               {nextTopic && (
                 <Link
                   href={`/topics/${nextTopic.id}`}
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   {nextTopic.title} →
                 </Link>
@@ -347,7 +362,7 @@ export default async function TopicPage({
                     <div className="text-center">
                       <p className="text-sm text-muted-foreground">
                         Avg quiz score:{" "}
-                        <span className="font-medium text-foreground">
+                        <span className="font-medium text-primary">
                           {Math.round(progress.averageQuizScore)}%
                         </span>
                       </p>
