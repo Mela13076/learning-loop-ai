@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
+import { SessionSummaryCard } from "@/components/ai/SessionSummaryCard";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -23,6 +24,14 @@ type TimerMode = "POMODORO" | "DEEP_WORK" | "CUSTOM";
 type Phase = "focus" | "break";
 type SessionState = "idle" | "running" | "paused" | "break" | "ended";
 type SaveState = "idle" | "saving" | "saved" | "error";
+type SummaryState = "idle" | "loading" | "ready" | "error";
+
+interface SummaryData {
+  summary: string
+  keyTakeaways: string[]
+  weakAreas: string[]
+  recommendedNext: string
+}
 
 interface ModeConfig {
   label: string;
@@ -75,6 +84,8 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [saveError, setSaveError] = useState<string>("");
+  const [summaryState, setSummaryState] = useState<SummaryState>("idle");
+  const [summaryData, setSummaryData] = useState<SummaryData | null>(null);
 
   // Custom mode input values (in minutes)
   const [customFocus, setCustomFocus] = useState(30);
@@ -170,6 +181,8 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
     setNotes("");
     setSaveState("idle");
     setSaveError("");
+    setSummaryState("idle");
+    setSummaryData(null);
   }, [activeConfig.focusMinutes]);
 
   const handleSave = useCallback(async () => {
@@ -177,12 +190,14 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
     setSaveState("saving");
     setSaveError("");
 
+    const durationMinutes = Math.max(1, Math.floor(elapsedSeconds / 60));
+
     try {
       const res = await fetch("/api/study-sessions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          durationMinutes: Math.max(1, Math.floor(elapsedSeconds / 60)),
+          durationMinutes,
           timerMode: mode,
           topicId: selectedTopicId || undefined,
           notes: notes.trim() || undefined,
@@ -200,6 +215,32 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : "Something went wrong");
       setSaveState("error");
+      return;
+    }
+
+    // Auto-generate AI summary only if a topic was selected AND notes were written
+    if (selectedTopicId && notes.trim()) {
+      setSummaryState("loading");
+      try {
+        const res = await fetch("/api/ai/session-summary", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            topicId: selectedTopicId,
+            durationMinutes,
+            notes: notes.trim() || undefined,
+          }),
+        });
+        if (res.ok) {
+          const data = (await res.json()) as SummaryData;
+          setSummaryData(data);
+          setSummaryState("ready");
+        } else {
+          setSummaryState("error");
+        }
+      } catch {
+        setSummaryState("error");
+      }
     }
   }, [elapsedSeconds, mode, notes, selectedTopicId]);
 
@@ -322,7 +363,7 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
   if (sessionState === "ended") {
     return (
       <div className="max-w-xl mx-auto space-y-6 text-center">
-        {/* Summary card */}
+        {/* Session complete card */}
         <div className="rounded-2xl border-2 border-teal-500 bg-teal-50 dark:bg-teal-900/20 p-8">
           <div className="text-4xl mb-3">🎉</div>
           <h2 className="text-2xl font-bold mb-1">Session Complete!</h2>
@@ -350,7 +391,7 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
           </div>
         )}
 
-        {/* Error */}
+        {/* Save error */}
         {saveState === "error" && (
           <div className="rounded-lg border border-red-300 bg-red-50 dark:bg-red-900/20 dark:border-red-700 px-4 py-3 text-sm text-red-700 dark:text-red-300">
             {saveError}
@@ -368,6 +409,14 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
             placeholder="What did you learn? Any questions? Notes for next time…"
             className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm resize-none disabled:opacity-50"
           />
+          <p className="mt-1.5 text-xs text-muted-foreground">
+            Notes are saved with your session so you can review them later.{" "}
+            {saveState !== "saved" && (
+              <span className="text-teal-600 dark:text-teal-400">
+                Adding notes also unlocks an AI-generated session summary.
+              </span>
+            )}
+          </p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -376,7 +425,7 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
           </Button>
           <Button
             className="bg-teal-600 hover:bg-teal-700 text-white disabled:opacity-60"
-            onClick={handleSave}
+            onClick={() => void handleSave()}
             disabled={saveState === "saving" || saveState === "saved"}
           >
             {saveState === "saving"
@@ -388,6 +437,30 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
               : "Save Session"}
           </Button>
         </div>
+
+        {/* AI summary — loading */}
+        {summaryState === "loading" && (
+          <div className="rounded-2xl border border-border bg-card px-6 py-8 text-center">
+            <div className="mx-auto mb-3 size-5 animate-spin rounded-full border-2 border-teal-500 border-t-transparent" />
+            <p className="text-sm text-muted-foreground">Generating session summary…</p>
+          </div>
+        )}
+
+        {/* AI summary — ready */}
+        {summaryState === "ready" && summaryData && (
+          <SessionSummaryCard
+            summary={summaryData}
+            topicId={selectedTopic?.id}
+            topicTitle={selectedTopic?.title}
+          />
+        )}
+
+        {/* AI summary — error (silent, non-blocking) */}
+        {summaryState === "error" && (
+          <p className="text-xs text-muted-foreground">
+            Couldn&apos;t generate an AI summary for this session.
+          </p>
+        )}
       </div>
     );
   }
@@ -468,7 +541,7 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
               {formatTime(secondsLeft)}
             </span>
             {selectedTopic && (
-              <span className="mt-2 text-xs text-gray-500 max-w-[160px] truncate">
+              <span className="mt-2 text-xs text-gray-500 max-w-40 truncate">
                 {selectedTopic.title}
               </span>
             )}
@@ -538,6 +611,9 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
           placeholder="Jot down key concepts, questions, or ideas as you go…"
           className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm resize-none"
         />
+        <p className="mt-1.5 text-xs text-muted-foreground">
+          Notes are saved with your session for future reference and unlock an AI summary when your session ends.
+        </p>
       </div>
     </div>
   );

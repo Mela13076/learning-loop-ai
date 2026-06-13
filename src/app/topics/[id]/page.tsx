@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/topics/ProgressBar";
 import { AiTutorChat } from "@/components/ai/AiTutorChat";
 import { QuizGeneratorButton } from "@/components/quiz/QuizGeneratorButton";
+import { SessionNotesList } from "@/components/topics/SessionNotesList";
 import type { ProgressStatus, Difficulty } from "@/generated/prisma/enums";
 
 // ---------------------------------------------------------------------------
@@ -101,6 +102,25 @@ export default async function TopicPage({
         },
       })
     : null;
+
+  // Study sessions with notes for this topic
+  const sessionNotes = dbUser
+    ? await db.studySession.findMany({
+        where: {
+          userId: dbUser.id,
+          topicId: id,
+          notes: { not: null },
+        },
+        orderBy: { endedAt: "desc" },
+        take: 5,
+        select: {
+          id: true,
+          notes: true,
+          durationMinutes: true,
+          endedAt: true,
+        },
+      })
+    : [];
 
   // Adjacent topics for prev/next navigation
   const [prevTopic, nextTopic] = await Promise.all([
@@ -202,6 +222,16 @@ export default async function TopicPage({
               </h2>
               <p className="text-base leading-relaxed">{topic.description}</p>
             </div>
+
+            {/* Session Notes */}
+            {sessionNotes.length > 0 && (
+              <div className="rounded-xl border border-border bg-card p-6">
+                <h2 className="mb-4 font-semibold text-sm uppercase tracking-wider text-muted-foreground">
+                  Session Notes
+                </h2>
+                <SessionNotesList initialNotes={sessionNotes} />
+              </div>
+            )}
 
             {/* AI Tutor Chat */}
             <div id="ai-tutor" className="rounded-xl border border-border bg-card p-6">
