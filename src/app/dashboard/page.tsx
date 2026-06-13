@@ -127,6 +127,7 @@ export default async function DashboardPage() {
       take: 5,
       include: {
         quiz: { include: { topic: { select: { id: true, title: true } } } },
+        answers: {include: { question: true },},
       },
     }),
     db.userTopicProgress.findMany({
@@ -361,9 +362,7 @@ export default async function DashboardPage() {
                 {recentAttempts.map((attempt) => {
                   const pct =
                     attempt.totalQuestions > 0
-                      ? Math.round(
-                          (attempt.score / attempt.totalQuestions) * 100
-                        )
+                      ? Math.round(attempt.score)  
                       : 0;
                   return (
                     <Link
@@ -376,7 +375,7 @@ export default async function DashboardPage() {
                           {attempt.quiz.topic?.title ?? "Unknown topic"}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {attempt.score}/{attempt.totalQuestions} correct
+                          {attempt.answers.filter((a) => a.isCorrect).length}/{attempt.totalQuestions} correct
                         </p>
                       </div>
                       <span
