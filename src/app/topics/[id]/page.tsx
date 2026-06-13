@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/topics/ProgressBar";
 import { AiTutorChat } from "@/components/ai/AiTutorChat";
+import { QuizGeneratorButton } from "@/components/quiz/QuizGeneratorButton";
 import type { ProgressStatus, Difficulty } from "@/generated/prisma/enums";
 
 // ---------------------------------------------------------------------------
@@ -256,16 +257,7 @@ export default async function TopicPage({
                 <a href="#ai-tutor">Ask AI Tutor</a>
               </Button>
 
-              <Button
-                variant="outline"
-                className="w-full"
-                disabled
-              >
-                Generate Quiz
-                <span className="ml-2 rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium">
-                  soon
-                </span>
-              </Button>
+              <QuizGeneratorButton topicId={topic.id} />
             </div>
 
             {/* Progress card */}
