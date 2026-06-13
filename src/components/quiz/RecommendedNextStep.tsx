@@ -2,14 +2,12 @@ import Link from "next/link"
 
 interface RecommendedNextStepProps {
   topicId: string
-  topicTitle: string
   nextTopic: { id: string; title: string } | null
   score: number
 }
 
 export function RecommendedNextStep({
   topicId,
-  topicTitle,
   nextTopic,
   score,
 }: RecommendedNextStepProps) {
@@ -19,7 +17,7 @@ export function RecommendedNextStep({
         ? `You're ready to move on to ${nextTopic.title}.`
         : "You've mastered this topic!"
       : score >= 40
-        ? "Consider reviewing this topic or asking the AI tutor for help."
+        ? "Consider reviewing this topic or using the AI Learning Coach."
         : "Try reviewing the topic and retaking the quiz."
 
   return (
@@ -43,10 +41,10 @@ export function RecommendedNextStep({
         </Link>
 
         <Link
-          href={`/topics/${topicId}#ai-tutor`}
+          href={`/topics/${topicId}#ai-learning-coach`}
           className="inline-flex items-center gap-1.5 rounded-lg border border-primary/50 px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/50 hover:text-primary"
         >
-          Ask AI Tutor
+          Open AI Learning Coach
         </Link>
 
         {nextTopic && (

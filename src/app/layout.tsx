@@ -30,7 +30,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Learning Loop AI",
   description:
-    "Build consistent study habits and master software engineering with AI-guided tutoring, quizzes, and progress tracking.",
+    "Build consistent study habits and master software engineering with an AI learning coach, quizzes, and progress tracking.",
 };
 
 export default async function RootLayout({

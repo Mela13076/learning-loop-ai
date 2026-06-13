@@ -14,7 +14,7 @@ const learningLoop = [
   {
     title: "3. Ask for guidance",
     description:
-      "Use the AI tutor to get hints, questions, and explanations before seeing the full answer.",
+      "Use the AI Learning Coach to work through one concept at a time with explanations, examples, and short quizzes.",
   },
   {
     title: "4. Practice recall",
@@ -45,7 +45,7 @@ const principles = [
 const mvpFeatures = [
   "Learning paths for structured CS and software engineering study",
   "Study timer sessions with notes and session tracking",
-  "AI tutor support with guided hints before answers",
+  "AI Learning Coach sessions tied to key concepts",
   "Topic-based quiz generation and results breakdowns",
   "Dashboard progress tracking for time, scores, streaks, and weak areas",
 ];
@@ -119,9 +119,9 @@ export default function AboutPage() {
             </h2>
             <div className="mt-5 space-y-4 text-muted-foreground">
               <p>
-                This is not meant to be just another AI chat box. The tutor is designed
-                to guide you with hints, questions, and explanations before giving away
-                the full answer.
+                This is not meant to be just another AI chat box. The coach is designed
+                to guide you through key concepts with short explanations, examples,
+                and quizzes before moving on.
               </p>
               <p>
                 The goal is to help you think, recall, and practice, not just copy.

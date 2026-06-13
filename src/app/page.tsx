@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 
 const features = [
   {
-    title: "Guided AI Tutor",
+    title: "AI Learning Coach",
     description:
-      "Get hints, guiding questions, and examples before the answer — so you actually learn, not just copy.",
+      "Work through one concept at a time with explanations, examples, and short quizzes instead of a generic AI chat.",
   },
   {
     title: "Active Recall Quizzes",
@@ -67,9 +67,8 @@ export default function Home() {
             </span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-            Learning Loop AI combines study timers, structured learning paths, AI
-            tutoring, and quizzes to help you learn through active recall — with an
-            AI that guides you instead of handing over answers.
+            Learning Loop AI combines study timers, structured learning paths, an AI
+            learning coach, and quizzes to help you learn through active recall.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Show when="signed-out">

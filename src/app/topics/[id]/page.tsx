@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/topics/ProgressBar";
 import { KeyConceptsCard } from "@/components/topics/KeyConceptsCard";
 import { LearningResourcesCard } from "@/components/topics/LearningResourcesCard";
-import { AiTutorChat } from "@/components/ai/AiTutorChat";
+import { AiLearningCoach } from "@/components/ai/AiLearningCoach";
 import { QuizGeneratorButton } from "@/components/quiz/QuizGeneratorButton";
 import { SessionNotesList } from "@/components/topics/SessionNotesList";
 import type { ProgressStatus, Difficulty } from "@/generated/prisma/enums";
@@ -270,14 +270,6 @@ export default async function TopicPage({
               </section>
             )}
 
-            {/* AI Tutor Chat */}
-            <div id="ai-tutor" className="rounded-xl border border-primary/50 bg-card p-6">
-              <h2 className="mb-4 font-semibold text-sm uppercase tracking-wider text-muted-foreground">
-                AI Tutor
-              </h2>
-              <AiTutorChat topicId={topic.id} topicTitle={topic.title} />
-            </div>
-
             {/* Prev / Next navigation */}
             <div className="flex items-center justify-between gap-4 pt-2">
               {prevTopic ? (
@@ -318,7 +310,7 @@ export default async function TopicPage({
                 className="w-full"
                 asChild
               >
-                <a href="#ai-tutor">Ask AI Tutor</a>
+                <a href="#ai-learning-coach">Open AI Learning Coach</a>
               </Button>
 
               <QuizGeneratorButton topicId={topic.id} />
@@ -397,6 +389,20 @@ export default async function TopicPage({
               </p>
             </div>
           </div>
+        </div>
+
+        <div
+          id="ai-learning-coach"
+          className="mt-8 rounded-xl border border-primary/50 bg-card p-6"
+        >
+          <h2 className="mb-4 font-semibold text-sm uppercase tracking-wider text-muted-foreground">
+            AI Learning Coach
+          </h2>
+          <AiLearningCoach
+            topicId={topic.id}
+            topicTitle={topic.title}
+            concepts={keyConcepts}
+          />
         </div>
       </main>
     </div>
