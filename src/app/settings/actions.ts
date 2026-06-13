@@ -9,14 +9,12 @@ import { isAccentColor, isThemeMode } from "@/lib/theme";
 import { syncClerkUser } from "@/lib/user";
 
 const profileSettingsSchema = z.object({
-  name: z.string().trim().min(1, "Name is required.").max(60, "Name is too long."),
   accentColor: z.string().refine(isAccentColor, "Choose a valid accent color."),
   themeMode: z.string().refine(isThemeMode, "Choose a valid theme mode."),
 });
 
 export type ProfileSettingsState = {
   errors?: {
-    name?: string[];
     accentColor?: string[];
     themeMode?: string[];
   };
@@ -29,16 +27,15 @@ export async function updateProfileSettings(
 ): Promise<ProfileSettingsState> {
   const { userId } = await auth();
   if (!userId) {
-    return { errors: { name: ["You must be signed in."] } };
+    return { errors: { accentColor: ["You must be signed in."] } };
   }
 
   const clerkUser = await currentUser();
   if (!clerkUser) {
-    return { errors: { name: ["You must be signed in."] } };
+    return { errors: { accentColor: ["You must be signed in."] } };
   }
 
   const validated = profileSettingsSchema.safeParse({
-    name: formData.get("name"),
     accentColor: formData.get("accentColor"),
     themeMode: formData.get("themeMode"),
   });
@@ -54,7 +51,6 @@ export async function updateProfileSettings(
   await db.user.update({
     where: { id: dbUser.id },
     data: {
-      name: validated.data.name,
       accentColor: validated.data.accentColor,
       themeMode: validated.data.themeMode,
     },

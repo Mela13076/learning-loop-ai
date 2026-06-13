@@ -20,7 +20,7 @@ export async function syncClerkUser(clerkUser: ClerkUser) {
       where: { clerkId: clerkUser.id },
       data: {
         email,
-        ...(existingUser.name ? {} : { name: clerkName }),
+        name: clerkName,
       },
     });
   }

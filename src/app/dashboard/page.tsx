@@ -187,7 +187,7 @@ export default async function DashboardPage() {
     if (recommendedTopic) break;
   }
 
-  const greetingName = dbUser.name?.split(" ")[0] ?? clerkUser.firstName ?? "there";
+  const greetingName = clerkUser.firstName ?? dbUser.name?.split(" ")[0] ?? "there";
 
   return (
     <div className="flex min-h-screen flex-col">

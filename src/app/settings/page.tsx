@@ -17,11 +17,6 @@ export default async function SettingsPage() {
 
   const dbUser = await syncClerkUser(clerkUser);
 
-  const name =
-    dbUser.name ??
-    [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(" ") ??
-    "";
-
   const accentColor = isAccentColor(dbUser.accentColor)
     ? dbUser.accentColor
     : DEFAULT_ACCENT_COLOR;
@@ -62,12 +57,11 @@ export default async function SettingsPage() {
         <div className="mb-8">
           <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Manage your profile name and site appearance preferences.
+            Manage your site appearance preferences.
           </p>
         </div>
 
         <ProfileSettingsForm
-          initialName={name}
           initialAccentColor={accentColor}
           initialThemeMode={themeMode}
           email={dbUser.email}

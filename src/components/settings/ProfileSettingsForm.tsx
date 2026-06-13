@@ -15,7 +15,6 @@ import {
 import { updateThemePreference } from "@/components/theme/ThemeProvider";
 
 interface ProfileSettingsFormProps {
-  initialName: string;
   initialAccentColor: AccentColor;
   initialThemeMode: ThemeMode;
   email: string;
@@ -34,7 +33,6 @@ function SubmitButton() {
 }
 
 export function ProfileSettingsForm({
-  initialName,
   initialAccentColor,
   initialThemeMode,
   email,
@@ -57,28 +55,13 @@ export function ProfileSettingsForm({
     <form action={formAction} className="space-y-8">
       <section className="rounded-xl border border-border bg-card p-6">
         <div className="mb-5">
-          <h2 className="text-lg font-semibold">Profile</h2>
+          <h2 className="text-lg font-semibold">Account</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Update the name shown across your dashboard and study pages.
+            Your name is managed in Clerk. This page only controls app-specific preferences.
           </p>
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2">
-          <label className="space-y-2">
-            <span className="text-sm font-medium">Display name</span>
-            <input
-              name="name"
-              type="text"
-              defaultValue={initialName}
-              required
-              maxLength={60}
-              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none transition-colors focus:border-ring"
-            />
-            {state.errors?.name?.[0] && (
-              <p className="text-sm text-red-500">{state.errors.name[0]}</p>
-            )}
-          </label>
-
           <label className="space-y-2">
             <span className="text-sm font-medium">Email</span>
             <input
