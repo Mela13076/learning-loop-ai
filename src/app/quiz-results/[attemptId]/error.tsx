@@ -11,7 +11,7 @@ export default function QuizResultsError({
 }) {
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur">
+      <header className="sticky top-0 z-10 border-b border-primary/50 bg-background/80 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-3xl items-center gap-4 px-4 sm:px-6">
           <Link
             href="/paths"
@@ -41,7 +41,7 @@ export default function QuizResultsError({
             </button>
             <Link
               href="/dashboard"
-              className="rounded-lg border border-border px-4 py-2 text-sm font-medium hover:bg-muted transition-colors"
+              className="rounded-lg border border-primary/50 px-4 py-2 text-sm font-medium hover:bg-muted transition-colors"
             >
               Dashboard
             </Link>

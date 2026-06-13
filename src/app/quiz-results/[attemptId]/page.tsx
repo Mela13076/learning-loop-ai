@@ -56,7 +56,7 @@ export default async function QuizResultsPage({
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur">
+      <header className="sticky top-0 z-10 border-b border-primary/50 bg-background/80 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-3xl items-center gap-4 px-4 sm:px-6">
           <Link
             href={`/topics/${currentTopic.id}`}

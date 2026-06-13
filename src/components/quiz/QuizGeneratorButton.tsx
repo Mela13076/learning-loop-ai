@@ -52,7 +52,7 @@ export function QuizGeneratorButton({ topicId }: QuizGeneratorButtonProps) {
   }
 
   return (
-    <div className="rounded-xl border border-border bg-card p-4 space-y-4">
+    <div className="rounded-xl border border-primary/50 bg-card p-4 space-y-4">
       <h3 className="font-semibold text-sm">Quiz Settings</h3>
 
       {/* Difficulty */}
@@ -66,7 +66,7 @@ export function QuizGeneratorButton({ topicId }: QuizGeneratorButtonProps) {
               className={`flex-1 rounded-md border px-2 py-1.5 text-xs capitalize transition-colors ${
                 difficulty === d
                   ? "border-primary bg-[var(--accent-soft)] text-primary"
-                  : "border-border text-muted-foreground hover:border-primary/50"
+                  : "border-primary/50 text-muted-foreground hover:border-primary/50"
               }`}
             >
               {d}
@@ -86,7 +86,7 @@ export function QuizGeneratorButton({ topicId }: QuizGeneratorButtonProps) {
               className={`flex-1 rounded-md border px-2 py-1.5 text-xs transition-colors ${
                 questionCount === n
                   ? "border-primary bg-[var(--accent-soft)] text-primary"
-                  : "border-border text-muted-foreground hover:border-primary/50"
+                  : "border-primary/50 text-muted-foreground hover:border-primary/50"
               }`}
             >
               {n}
@@ -106,7 +106,7 @@ export function QuizGeneratorButton({ topicId }: QuizGeneratorButtonProps) {
               className={`flex-1 rounded-md border px-2 py-1.5 text-xs transition-colors ${
                 questionType === t
                   ? "border-primary bg-[var(--accent-soft)] text-primary"
-                  : "border-border text-muted-foreground hover:border-primary/50"
+                  : "border-primary/50 text-muted-foreground hover:border-primary/50"
               }`}
             >
               {t === "multiple_choice" ? "MC" : t === "short_answer" ? "Short" : "Mixed"}

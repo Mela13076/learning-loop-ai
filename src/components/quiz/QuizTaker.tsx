@@ -68,7 +68,7 @@ export function QuizTaker({
   return (
     <div className="flex min-h-screen flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur">
+      <header className="sticky top-0 z-10 border-b border-primary/50 bg-background/80 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-3xl items-center justify-between px-4 sm:px-6">
           <div>
             <p className="text-xs text-muted-foreground">{topicTitle}</p>
@@ -81,7 +81,7 @@ export function QuizTaker({
       </header>
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-10 sm:px-6">
-        <div className="rounded-xl border border-border bg-card p-6 sm:p-8">
+        <div className="rounded-xl border border-primary/50 bg-card p-6 sm:p-8">
           <QuizQuestionCard
             questionNumber={currentIndex + 1}
             totalQuestions={questions.length}
@@ -143,7 +143,7 @@ export function QuizTaker({
         </div>
 
         {/* Question navigator */}
-        <div className="mt-6 rounded-xl border border-border bg-card p-4">
+        <div className="mt-6 rounded-xl border border-primary/50 bg-card p-4">
           <p className="mb-3 text-xs font-medium text-muted-foreground">
             Jump to question
           </p>
@@ -157,7 +157,7 @@ export function QuizTaker({
                     ? "bg-primary text-primary-foreground"
                     : answers[questions[i].id]?.trim()
                       ? "border border-primary text-primary"
-                      : "border border-border text-muted-foreground hover:border-primary/50"
+                      : "border border-primary/50 text-muted-foreground hover:border-primary/50"
                 }`}
               >
                 {i + 1}

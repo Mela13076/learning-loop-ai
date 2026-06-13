@@ -35,7 +35,7 @@ export default async function PathsPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur">
+      <header className="sticky top-0 z-10 border-b border-primary/50 bg-background/80 backdrop-blur">
         <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2 font-bold">
             <span className="grid size-7 place-items-center rounded-md bg-primary text-sm text-primary-foreground">
@@ -76,7 +76,7 @@ export default async function PathsPage() {
         </div>
 
         {learningPaths.length === 0 && (
-          <div className="rounded-xl border border-border bg-card p-10 text-center">
+          <div className="rounded-xl border border-primary/50 bg-card p-10 text-center">
             <p className="text-muted-foreground text-sm">
               No learning paths available yet. Check back soon!
             </p>

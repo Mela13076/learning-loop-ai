@@ -485,7 +485,7 @@ export function StudyTimer({
 
         {/* AI summary — loading */}
         {summaryState === "loading" && (
-          <div className="rounded-2xl border border-border bg-card px-6 py-8 text-center">
+          <div className="rounded-2xl border border-primary/50 bg-card px-6 py-8 text-center">
             <div className="mx-auto mb-3 size-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
             <p className="text-sm text-muted-foreground">Generating session summary…</p>
           </div>

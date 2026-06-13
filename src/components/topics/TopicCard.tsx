@@ -60,7 +60,7 @@ export function TopicCard({
   return (
     <Link
       href={`/topics/${id}`}
-      className="block rounded-xl border border-border bg-card p-5 transition-all duration-200 hover:border-primary/50 hover:bg-muted/30"
+      className="block rounded-xl border border-primary/50 bg-card p-5 transition-all duration-200 hover:border-primary/50 hover:bg-muted/30"
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-3 min-w-0">

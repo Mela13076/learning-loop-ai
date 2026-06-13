@@ -85,7 +85,7 @@ export function QuizQuestionCard({
               className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3.5 transition-colors ${
                 currentAnswer === option
                   ? "border-primary bg-[var(--accent-soft)]"
-                  : "border-border hover:border-primary/50 hover:bg-muted/40"
+                  : "border-primary/50 hover:border-primary/50 hover:bg-muted/40"
               }`}
             >
               <input

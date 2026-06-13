@@ -53,7 +53,7 @@ const mvpFeatures = [
 export default function AboutPage() {
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur">
+      <header className="sticky top-0 z-10 border-b border-primary/50 bg-background/80 backdrop-blur">
         <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2 font-bold">
             <span className="grid size-7 place-items-center rounded-md bg-primary text-sm text-primary-foreground">
@@ -98,7 +98,7 @@ export default function AboutPage() {
         </section>
 
         <section className="mt-16 grid gap-6 lg:grid-cols-2">
-          <div className="rounded-2xl border border-border bg-card p-8">
+          <div className="rounded-2xl border border-primary/50 bg-card p-8">
             <h2 className="text-2xl font-bold tracking-tight">Why this exists</h2>
             <div className="mt-5 space-y-4 text-muted-foreground">
               <p>
@@ -113,7 +113,7 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-border bg-card p-8">
+          <div className="rounded-2xl border border-primary/50 bg-card p-8">
             <h2 className="text-2xl font-bold tracking-tight">
               What makes it different
             </h2>
@@ -143,7 +143,7 @@ export default function AboutPage() {
             {learningLoop.map((step) => (
               <div
                 key={step.title}
-                className="rounded-2xl border border-border bg-card p-6"
+                className="rounded-2xl border border-primary/50 bg-card p-6"
               >
                 <h3 className="font-semibold text-foreground">{step.title}</h3>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">
@@ -155,7 +155,7 @@ export default function AboutPage() {
         </section>
 
         <section className="mt-16 grid gap-6 lg:grid-cols-2">
-          <div className="rounded-2xl border border-border bg-card p-8">
+          <div className="rounded-2xl border border-primary/50 bg-card p-8">
             <h2 className="text-2xl font-bold tracking-tight">Who it is for</h2>
             <ul className="mt-5 space-y-3 text-sm leading-6 text-muted-foreground">
               {audience.map((item) => (
@@ -167,7 +167,7 @@ export default function AboutPage() {
             </ul>
           </div>
 
-          <div className="rounded-2xl border border-border bg-card p-8">
+          <div className="rounded-2xl border border-primary/50 bg-card p-8">
             <h2 className="text-2xl font-bold tracking-tight">Core principles</h2>
             <ul className="mt-5 space-y-3 text-sm leading-6 text-muted-foreground">
               {principles.map((item) => (
@@ -180,7 +180,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section className="mt-16 rounded-2xl border border-border bg-card p-8">
+        <section className="mt-16 rounded-2xl border border-primary/50 bg-card p-8">
           <h2 className="text-2xl font-bold tracking-tight">What is in the app right now</h2>
           <p className="mt-3 max-w-3xl text-muted-foreground">
             The current MVP focuses on the core study workflow first: structure,
@@ -190,7 +190,7 @@ export default function AboutPage() {
             {mvpFeatures.map((feature) => (
               <li
                 key={feature}
-                className="rounded-xl border border-border bg-background/40 px-4 py-4 text-sm leading-6 text-muted-foreground"
+                className="rounded-xl border border-primary/50 bg-background/40 px-4 py-4 text-sm leading-6 text-muted-foreground"
               >
                 <span className="font-medium text-foreground">{feature}</span>
               </li>
@@ -211,7 +211,7 @@ export default function AboutPage() {
             </Link>
             <Link
               href="/dashboard"
-              className="inline-flex items-center rounded-lg border border-border px-4 py-2 text-sm font-medium transition-colors hover:bg-muted"
+              className="inline-flex items-center rounded-lg border border-primary/50 px-4 py-2 text-sm font-medium transition-colors hover:bg-muted"
             >
               Go to dashboard
             </Link>

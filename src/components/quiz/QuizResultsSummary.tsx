@@ -88,7 +88,7 @@ export function QuizResultsSummary({
 
       {/* Areas to review */}
       {incorrectAnswers.length > 0 && (
-        <div className="rounded-xl border border-border bg-card p-5">
+        <div className="rounded-xl border border-primary/50 bg-card p-5">
           <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
             Areas to Review ({incorrectAnswers.length})
           </h2>

@@ -1,7 +1,7 @@
 export default function PathDetailLoading() {
   return (
     <div className="flex min-h-screen flex-col">
-      <div className="h-16 border-b border-border" />
+      <div className="h-16 border-b border-primary/50" />
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 lg:px-8 animate-pulse">
         <div className="mb-6 h-4 w-28 rounded bg-muted" />
         <div className="mb-8">
@@ -13,7 +13,7 @@ export default function PathDetailLoading() {
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="rounded-xl border border-border bg-card p-5"
+              className="rounded-xl border border-primary/50 bg-card p-5"
             >
               <div className="flex items-start gap-3">
                 <div className="size-6 shrink-0 rounded-full bg-muted" />

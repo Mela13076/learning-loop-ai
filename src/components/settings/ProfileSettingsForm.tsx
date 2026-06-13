@@ -53,7 +53,7 @@ export function ProfileSettingsForm({
 
   return (
     <form action={formAction} className="space-y-8">
-      <section className="rounded-xl border border-border bg-card p-6">
+      <section className="rounded-xl border border-primary/50 bg-card p-6">
         <div className="mb-5">
           <h2 className="text-lg font-semibold">Account</h2>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -74,7 +74,7 @@ export function ProfileSettingsForm({
         </div>
       </section>
 
-      <section className="rounded-xl border border-border bg-card p-6">
+      <section className="rounded-xl border border-primary/50 bg-card p-6">
         <div className="mb-5">
           <h2 className="text-lg font-semibold">Appearance</h2>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -104,7 +104,7 @@ export function ProfileSettingsForm({
                 {state.errors.accentColor[0]}
               </p>
             )}
-            <div className="flex items-center gap-3 rounded-lg border border-border bg-background px-3 py-3">
+            <div className="flex items-center gap-3 rounded-lg border border-primary/50 bg-background px-3 py-3">
               <span
                 className="size-5 rounded-full border border-black/10 dark:border-white/10"
                 style={{ backgroundColor: selectedAccent?.light }}
@@ -118,7 +118,7 @@ export function ProfileSettingsForm({
           <fieldset className="space-y-3">
             <legend className="text-sm font-medium">Theme mode</legend>
             <input type="hidden" name="themeMode" value={themeMode} />
-            <label className="flex items-start gap-3 rounded-lg border border-border bg-background px-4 py-3">
+            <label className="flex items-start gap-3 rounded-lg border border-primary/50 bg-background px-4 py-3">
               <input
                 type="radio"
                 checked={themeMode === "dark"}
@@ -132,7 +132,7 @@ export function ProfileSettingsForm({
                 </span>
               </span>
             </label>
-            <label className="flex items-start gap-3 rounded-lg border border-border bg-background px-4 py-3">
+            <label className="flex items-start gap-3 rounded-lg border border-primary/50 bg-background px-4 py-3">
               <input
                 type="radio"
                 checked={themeMode === "light"}

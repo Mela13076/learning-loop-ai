@@ -135,7 +135,7 @@ export function SessionNotesList({ initialNotes }: SessionNotesListProps) {
                     </button>
                     <button
                       onClick={() => setEditingId(null)}
-                      className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
+                      className="rounded-lg border border-primary/50 px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
                     >
                       Cancel
                     </button>
@@ -161,7 +161,7 @@ export function SessionNotesList({ initialNotes }: SessionNotesListProps) {
               )}
 
               {i < notes.length - 1 && (
-                <hr className="mt-4 border-border" />
+                <hr className="mt-4 border-primary/50" />
               )}
             </div>
           )
@@ -175,7 +175,7 @@ export function SessionNotesList({ initialNotes }: SessionNotesListProps) {
           onClick={() => setModalNote(null)}
         >
           <div
-            className="relative w-full max-w-lg rounded-2xl border border-border bg-background p-6 shadow-xl"
+            className="relative w-full max-w-lg rounded-2xl border border-primary/50 bg-background p-6 shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
