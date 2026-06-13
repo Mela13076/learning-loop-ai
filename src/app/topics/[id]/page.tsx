@@ -251,20 +251,6 @@ export default async function TopicPage({
               </div>
             )}
 
-            <div
-              id="ai-learning-coach"
-              className="rounded-xl border border-primary/50 bg-card p-6"
-            >
-              <h2 className="mb-4 font-semibold text-sm uppercase tracking-wider text-muted-foreground">
-                AI Learning Coach
-              </h2>
-              <AiLearningCoach
-                topicId={topic.id}
-                topicTitle={topic.title}
-                concepts={keyConcepts}
-              />
-            </div>
-
             {/* Prev / Next navigation */}
             <div className="flex items-center justify-between gap-4 pt-2">
               {prevTopic ? (
@@ -384,6 +370,20 @@ export default async function TopicPage({
               </p>
             </div>
           </div>
+        </div>
+
+        <div
+          id="ai-learning-coach"
+          className="mt-8 rounded-xl border border-primary/50 bg-card p-6"
+        >
+          <h2 className="mb-4 font-semibold text-sm uppercase tracking-wider text-muted-foreground">
+            AI Learning Coach
+          </h2>
+          <AiLearningCoach
+            topicId={topic.id}
+            topicTitle={topic.title}
+            concepts={keyConcepts}
+          />
         </div>
       </main>
     </div>

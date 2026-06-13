@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Brain, CheckCircle2, Lightbulb, RotateCcw, Sparkles } from "lucide-react"
+import { Brain, CheckCircle2, Lightbulb, RotateCcw, Sparkles, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { KeyConcept } from "@/lib/topic-content"
 import type {
@@ -187,6 +187,8 @@ function CoachLessonCard({
 
 function CoachQuizCard({
   response,
+  hintNote,
+  onDismissHint,
   selectedAnswer,
   onSelectAnswer,
   onSubmit,
@@ -194,6 +196,8 @@ function CoachQuizCard({
   loading,
 }: {
   response: LearningCoachQuizResponse
+  hintNote: { content: string } | null
+  onDismissHint: () => void
   selectedAnswer: string
   onSelectAnswer: (value: string) => void
   onSubmit: () => void
@@ -201,12 +205,34 @@ function CoachQuizCard({
   loading: boolean
 }) {
   return (
-    <div className="rounded-2xl border border-primary/50 bg-card p-5">
-      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+    <div className="relative rounded-2xl border border-primary/50 bg-card p-5">
+      {hintNote && (
+        <div className="absolute left-4 right-4 top-4 z-10 rounded-xl border border-amber-300/80 bg-amber-50 px-4 py-3 text-amber-950 shadow-sm md:left-auto md:max-w-xs dark:border-amber-500/50 dark:bg-amber-950/90 dark:text-amber-100">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-700 dark:text-amber-300">
+                <Lightbulb className="size-3.5" />
+                Hint
+              </div>
+              <p className="mt-2 text-sm leading-6">{hintNote.content}</p>
+            </div>
+            <button
+              type="button"
+              onClick={onDismissHint}
+              className="rounded-md p-1 text-amber-700 transition-colors hover:bg-amber-100 hover:text-amber-900 dark:text-amber-300 dark:hover:bg-amber-900/60 dark:hover:text-amber-100"
+              aria-label="Dismiss hint"
+            >
+              <X className="size-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="flex items-center gap-2 md:pr-72 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
         <Brain className="size-4" />
         Quiz Check
       </div>
-      <h3 className="mt-2 text-xl font-semibold">{response.title}</h3>
+      <h3 className="mt-2 md:pr-72 text-xl font-semibold">{response.title}</h3>
       <p className="mt-4 text-base leading-7">{response.question}</p>
 
       <div className="mt-5 space-y-3">
@@ -260,6 +286,9 @@ export function AiLearningCoach({
   const [selectedConcept, setSelectedConcept] = useState<KeyConcept | null>(null)
   const [response, setResponse] = useState<LearningCoachResponse | null>(null)
   const [currentQuiz, setCurrentQuiz] = useState<LearningCoachQuizResponse | null>(null)
+  const [quizHint, setQuizHint] = useState<{ content: string } | null>(
+    null
+  )
   const [selectedAnswer, setSelectedAnswer] = useState("")
   const [quizCounts, setQuizCounts] = useState<Record<string, number>>({})
   const [loading, setLoading] = useState(false)
@@ -298,6 +327,7 @@ export function AiLearningCoach({
 
       if (data.type === "quiz") {
         setCurrentQuiz(data)
+        setQuizHint(null)
         setSelectedAnswer("")
         setQuizCounts((prev) => ({
           ...prev,
@@ -315,6 +345,7 @@ export function AiLearningCoach({
     setSelectedConcept(concept)
     setResponse(null)
     setCurrentQuiz(null)
+    setQuizHint(null)
     setSelectedAnswer("")
     setSessionComplete(false)
     await runCoachAction(concept, { action: "start" })
@@ -323,6 +354,7 @@ export function AiLearningCoach({
   async function handleSubmitAnswer(): Promise<void> {
     if (!selectedConcept || !currentQuiz || !selectedAnswer) return
 
+    setQuizHint(null)
     await runCoachAction(selectedConcept, {
       action: "answer",
       interactionId: currentQuiz.interactionId,
@@ -330,11 +362,49 @@ export function AiLearningCoach({
     })
   }
 
+  async function handleShowHint(): Promise<void> {
+    if (!selectedConcept || !currentQuiz) return
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      const res = await fetch("/api/ai/coach", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          topicId,
+          conceptTitle: selectedConcept.title,
+          conceptDescription: selectedConcept.description,
+          action: "hint",
+          interactionId: currentQuiz.interactionId,
+        }),
+      })
+
+      if (!res.ok) {
+        const data = (await res.json()) as { error?: string }
+        throw new Error(data.error ?? "Failed to load coach response")
+      }
+
+      const data = (await res.json()) as LearningCoachResponse
+      if (data.type === "lesson") {
+        setQuizHint({
+          content: data.content,
+        })
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   async function handleNextAction(action: LearningCoachNextAction): Promise<void> {
     if (action === "change-concept") {
       setSelectedConcept(null)
       setResponse(null)
       setCurrentQuiz(null)
+      setQuizHint(null)
       setSelectedAnswer("")
       setSessionComplete(false)
       setError(null)
@@ -345,6 +415,7 @@ export function AiLearningCoach({
       setSelectedConcept(null)
       setResponse(null)
       setCurrentQuiz(null)
+      setQuizHint(null)
       setSelectedAnswer("")
       setSessionComplete(true)
       setError(null)
@@ -354,6 +425,7 @@ export function AiLearningCoach({
     if (action === "try-again") {
       if (currentQuiz) {
         setResponse(currentQuiz)
+        setQuizHint(null)
         setSelectedAnswer("")
       }
       return
@@ -362,14 +434,11 @@ export function AiLearningCoach({
     if (!selectedConcept) return
 
     if (action === "hint") {
-      if (!currentQuiz) return
-      await runCoachAction(selectedConcept, {
-        action: "hint",
-        interactionId: currentQuiz.interactionId,
-      })
+      await handleShowHint()
       return
     }
 
+    setQuizHint(null)
     await runCoachAction(selectedConcept, { action })
   }
 
@@ -383,7 +452,7 @@ export function AiLearningCoach({
         <h2 className="mt-2 text-2xl font-semibold">Learn one concept at a time</h2>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
           Pick a key concept from {topicTitle}. The coach will explain it, show an
-          example, and quiz you without turning the experience into an open chat.
+          example, and quiz you.
         </p>
 
         <div className="mt-5 flex flex-wrap gap-2">
@@ -460,6 +529,8 @@ export function AiLearningCoach({
       {response?.type === "quiz" && (
         <CoachQuizCard
           response={response}
+          hintNote={quizHint}
+          onDismissHint={() => setQuizHint(null)}
           selectedAnswer={selectedAnswer}
           onSelectAnswer={setSelectedAnswer}
           onSubmit={() => void handleSubmitAnswer()}
