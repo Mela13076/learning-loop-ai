@@ -113,9 +113,9 @@ export function QuizTaker({
                   onClick={() => setCurrentIndex(i)}
                   className={`size-2 rounded-full transition-colors ${
                     i === currentIndex
-                      ? "bg-teal-500"
+                      ? "bg-primary"
                       : answers[questions[i].id]?.trim()
-                        ? "bg-teal-300 dark:bg-teal-700"
+                        ? "bg-primary/40"
                         : "bg-muted-foreground/30"
                   }`}
                   aria-label={`Go to question ${i + 1}`}
@@ -125,7 +125,7 @@ export function QuizTaker({
 
             {isLast ? (
               <Button
-                className="bg-teal-600 text-white hover:bg-teal-700"
+                className=""
                 onClick={() => void handleSubmit()}
                 disabled={submitting}
               >
@@ -154,10 +154,10 @@ export function QuizTaker({
                 onClick={() => setCurrentIndex(i)}
                 className={`size-8 rounded-md text-xs font-medium transition-colors ${
                   i === currentIndex
-                    ? "bg-teal-600 text-white"
+                    ? "bg-primary text-primary-foreground"
                     : answers[questions[i].id]?.trim()
-                      ? "border border-teal-400 text-teal-600 dark:text-teal-400"
-                      : "border border-border text-muted-foreground hover:border-teal-400"
+                      ? "border border-primary text-primary"
+                      : "border border-border text-muted-foreground hover:border-primary/50"
                 }`}
               >
                 {i + 1}

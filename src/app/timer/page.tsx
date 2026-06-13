@@ -4,6 +4,7 @@ import { UserButton } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { StudyTimer } from "@/components/timer/StudyTimer";
+import { syncClerkUser } from "@/lib/user";
 
 export default async function TimerPage({
   searchParams,
@@ -13,16 +14,7 @@ export default async function TimerPage({
   const clerkUser = await currentUser();
   if (!clerkUser) redirect("/login");
 
-  // Ensure user row exists
-  const email = clerkUser.emailAddresses[0]?.emailAddress ?? "";
-  const name =
-    [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(" ") || null;
-
-  await db.user.upsert({
-    where: { clerkId: clerkUser.id },
-    create: { clerkId: clerkUser.id, email, name },
-    update: { email, name },
-  });
+  await syncClerkUser(clerkUser);
 
   const { topic: initialTopicId } = await searchParams;
 
@@ -40,29 +32,45 @@ export default async function TimerPage({
   }));
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="flex min-h-screen flex-col">
       {/* Nav */}
-      <header className="border-b bg-white dark:bg-gray-900 sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+      <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur">
+        <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <Link href="/" className="flex items-center gap-2 font-bold">
+            <span className="grid size-7 place-items-center rounded-md bg-primary text-sm text-primary-foreground">
+              LL
+            </span>
+            <span className="text-lg">Learning Loop AI</span>
+          </Link>
+          <div className="flex items-center gap-3 sm:gap-4">
             <Link
               href="/dashboard"
-              className="text-sm text-gray-500 hover:text-gray-900 dark:hover:text-white"
+              className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
-              ← Dashboard
+              Dashboard
             </Link>
-            <span className="text-gray-300 dark:text-gray-700">|</span>
-            <span className="font-semibold text-sm">Study Timer</span>
+            <Link
+              href="/paths"
+              className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Learning Paths
+            </Link>
+            <Link
+              href="/settings"
+              className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Settings
+            </Link>
+            <UserButton />
           </div>
-          <UserButton />
-        </div>
+        </nav>
       </header>
 
       {/* Main */}
-      <main className="max-w-4xl mx-auto px-4 py-10">
+      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold">Study Timer</h1>
-          <p className="mt-1 text-gray-500 text-sm">
+          <p className="mt-1 text-sm text-muted-foreground">
             Pick a mode, select a topic, and start your session.
           </p>
         </div>

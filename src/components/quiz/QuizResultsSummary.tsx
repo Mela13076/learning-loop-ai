@@ -52,14 +52,14 @@ export function QuizResultsSummary({
 
   const scoreColor =
     score >= 80
-      ? "text-teal-500 dark:text-teal-400"
+      ? "text-primary"
       : score >= 40
         ? "text-yellow-500 dark:text-yellow-400"
         : "text-red-500 dark:text-red-400"
 
   const scoreBg =
     score >= 80
-      ? "bg-teal-50 border-teal-200 dark:bg-teal-900/20 dark:border-teal-800"
+      ? "bg-[var(--accent-soft)] border-primary/20"
       : score >= 40
         ? "bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800"
         : "bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800"
@@ -123,7 +123,7 @@ export function QuizResultsSummary({
                 key={answer.id}
                 className={`rounded-xl border p-5 ${
                   answer.isCorrect
-                    ? "border-teal-200 bg-teal-50/50 dark:border-teal-800 dark:bg-teal-900/10"
+                    ? "border-primary/20 bg-[var(--accent-soft)]/60"
                     : "border-red-200 bg-red-50/50 dark:border-red-800 dark:bg-red-900/10"
                 }`}
               >
@@ -131,7 +131,7 @@ export function QuizResultsSummary({
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2">
                     <span
-                      className={`text-lg font-bold ${answer.isCorrect ? "text-teal-600 dark:text-teal-400" : "text-red-500"}`}
+                      className={`text-lg font-bold ${answer.isCorrect ? "text-primary" : "text-red-500"}`}
                     >
                       {answer.isCorrect ? "✓" : "✗"}
                     </span>
@@ -161,7 +161,7 @@ export function QuizResultsSummary({
                     <span
                       className={
                         answer.isCorrect
-                          ? "text-teal-700 dark:text-teal-300"
+                          ? "text-primary"
                           : "text-red-600 dark:text-red-400"
                       }
                     >
@@ -173,7 +173,7 @@ export function QuizResultsSummary({
                   {!answer.isCorrect && (
                     <div className="flex flex-wrap gap-1.5">
                       <span className="font-medium text-muted-foreground">Correct answer:</span>
-                      <span className="text-teal-700 dark:text-teal-300">
+                      <span className="text-primary">
                         {answer.question.correctAnswer}
                       </span>
                     </div>

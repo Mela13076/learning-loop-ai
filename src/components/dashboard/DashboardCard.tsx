@@ -28,7 +28,7 @@ export function DashboardCard({
         {action && (
           <Link
             href={action.href}
-            className="text-xs text-teal-600 hover:text-teal-500 dark:text-teal-400 dark:hover:text-teal-300 transition-colors"
+            className="text-xs text-primary transition-colors hover:opacity-80"
           >
             {action.label}
           </Link>

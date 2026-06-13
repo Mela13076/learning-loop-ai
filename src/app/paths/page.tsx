@@ -38,23 +38,29 @@ export default async function PathsPage() {
       <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur">
         <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2 font-bold">
-            <span className="grid size-7 place-items-center rounded-md bg-teal-600 text-sm text-white">
+            <span className="grid size-7 place-items-center rounded-md bg-primary text-sm text-primary-foreground">
               LL
             </span>
             <span className="text-lg">Learning Loop AI</span>
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <Link
               href="/dashboard"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Dashboard
             </Link>
             <Link
               href="/timer"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Study Timer
+            </Link>
+            <Link
+              href="/settings"
+              className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Settings
             </Link>
             <UserButton />
           </div>
@@ -68,6 +74,14 @@ export default async function PathsPage() {
             Choose a structured path to guide your learning journey.
           </p>
         </div>
+
+        {learningPaths.length === 0 && (
+          <div className="rounded-xl border border-border bg-card p-10 text-center">
+            <p className="text-muted-foreground text-sm">
+              No learning paths available yet. Check back soon!
+            </p>
+          </div>
+        )}
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {learningPaths.map((path) => {

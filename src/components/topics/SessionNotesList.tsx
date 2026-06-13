@@ -123,13 +123,13 @@ export function SessionNotesList({ initialNotes }: SessionNotesListProps) {
                     value={editText}
                     onChange={(e) => setEditText(e.target.value)}
                     rows={4}
-                    className="w-full resize-none rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className="w-full resize-none rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                   />
                   <div className="flex gap-2">
                     <button
                       onClick={() => void handleSaveEdit(note.id)}
                       disabled={savingId === note.id}
-                      className="rounded-lg bg-teal-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-teal-700 disabled:opacity-50"
+                      className="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
                     >
                       {savingId === note.id ? "Saving…" : "Save"}
                     </button>
@@ -149,7 +149,7 @@ export function SessionNotesList({ initialNotes }: SessionNotesListProps) {
                       {"… "}
                       <button
                         onClick={() => setModalNote(note)}
-                        className="text-teal-600 dark:text-teal-400 hover:underline font-medium"
+                        className="font-medium text-primary hover:underline"
                       >
                         Read more
                       </button>

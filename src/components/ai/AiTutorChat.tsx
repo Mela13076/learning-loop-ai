@@ -91,7 +91,7 @@ export function AiTutorChat({ topicId, topicTitle }: AiTutorChatProps) {
         {messages.map((msg, i) =>
           msg.role === "user" ? (
             <div key={i} className="flex justify-end">
-              <div className="max-w-[80%] rounded-xl rounded-br-sm bg-teal-600 px-4 py-2.5 text-sm text-white">
+              <div className="max-w-[80%] rounded-xl rounded-br-sm bg-primary px-4 py-2.5 text-sm text-primary-foreground">
                 {msg.text}
               </div>
             </div>
@@ -99,7 +99,7 @@ export function AiTutorChat({ topicId, topicTitle }: AiTutorChatProps) {
             <div key={i} className="flex justify-start">
               <div className="max-w-[90%] space-y-2">
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <span className="grid size-5 place-items-center rounded-full bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-400 font-bold text-[10px]">
+                  <span className="grid size-5 place-items-center rounded-full bg-[var(--accent-soft)] font-bold text-[10px] text-primary">
                     AI
                   </span>
                   Tutor
@@ -158,12 +158,12 @@ export function AiTutorChat({ topicId, topicTitle }: AiTutorChatProps) {
           placeholder="Ask a question... (Enter to send)"
           rows={2}
           disabled={loading}
-          className="flex-1 resize-none rounded-lg border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50"
+          className="flex-1 resize-none rounded-lg border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
         />
         <Button
           onClick={() => void sendMessage()}
           disabled={loading || !input.trim()}
-          className="self-end bg-teal-600 text-white hover:bg-teal-700"
+          className="self-end"
         >
           Send
         </Button>

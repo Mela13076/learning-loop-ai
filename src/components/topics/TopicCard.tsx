@@ -30,8 +30,8 @@ const STATUS_CONFIG: Record<
   },
   IN_PROGRESS: {
     label: "In progress",
-    dotClass: "bg-teal-500",
-    textClass: "text-teal-600 dark:text-teal-400",
+    dotClass: "bg-primary",
+    textClass: "text-primary",
   },
   NEEDS_REVIEW: {
     label: "Needs review",
@@ -60,7 +60,7 @@ export function TopicCard({
   return (
     <Link
       href={`/topics/${id}`}
-      className="block rounded-xl border border-border bg-card p-5 hover:border-teal-600/50 hover:bg-muted/30 transition-all duration-200"
+      className="block rounded-xl border border-border bg-card p-5 transition-all duration-200 hover:border-primary/50 hover:bg-muted/30"
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-3 min-w-0">

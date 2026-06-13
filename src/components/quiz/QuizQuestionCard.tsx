@@ -51,7 +51,7 @@ export function QuizQuestionCard({
       {/* Progress bar */}
       <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
         <div
-          className="h-full rounded-full bg-teal-500 transition-all duration-300"
+          className="h-full rounded-full bg-primary transition-all duration-300"
           style={{ width: `${(questionNumber / totalQuestions) * 100}%` }}
         />
       </div>
@@ -75,7 +75,7 @@ export function QuizQuestionCard({
           onChange={(e) => onChange(e.target.value)}
           placeholder="Type your answer here…"
           rows={4}
-          className="w-full resize-none rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-teal-500"
+          className="w-full resize-none rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         />
       ) : (
         <div className="space-y-2.5">
@@ -84,8 +84,8 @@ export function QuizQuestionCard({
               key={i}
               className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3.5 transition-colors ${
                 currentAnswer === option
-                  ? "border-teal-500 bg-teal-50 dark:bg-teal-900/20"
-                  : "border-border hover:border-teal-300 hover:bg-muted/40"
+                  ? "border-primary bg-[var(--accent-soft)]"
+                  : "border-border hover:border-primary/50 hover:bg-muted/40"
               }`}
             >
               <input
@@ -94,7 +94,7 @@ export function QuizQuestionCard({
                 value={option}
                 checked={currentAnswer === option}
                 onChange={() => onChange(option)}
-                className="mt-0.5 accent-teal-600"
+                className="mt-0.5 accent-[var(--accent-strong)]"
               />
               <span className="text-sm leading-relaxed">{option}</span>
             </label>

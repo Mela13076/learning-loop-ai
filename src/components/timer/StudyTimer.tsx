@@ -275,8 +275,8 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
                 className={[
                   "rounded-xl border-2 p-4 text-left transition-all",
                   mode === m
-                    ? "border-teal-500 bg-teal-50 dark:bg-teal-900/30"
-                    : "border-gray-200 dark:border-gray-700 hover:border-teal-300",
+                    ? "border-primary bg-[var(--accent-soft)]"
+                    : "border-gray-200 dark:border-gray-700 hover:border-primary/50",
                 ].join(" ")}
               >
                 <div className="font-semibold text-sm">{MODE_CONFIGS[m].label}</div>
@@ -347,7 +347,7 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
 
         <Button
           size="lg"
-          className="w-full bg-teal-600 hover:bg-teal-700 text-white text-base py-6"
+          className="w-full py-6 text-base"
           onClick={handleStart}
         >
           Start Session
@@ -364,12 +364,12 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
     return (
       <div className="max-w-xl mx-auto space-y-6 text-center">
         {/* Session complete card */}
-        <div className="rounded-2xl border-2 border-teal-500 bg-teal-50 dark:bg-teal-900/20 p-8">
+        <div className="rounded-2xl border-2 border-primary bg-[var(--accent-soft)] p-8">
           <div className="text-4xl mb-3">🎉</div>
           <h2 className="text-2xl font-bold mb-1">Session Complete!</h2>
           <p className="text-gray-600 dark:text-gray-400">
             You studied for{" "}
-            <span className="font-semibold text-teal-600">
+            <span className="font-semibold text-primary">
               {elapsedMinutes} minute{elapsedMinutes !== 1 ? "s" : ""}
             </span>
             {selectedTopic && (
@@ -412,7 +412,7 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
           <p className="mt-1.5 text-xs text-muted-foreground">
             Notes are saved with your session so you can review them later.{" "}
             {saveState !== "saved" && (
-              <span className="text-teal-600 dark:text-teal-400">
+              <span className="text-primary">
                 Adding notes also unlocks an AI-generated session summary.
               </span>
             )}
@@ -424,7 +424,7 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
             Start New Session
           </Button>
           <Button
-            className="bg-teal-600 hover:bg-teal-700 text-white disabled:opacity-60"
+            className="disabled:opacity-60"
             onClick={() => void handleSave()}
             disabled={saveState === "saving" || saveState === "saved"}
           >
@@ -441,7 +441,7 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
         {/* AI summary — loading */}
         {summaryState === "loading" && (
           <div className="rounded-2xl border border-border bg-card px-6 py-8 text-center">
-            <div className="mx-auto mb-3 size-5 animate-spin rounded-full border-2 border-teal-500 border-t-transparent" />
+            <div className="mx-auto mb-3 size-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
             <p className="text-sm text-muted-foreground">Generating session summary…</p>
           </div>
         )}
@@ -481,7 +481,7 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
             "inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold",
             isBreak
               ? "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
-              : "bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300",
+              : "bg-[var(--accent-soft)] text-primary",
           ].join(" ")}
         >
           <span
@@ -491,7 +491,7 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
                 ? "bg-blue-500"
                 : isPaused
                 ? "bg-yellow-500"
-                : "bg-teal-500 animate-pulse",
+                : "bg-primary animate-pulse",
             ].join(" ")}
           />
           {isPaused ? "Paused" : isBreak ? "Break Time" : "Focus"}
@@ -505,8 +505,8 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
 
       {/* Circular timer */}
       <div className="flex justify-center">
-        <div className="relative">
-          <svg width="280" height="280" className="-rotate-90">
+        <div className="relative w-60 sm:w-70">
+          <svg viewBox="0 0 280 280" className="w-full h-auto -rotate-90">
             <circle
               cx="140"
               cy="140"
@@ -530,7 +530,7 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
                   ? "text-blue-500"
                   : isPaused
                   ? "text-yellow-500"
-                  : "text-teal-500"
+                  : "text-primary"
               }
               style={{ transition: "stroke-dasharray 0.8s ease" }}
             />
@@ -571,7 +571,7 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
         ) : isPaused ? (
           <>
             <Button
-              className="bg-teal-600 hover:bg-teal-700 text-white"
+              className=""
               onClick={handleResume}
             >
               Resume

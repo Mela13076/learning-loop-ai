@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { DashboardCard, StatValue } from "@/components/dashboard/DashboardCard";
 import { StreakCard } from "@/components/dashboard/StreakCard";
 import type { ProgressStatus, Difficulty } from "@/generated/prisma/enums";
+import { syncClerkUser } from "@/lib/user";
 
 // ---------------------------------------------------------------------------
 // Data helpers
@@ -63,7 +64,7 @@ function statusLabel(s: ProgressStatus): string {
 
 function statusColor(s: ProgressStatus): string {
   if (s === "NOT_STARTED") return "text-muted-foreground";
-  if (s === "IN_PROGRESS") return "text-teal-600 dark:text-teal-400";
+  if (s === "IN_PROGRESS") return "text-primary";
   if (s === "NEEDS_REVIEW") return "text-yellow-600 dark:text-yellow-400";
   return "text-green-600 dark:text-green-400";
 }
@@ -76,16 +77,7 @@ export default async function DashboardPage() {
   const clerkUser = await currentUser();
   if (!clerkUser) redirect("/login");
 
-  // Sync the Clerk user into our database on every dashboard load.
-  const email = clerkUser.emailAddresses[0]?.emailAddress ?? "";
-  const name =
-    [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(" ") || null;
-
-  const dbUser = await db.user.upsert({
-    where: { clerkId: clerkUser.id },
-    create: { clerkId: clerkUser.id, email, name },
-    update: { email, name },
-  });
+  const dbUser = await syncClerkUser(clerkUser);
 
   // Date boundaries
   const now = new Date();
@@ -195,7 +187,7 @@ export default async function DashboardPage() {
     if (recommendedTopic) break;
   }
 
-  const greetingName = clerkUser.firstName ?? "there";
+  const greetingName = dbUser.name?.split(" ")[0] ?? clerkUser.firstName ?? "there";
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -203,23 +195,29 @@ export default async function DashboardPage() {
       <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur">
         <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2 font-bold">
-            <span className="grid size-7 place-items-center rounded-md bg-teal-600 text-sm text-white">
+            <span className="grid size-7 place-items-center rounded-md bg-primary text-sm text-primary-foreground">
               LL
             </span>
             <span className="text-lg">Learning Loop AI</span>
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <Link
               href="/paths"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Learning Paths
             </Link>
             <Link
               href="/timer"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Study Timer
+            </Link>
+            <Link
+              href="/settings"
+              className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Settings
             </Link>
             <UserButton />
           </div>
@@ -240,19 +238,13 @@ export default async function DashboardPage() {
             </p>
           </div>
           {lastSession?.topic ? (
-            <Button
-              asChild
-              className="shrink-0 bg-teal-600 text-white hover:bg-teal-700"
-            >
+            <Button asChild className="shrink-0">
               <Link href={`/topics/${lastSession.topic.id}`}>
                 Continue studying
               </Link>
             </Button>
           ) : (
-            <Button
-              asChild
-              className="shrink-0 bg-teal-600 text-white hover:bg-teal-700"
-            >
+            <Button asChild className="shrink-0">
               <Link href="/paths">Browse learning paths</Link>
             </Button>
           )}
@@ -333,7 +325,7 @@ export default async function DashboardPage() {
                   <Link
                     key={lp.id}
                     href={`/paths/${lp.id}`}
-                    className="block rounded-xl border border-border bg-card p-4 hover:border-teal-600/50 transition-all duration-200"
+                    className="block rounded-xl border border-border bg-card p-4 transition-all duration-200 hover:border-primary/50"
                   >
                     <p className="font-medium">{lp.title}</p>
                     <p className="mt-1 text-xs text-muted-foreground">
@@ -439,11 +431,7 @@ export default async function DashboardPage() {
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <Button
-                    asChild
-                    className="bg-teal-600 text-white hover:bg-teal-700"
-                    size="sm"
-                  >
+                  <Button asChild size="sm">
                     <Link href={`/topics/${recommendedTopic.id}`}>
                       Start topic
                     </Link>

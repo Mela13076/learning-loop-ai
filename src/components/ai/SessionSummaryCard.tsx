@@ -17,9 +17,9 @@ export function SessionSummaryCard({
   topicTitle,
 }: SessionSummaryCardProps) {
   return (
-    <div className="space-y-5 rounded-2xl border border-teal-200 bg-teal-50/50 p-6 text-left dark:border-teal-800 dark:bg-teal-900/10">
+    <div className="space-y-5 rounded-2xl border border-primary/20 bg-[var(--accent-soft)]/60 p-6 text-left">
       <div className="flex items-center gap-2">
-        <span className="grid size-6 place-items-center rounded-full bg-teal-600 text-xs text-white">
+        <span className="grid size-6 place-items-center rounded-full bg-primary text-xs text-primary-foreground">
           AI
         </span>
         <h3 className="font-semibold">Session Summary</h3>
@@ -37,7 +37,7 @@ export function SessionSummaryCard({
           <ul className="space-y-1.5">
             {summary.keyTakeaways.map((t, i) => (
               <li key={i} className="flex items-start gap-2 text-sm">
-                <span className="mt-0.5 shrink-0 text-teal-500">→</span>
+                <span className="mt-0.5 shrink-0 text-primary">→</span>
                 <span>{t}</span>
               </li>
             ))}
@@ -72,7 +72,7 @@ export function SessionSummaryCard({
           {topicId && (
             <a
               href={`/topics/${topicId}`}
-              className="mt-2 inline-block text-xs font-medium text-teal-600 hover:underline dark:text-teal-400"
+              className="mt-2 inline-block text-xs font-medium text-primary hover:underline"
             >
               Continue with {topicTitle ?? "this topic"} →
             </a>

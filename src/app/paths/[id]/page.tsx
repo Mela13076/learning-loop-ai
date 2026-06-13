@@ -71,23 +71,29 @@ export default async function PathDetailPage({
       <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur">
         <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2 font-bold">
-            <span className="grid size-7 place-items-center rounded-md bg-teal-600 text-sm text-white">
+            <span className="grid size-7 place-items-center rounded-md bg-primary text-sm text-primary-foreground">
               LL
             </span>
             <span className="text-lg">Learning Loop AI</span>
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <Link
               href="/dashboard"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Dashboard
             </Link>
             <Link
               href="/paths"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Learning Paths
+            </Link>
+            <Link
+              href="/settings"
+              className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Settings
             </Link>
             <UserButton />
           </div>
@@ -108,7 +114,7 @@ export default async function PathDetailPage({
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold tracking-tight">{path.title}</h1>
-              <span className="rounded-full bg-teal-100 px-2.5 py-0.5 text-xs font-medium text-teal-700 dark:bg-teal-900/40 dark:text-teal-400">
+              <span className="rounded-full bg-[var(--accent-soft)] px-2.5 py-0.5 text-xs font-medium text-primary">
                 {LEVEL_LABEL[path.level]}
               </span>
             </div>
@@ -128,7 +134,7 @@ export default async function PathDetailPage({
               {inProgressCount > 0 && (
                 <>
                   <span>·</span>
-                  <span className="text-teal-600 dark:text-teal-400">
+                  <span className="text-primary">
                     {inProgressCount} in progress
                   </span>
                 </>
@@ -137,10 +143,7 @@ export default async function PathDetailPage({
           </div>
 
           {nextTopic && (
-            <Button
-              asChild
-              className="shrink-0 bg-teal-600 text-white hover:bg-teal-700"
-            >
+            <Button asChild className="shrink-0">
               <Link href={`/topics/${nextTopic.id}`}>
                 {inProgressCount > 0 ? "Continue studying" : "Start first topic"}
               </Link>

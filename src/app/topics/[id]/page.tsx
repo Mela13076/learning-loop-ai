@@ -46,8 +46,8 @@ const STATUS_CONFIG: Record<
   },
   IN_PROGRESS: {
     label: "In progress",
-    dotClass: "bg-teal-500",
-    textClass: "text-teal-600 dark:text-teal-400",
+    dotClass: "bg-primary",
+    textClass: "text-primary",
   },
   NEEDS_REVIEW: {
     label: "Needs review",
@@ -152,23 +152,29 @@ export default async function TopicPage({
       <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur">
         <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2 font-bold">
-            <span className="grid size-7 place-items-center rounded-md bg-teal-600 text-sm text-white">
+            <span className="grid size-7 place-items-center rounded-md bg-primary text-sm text-primary-foreground">
               LL
             </span>
             <span className="text-lg">Learning Loop AI</span>
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <Link
               href="/dashboard"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Dashboard
             </Link>
             <Link
               href="/paths"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Learning Paths
+            </Link>
+            <Link
+              href="/settings"
+              className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Settings
             </Link>
             <UserButton />
           </div>
@@ -270,10 +276,7 @@ export default async function TopicPage({
             <div className="rounded-xl border border-border bg-card p-5 space-y-3">
               <h2 className="font-semibold text-sm">Start studying</h2>
 
-              <Button
-                asChild
-                className="w-full bg-teal-600 text-white hover:bg-teal-700"
-              >
+              <Button asChild className="w-full">
                 <Link href={`/timer?topic=${topic.id}`}>
                   Start Study Timer
                 </Link>
@@ -354,7 +357,7 @@ export default async function TopicPage({
               <h2 className="mb-3 font-semibold text-sm">Learning Path</h2>
               <Link
                 href={`/paths/${topic.learningPath.id}`}
-                className="text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
+                className="text-sm font-medium transition-colors hover:text-primary"
               >
                 {topic.learningPath.title}
               </Link>

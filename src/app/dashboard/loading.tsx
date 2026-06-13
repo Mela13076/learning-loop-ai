@@ -4,7 +4,7 @@ export default function DashboardLoading() {
       <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur">
         <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2">
-            <div className="size-7 rounded-md bg-teal-600" />
+            <div className="size-7 rounded-md bg-primary" />
             <div className="h-5 w-36 rounded bg-muted animate-pulse" />
           </div>
           <div className="size-8 rounded-full bg-muted animate-pulse" />

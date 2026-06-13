@@ -31,7 +31,7 @@ export default function Home() {
       <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur">
         <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2 font-bold">
-            <span className="grid size-7 place-items-center rounded-md bg-teal-600 text-sm text-white">
+            <span className="grid size-7 place-items-center rounded-md bg-primary text-sm text-primary-foreground">
               LL
             </span>
             <span className="text-lg">Learning Loop AI</span>
@@ -41,12 +41,12 @@ export default function Home() {
               <Button variant="ghost" asChild>
                 <Link href="/login">Log in</Link>
               </Button>
-              <Button asChild className="bg-teal-600 text-white hover:bg-teal-700">
+              <Button asChild>
                 <Link href="/signup">Get started</Link>
               </Button>
             </Show>
             <Show when="signed-in">
-              <Button asChild className="bg-teal-600 text-white hover:bg-teal-700">
+              <Button asChild>
                 <Link href="/dashboard">Dashboard</Link>
               </Button>
               <UserButton />
@@ -57,12 +57,12 @@ export default function Home() {
 
       <main className="flex-1">
         <section className="mx-auto max-w-6xl px-4 py-24 text-center sm:px-6 lg:px-8">
-          <span className="inline-block rounded-full bg-teal-600/10 px-3 py-1 text-sm font-medium text-teal-600 dark:text-teal-400">
+          <span className="inline-block rounded-full bg-[var(--accent-soft)] px-3 py-1 text-sm font-medium text-primary">
             Study actively, not passively
           </span>
           <h1 className="mx-auto mt-6 max-w-3xl text-4xl font-extrabold tracking-tight sm:text-5xl">
             Build consistent study habits and{" "}
-            <span className="text-teal-600 dark:text-teal-400">
+            <span className="text-primary">
               master software engineering
             </span>
           </h1>
@@ -73,11 +73,7 @@ export default function Home() {
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Show when="signed-out">
-              <Button
-                size="lg"
-                asChild
-                className="bg-teal-600 text-white hover:bg-teal-700"
-              >
+              <Button size="lg" asChild>
                 <Link href="/signup">Start learning free</Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
@@ -85,11 +81,7 @@ export default function Home() {
               </Button>
             </Show>
             <Show when="signed-in">
-              <Button
-                size="lg"
-                asChild
-                className="bg-teal-600 text-white hover:bg-teal-700"
-              >
+              <Button size="lg" asChild>
                 <Link href="/dashboard">Continue studying</Link>
               </Button>
             </Show>
@@ -101,7 +93,7 @@ export default function Home() {
             {features.map((feature) => (
               <div
                 key={feature.title}
-                className="rounded-xl border border-border bg-card p-6 transition-all duration-200 hover:border-teal-600/50"
+                className="rounded-xl border border-border bg-card p-6 transition-all duration-200 hover:border-primary/50"
               >
                 <h3 className="font-semibold">{feature.title}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">

@@ -30,21 +30,21 @@ export function RecommendedNextStep({
       <div className="flex flex-wrap gap-3">
         <Link
           href={`/topics/${topicId}`}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-teal-400 hover:text-teal-600 dark:hover:text-teal-400"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/50 hover:text-primary"
         >
           Generate New Quiz
         </Link>
 
         <Link
           href={`/topics/${topicId}`}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-teal-400 hover:text-teal-600 dark:hover:text-teal-400"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/50 hover:text-primary"
         >
           Review Topic
         </Link>
 
         <Link
           href={`/topics/${topicId}#ai-tutor`}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-teal-400 hover:text-teal-600 dark:hover:text-teal-400"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/50 hover:text-primary"
         >
           Ask AI Tutor
         </Link>
@@ -52,7 +52,7 @@ export function RecommendedNextStep({
         {nextTopic && (
           <Link
             href={`/topics/${nextTopic.id}`}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-teal-700"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90"
           >
             Next Topic: {nextTopic.title} →
           </Link>

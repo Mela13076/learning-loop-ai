@@ -11,7 +11,7 @@ export function ProgressBar({ value, className = "", size = "md" }: ProgressBarP
   return (
     <div className={`w-full rounded-full bg-muted ${height} ${className}`}>
       <div
-        className={`rounded-full bg-teal-600 dark:bg-teal-400 transition-all duration-300 ${height}`}
+        className={`rounded-full bg-primary transition-all duration-300 ${height}`}
         style={{ width: `${clamped}%` }}
       />
     </div>

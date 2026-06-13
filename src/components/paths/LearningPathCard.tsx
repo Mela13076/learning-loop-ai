@@ -40,7 +40,7 @@ export function LearningPathCard({
   return (
     <Link
       href={`/paths/${id}`}
-      className="flex flex-col rounded-xl border border-border bg-card p-6 hover:border-teal-600/50 hover:bg-muted/30 transition-all duration-200"
+      className="flex flex-col rounded-xl border border-border bg-card p-6 transition-all duration-200 hover:border-primary/50 hover:bg-muted/30"
     >
       <div className="flex items-start justify-between gap-3">
         <h2 className="font-semibold text-lg leading-snug">{title}</h2>

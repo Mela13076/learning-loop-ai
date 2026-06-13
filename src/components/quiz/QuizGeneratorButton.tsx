@@ -65,8 +65,8 @@ export function QuizGeneratorButton({ topicId }: QuizGeneratorButtonProps) {
               onClick={() => setDifficulty(d)}
               className={`flex-1 rounded-md border px-2 py-1.5 text-xs capitalize transition-colors ${
                 difficulty === d
-                  ? "border-teal-500 bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400"
-                  : "border-border text-muted-foreground hover:border-teal-400"
+                  ? "border-primary bg-[var(--accent-soft)] text-primary"
+                  : "border-border text-muted-foreground hover:border-primary/50"
               }`}
             >
               {d}
@@ -85,8 +85,8 @@ export function QuizGeneratorButton({ topicId }: QuizGeneratorButtonProps) {
               onClick={() => setQuestionCount(n)}
               className={`flex-1 rounded-md border px-2 py-1.5 text-xs transition-colors ${
                 questionCount === n
-                  ? "border-teal-500 bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400"
-                  : "border-border text-muted-foreground hover:border-teal-400"
+                  ? "border-primary bg-[var(--accent-soft)] text-primary"
+                  : "border-border text-muted-foreground hover:border-primary/50"
               }`}
             >
               {n}
@@ -105,8 +105,8 @@ export function QuizGeneratorButton({ topicId }: QuizGeneratorButtonProps) {
               onClick={() => setQuestionType(t)}
               className={`flex-1 rounded-md border px-2 py-1.5 text-xs transition-colors ${
                 questionType === t
-                  ? "border-teal-500 bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400"
-                  : "border-border text-muted-foreground hover:border-teal-400"
+                  ? "border-primary bg-[var(--accent-soft)] text-primary"
+                  : "border-border text-muted-foreground hover:border-primary/50"
               }`}
             >
               {t === "multiple_choice" ? "MC" : t === "short_answer" ? "Short" : "Mixed"}
@@ -129,7 +129,7 @@ export function QuizGeneratorButton({ topicId }: QuizGeneratorButtonProps) {
         </Button>
         <Button
           size="sm"
-          className="flex-1 bg-teal-600 text-white hover:bg-teal-700"
+          className="flex-1"
           onClick={() => void handleGenerate()}
           disabled={loading}
         >

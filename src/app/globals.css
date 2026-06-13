@@ -49,13 +49,16 @@
 }
 
 :root {
+  --accent-strong: #0d9488;
+  --accent-strong-hover: #0f766e;
+  --accent-soft: #f0fdfa;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  --primary: var(--accent-strong);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -66,7 +69,7 @@
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --ring: var(--accent-strong);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -75,7 +78,7 @@
   --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary: var(--accent-strong);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.97 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
@@ -84,14 +87,17 @@
 }
 
 .dark {
+  --accent-strong: #2dd4bf;
+  --accent-strong-hover: #14b8a6;
+  --accent-soft: #134e4a;
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
+  --primary: var(--accent-strong);
+  --primary-foreground: oklch(0.145 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
@@ -101,7 +107,7 @@
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --ring: var(--accent-strong);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -109,12 +115,96 @@
   --chart-5: oklch(0.269 0 0);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: var(--accent-strong);
+  --sidebar-primary-foreground: oklch(0.145 0 0);
   --sidebar-accent: oklch(0.269 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+:root[data-accent="blue"] {
+  --accent-strong: #2563eb;
+  --accent-strong-hover: #1d4ed8;
+  --accent-soft: #eff6ff;
+}
+
+:root.dark[data-accent="blue"] {
+  --accent-strong: #60a5fa;
+  --accent-strong-hover: #3b82f6;
+  --accent-soft: #172554;
+}
+
+:root[data-accent="green"] {
+  --accent-strong: #16a34a;
+  --accent-strong-hover: #15803d;
+  --accent-soft: #f0fdf4;
+}
+
+:root.dark[data-accent="green"] {
+  --accent-strong: #4ade80;
+  --accent-strong-hover: #22c55e;
+  --accent-soft: #14532d;
+}
+
+:root[data-accent="purple"] {
+  --accent-strong: #9333ea;
+  --accent-strong-hover: #7e22ce;
+  --accent-soft: #faf5ff;
+}
+
+:root.dark[data-accent="purple"] {
+  --accent-strong: #c084fc;
+  --accent-strong-hover: #a855f7;
+  --accent-soft: #3b0764;
+}
+
+:root[data-accent="pink"] {
+  --accent-strong: #db2777;
+  --accent-strong-hover: #be185d;
+  --accent-soft: #fdf2f8;
+}
+
+:root.dark[data-accent="pink"] {
+  --accent-strong: #f472b6;
+  --accent-strong-hover: #ec4899;
+  --accent-soft: #500724;
+}
+
+:root[data-accent="orange"] {
+  --accent-strong: #ea580c;
+  --accent-strong-hover: #c2410c;
+  --accent-soft: #fff7ed;
+}
+
+:root.dark[data-accent="orange"] {
+  --accent-strong: #fb923c;
+  --accent-strong-hover: #f97316;
+  --accent-soft: #431407;
+}
+
+:root[data-accent="red"] {
+  --accent-strong: #dc2626;
+  --accent-strong-hover: #b91c1c;
+  --accent-soft: #fef2f2;
+}
+
+:root.dark[data-accent="red"] {
+  --accent-strong: #f87171;
+  --accent-strong-hover: #ef4444;
+  --accent-soft: #450a0a;
+}
+
+:root[data-accent="yellow"] {
+  --accent-strong: #ca8a04;
+  --accent-strong-hover: #a16207;
+  --accent-soft: #fefce8;
+}
+
+:root.dark[data-accent="yellow"] {
+  --accent-strong: #facc15;
+  --accent-strong-hover: #eab308;
+  --accent-soft: #422006;
 }
 
 @layer base {
