@@ -101,6 +101,8 @@ model Topic {
   difficulty       Difficulty
   orderIndex       Int
   estimatedMinutes Int
+  keyConcepts      Json?
+  learningResources Json?
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
 

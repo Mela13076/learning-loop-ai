@@ -1,0 +1,631 @@
+{
+  "learningPath": "Frontend Fundamentals",
+  "topics": [
+    {
+      "title": "HTML Basics",
+      "keyConcepts": [
+        {
+          "title": "Document Structure",
+          "description": "Understand the purpose of the doctype, html, head, and body elements in a complete webpage."
+        },
+        {
+          "title": "Elements and Tags",
+          "description": "Learn how HTML elements use opening tags, content, and closing tags to structure a page."
+        },
+        {
+          "title": "HTML Attributes",
+          "description": "Understand how attributes provide additional information or settings for an element."
+        },
+        {
+          "title": "Text and Lists",
+          "description": "Use headings, paragraphs, ordered lists, and unordered lists to organize written content."
+        },
+        {
+          "title": "Links and Paths",
+          "description": "Create hyperlinks and understand the difference between relative and absolute paths."
+        },
+        {
+          "title": "Images and Alt Text",
+          "description": "Embed images and provide meaningful alternative text for accessibility."
+        },
+        {
+          "title": "Semantic HTML",
+          "description": "Use elements such as header, nav, main, section, and footer to communicate the meaning of page content."
+        },
+        {
+          "title": "Forms and Labels",
+          "description": "Create basic forms with accessible labels, inputs, buttons, and common form controls."
+        }
+      ],
+      "learningResources": [
+        {
+          "title": "MDN: Structuring Content with HTML",
+          "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content",
+          "type": "Documentation",
+          "description": "A structured MDN learning module covering HTML syntax, text, links, images, forms, and semantic page structure.",
+          "beginnerValue": "It provides an industry-standard progression through the HTML concepts beginners need before learning CSS and JavaScript."
+        },
+        {
+          "title": "MDN: Basic HTML Syntax",
+          "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content/Basic_HTML_syntax",
+          "type": "Tutorial",
+          "description": "An introductory lesson explaining HTML elements, attributes, nesting, and the structure of a basic document.",
+          "beginnerValue": "It gives beginners a focused starting point with practical examples and clear terminology."
+        },
+        {
+          "title": "freeCodeCamp: Responsive Web Design Certification",
+          "url": "https://www.freecodecamp.org/learn/responsive-web-design-v9",
+          "type": "Interactive Course",
+          "description": "A free project-based course that teaches HTML, CSS, accessibility, and responsive web development.",
+          "beginnerValue": "It allows learners to practice HTML immediately through guided coding exercises and projects."
+        }
+      ]
+    },
+    {
+      "title": "CSS Fundamentals",
+      "keyConcepts": [
+        {
+          "title": "CSS Rules",
+          "description": "Understand how selectors, properties, and values work together to apply styles."
+        },
+        {
+          "title": "CSS Selectors",
+          "description": "Target elements using type, class, ID, and basic relationship selectors."
+        },
+        {
+          "title": "Cascade and Specificity",
+          "description": "Understand how the browser resolves conflicts when multiple styles apply to the same element."
+        },
+        {
+          "title": "Box Model",
+          "description": "Understand how content, padding, borders, and margins determine an element's size and spacing."
+        },
+        {
+          "title": "Values and Units",
+          "description": "Use common values and units such as pixels, percentages, rem, colors, and viewport units."
+        },
+        {
+          "title": "Typography Styling",
+          "description": "Style text using font families, font sizes, line heights, alignment, and related properties."
+        },
+        {
+          "title": "Display and Flow",
+          "description": "Understand how block, inline, and other display values affect the layout of elements."
+        },
+        {
+          "title": "Flexbox Layout",
+          "description": "Arrange and align elements in a row or column using flexible containers."
+        },
+        {
+          "title": "Grid Layout",
+          "description": "Create basic two-dimensional layouts using rows, columns, and grid gaps."
+        },
+        {
+          "title": "Responsive Design",
+          "description": "Use flexible layouts and media queries to adapt a page to different screen sizes."
+        }
+      ],
+      "learningResources": [
+        {
+          "title": "MDN: CSS Styling Basics",
+          "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics",
+          "type": "Documentation",
+          "description": "A comprehensive MDN module covering selectors, the box model, values, conflicts, sizing, and styling techniques.",
+          "beginnerValue": "It introduces CSS in a structured order and includes exercises that reinforce foundational skills."
+        },
+        {
+          "title": "MDN: The Box Model",
+          "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Box_model",
+          "type": "Tutorial",
+          "description": "A focused explanation of the CSS box model and the terminology used to describe element sizing and spacing.",
+          "beginnerValue": "The box model is essential for debugging layouts, and this lesson makes the concept easier to visualize."
+        },
+        {
+          "title": "MDN: CSS Layout",
+          "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout",
+          "type": "Documentation",
+          "description": "A learning module covering layout concepts such as normal flow, flexbox, grid, and responsive design.",
+          "beginnerValue": "It helps learners move from basic styling to building practical page layouts."
+        },
+        {
+          "title": "freeCodeCamp: Responsive Web Design Certification",
+          "url": "https://www.freecodecamp.org/learn/responsive-web-design-v9",
+          "type": "Interactive Course",
+          "description": "A free project-based course that teaches modern HTML, CSS, accessibility, and responsive web development.",
+          "beginnerValue": "It gives beginners hands-on practice applying CSS concepts while building visual projects."
+        }
+      ]
+    },
+    {
+      "title": "JavaScript Variables",
+      "keyConcepts": [
+        {
+          "title": "Values and Types",
+          "description": "Recognize common JavaScript values such as strings, numbers, booleans, null, and undefined."
+        },
+        {
+          "title": "Variable Declarations",
+          "description": "Use let and const to create variables and understand when each declaration is appropriate."
+        },
+        {
+          "title": "Assignment and Initialization",
+          "description": "Understand the difference between creating a variable, giving it an initial value, and updating its value."
+        },
+        {
+          "title": "Naming Variables",
+          "description": "Choose valid, descriptive variable names that make code easier to understand."
+        },
+        {
+          "title": "Reassignment",
+          "description": "Understand when a variable can be assigned a new value and why const prevents reassignment."
+        },
+        {
+          "title": "Variable Scope",
+          "description": "Understand how block scope, function scope, and global scope affect where a variable can be accessed."
+        },
+        {
+          "title": "Null and Undefined",
+          "description": "Recognize the difference between a missing value, an unassigned value, and an intentional empty value."
+        },
+        {
+          "title": "Type Checking",
+          "description": "Use typeof and basic debugging techniques to inspect the type of a stored value."
+        }
+      ],
+      "learningResources": [
+        {
+          "title": "MDN: Grammar and Types",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Grammar_and_types",
+          "type": "Documentation",
+          "description": "An MDN guide covering declarations, variable scope, data types, literals, and related JavaScript fundamentals.",
+          "beginnerValue": "It provides an authoritative explanation of the rules beginners need to write predictable JavaScript."
+        },
+        {
+          "title": "MDN: JavaScript Guide",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide",
+          "type": "Guide",
+          "description": "A structured overview of JavaScript concepts including grammar, types, control flow, functions, and objects.",
+          "beginnerValue": "It gives learners a reliable reference they can continue using as their JavaScript skills grow."
+        },
+        {
+          "title": "freeCodeCamp: JavaScript Certification",
+          "url": "https://www.freecodecamp.org/learn/javascript-v9",
+          "type": "Interactive Course",
+          "description": "A free course teaching core JavaScript concepts such as variables, functions, arrays, objects, and control flow.",
+          "beginnerValue": "It provides immediate coding practice and helps beginners build confidence through guided exercises."
+        }
+      ]
+    },
+    {
+      "title": "JavaScript Functions",
+      "keyConcepts": [
+        {
+          "title": "Function Purpose",
+          "description": "Understand how functions group reusable instructions and reduce repeated code."
+        },
+        {
+          "title": "Declaring Functions",
+          "description": "Create named functions using standard function declaration syntax."
+        },
+        {
+          "title": "Calling Functions",
+          "description": "Run a function by invoking it with parentheses at the appropriate point in a program."
+        },
+        {
+          "title": "Parameters and Arguments",
+          "description": "Pass information into a function and understand the difference between parameters and arguments."
+        },
+        {
+          "title": "Return Values",
+          "description": "Use return to send a value back to the code that called a function."
+        },
+        {
+          "title": "Function Scope",
+          "description": "Understand how variables declared inside a function differ from variables declared outside it."
+        },
+        {
+          "title": "Function Expressions",
+          "description": "Store a function in a variable and recognize that functions can be treated as values."
+        },
+        {
+          "title": "Arrow Functions",
+          "description": "Use concise arrow function syntax and recognize common situations where it appears."
+        },
+        {
+          "title": "Callback Functions",
+          "description": "Understand how one function can be passed to another function to run later."
+        }
+      ],
+      "learningResources": [
+        {
+          "title": "MDN: Functions",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions",
+          "type": "Documentation",
+          "description": "An MDN guide explaining how to define, call, and work with JavaScript functions.",
+          "beginnerValue": "It covers the core function concepts learners need before working with events, array methods, and React."
+        },
+        {
+          "title": "MDN: Arrow Function Expressions",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions",
+          "type": "Documentation",
+          "description": "A reference explaining arrow function syntax and how it differs from traditional function expressions.",
+          "beginnerValue": "Arrow functions appear frequently in modern frontend code, so this reference helps beginners recognize and use them correctly."
+        },
+        {
+          "title": "freeCodeCamp: JavaScript Certification",
+          "url": "https://www.freecodecamp.org/learn/javascript-v9",
+          "type": "Interactive Course",
+          "description": "A free interactive JavaScript course that includes variables, functions, objects, arrays, and control flow.",
+          "beginnerValue": "It provides hands-on exercises so learners can practice writing and calling functions instead of only reading about them."
+        }
+      ]
+    },
+    {
+      "title": "DOM Manipulation",
+      "keyConcepts": [
+        {
+          "title": "DOM Tree",
+          "description": "Understand how the browser represents an HTML document as a tree of nodes and objects."
+        },
+        {
+          "title": "Document Object",
+          "description": "Recognize document as the main entry point for accessing and changing a webpage."
+        },
+        {
+          "title": "Selecting Elements",
+          "description": "Find elements using methods such as querySelector and querySelectorAll."
+        },
+        {
+          "title": "Updating Content",
+          "description": "Change visible text and other content after a page has loaded."
+        },
+        {
+          "title": "Attributes and Classes",
+          "description": "Read, update, add, and remove element attributes and CSS classes."
+        },
+        {
+          "title": "Creating Elements",
+          "description": "Create new elements and add them to the page using DOM methods."
+        },
+        {
+          "title": "Removing Elements",
+          "description": "Remove elements from the document when the interface changes."
+        },
+        {
+          "title": "Event Listeners",
+          "description": "Respond to user interactions by registering event handlers with addEventListener."
+        },
+        {
+          "title": "Event Objects",
+          "description": "Use information from an event object to understand what happened and which element triggered it."
+        },
+        {
+          "title": "DOM Load Timing",
+          "description": "Understand why scripts should run after the required HTML elements have been parsed."
+        }
+      ],
+      "learningResources": [
+        {
+          "title": "MDN: Document Object Model",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model",
+          "type": "Documentation",
+          "description": "An MDN overview of the DOM as a programming interface for changing document structure, style, and content.",
+          "beginnerValue": "It provides an authoritative explanation of how JavaScript interacts with webpages."
+        },
+        {
+          "title": "MDN: Introduction to Events",
+          "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Events",
+          "type": "Tutorial",
+          "description": "A beginner-focused lesson explaining event listeners, event handlers, and common browser events.",
+          "beginnerValue": "It connects DOM manipulation to user interaction, which is essential for building interactive pages."
+        },
+        {
+          "title": "MDN: Document.querySelector",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector",
+          "type": "Documentation",
+          "description": "A focused reference for selecting the first element that matches a CSS selector.",
+          "beginnerValue": "querySelector is one of the most common DOM methods, making this a useful reference during practice."
+        },
+        {
+          "title": "freeCodeCamp: JavaScript DOM Manipulation Handbook",
+          "url": "https://www.freecodecamp.org/news/the-javascript-dom-manipulation-handbook/",
+          "type": "Guide",
+          "description": "A practical handbook covering element selection, content changes, attributes, styles, traversal, events, and element creation.",
+          "beginnerValue": "It gives learners concrete examples and a broader practice-oriented explanation after they learn the DOM basics."
+        }
+      ]
+    },
+    {
+      "title": "React Components",
+      "keyConcepts": [
+        {
+          "title": "Component-Based UI",
+          "description": "Understand how React interfaces are built by combining small, reusable pieces."
+        },
+        {
+          "title": "Function Components",
+          "description": "Create a React component as a JavaScript function that returns user interface markup."
+        },
+        {
+          "title": "Component Naming",
+          "description": "Use PascalCase names so React can distinguish custom components from standard HTML elements."
+        },
+        {
+          "title": "JSX Syntax",
+          "description": "Write HTML-like markup inside JavaScript and understand common differences between JSX and HTML."
+        },
+        {
+          "title": "Rendering Components",
+          "description": "Use a component within JSX so React can display the component's output."
+        },
+        {
+          "title": "Importing and Exporting",
+          "description": "Split components into files and use imports and exports to organize an application."
+        },
+        {
+          "title": "Component Composition",
+          "description": "Build larger interfaces by nesting and combining smaller components."
+        },
+        {
+          "title": "Pure Components",
+          "description": "Understand that a component should calculate its interface from inputs without changing outside values during rendering."
+        },
+        {
+          "title": "Conditional Rendering",
+          "description": "Display different interface elements based on JavaScript conditions."
+        },
+        {
+          "title": "Rendering Lists",
+          "description": "Render repeated components from arrays and provide stable keys for list items."
+        }
+      ],
+      "learningResources": [
+        {
+          "title": "React: Your First Component",
+          "url": "https://react.dev/learn/your-first-component",
+          "type": "Tutorial",
+          "description": "An official React lesson introducing components, component definitions, and how components are used in an application.",
+          "beginnerValue": "It starts with the core mental model learners need before studying props, state, or effects."
+        },
+        {
+          "title": "React: Writing Markup with JSX",
+          "url": "https://react.dev/learn/writing-markup-with-jsx",
+          "type": "Tutorial",
+          "description": "An official React lesson explaining JSX, its rules, and how it differs from HTML.",
+          "beginnerValue": "JSX is used in most React codebases, so understanding it early prevents common beginner errors."
+        },
+        {
+          "title": "React: Quick Start",
+          "url": "https://react.dev/learn",
+          "type": "Guide",
+          "description": "The official React learning path covering components, JSX, props, events, state, and related fundamentals.",
+          "beginnerValue": "It provides a trusted overview and a clear sequence for learning the React concepts that work together."
+        },
+        {
+          "title": "freeCodeCamp: React Handbook for Beginners",
+          "url": "https://www.freecodecamp.org/news/react-handbook-for-beginners-learn-jsx-hooks-rendering/",
+          "type": "Guide",
+          "description": "A beginner handbook covering React components, JSX, hooks, rendering, and common best practices.",
+          "beginnerValue": "It reinforces the official documentation with additional explanations and examples in a beginner-friendly format."
+        }
+      ]
+    },
+    {
+      "title": "React State",
+      "keyConcepts": [
+        {
+          "title": "Component Memory",
+          "description": "Understand that state stores information a component needs to remember between renders."
+        },
+        {
+          "title": "useState Hook",
+          "description": "Declare a state variable and its setter function using the useState Hook."
+        },
+        {
+          "title": "Initial State",
+          "description": "Choose the value a state variable should have when the component first renders."
+        },
+        {
+          "title": "State Setters",
+          "description": "Update state with the setter function instead of modifying the state variable directly."
+        },
+        {
+          "title": "Re-Rendering",
+          "description": "Understand that updating state asks React to render the component again with the new value."
+        },
+        {
+          "title": "State Snapshots",
+          "description": "Recognize that each render receives a snapshot of state values for that specific render."
+        },
+        {
+          "title": "Updater Functions",
+          "description": "Update state from its previous value when the next value depends on the current one."
+        },
+        {
+          "title": "Immutable Updates",
+          "description": "Create new objects or arrays when updating state instead of mutating existing values."
+        },
+        {
+          "title": "Lifting State Up",
+          "description": "Move shared state to the closest common parent when multiple components need coordinated data."
+        }
+      ],
+      "learningResources": [
+        {
+          "title": "React: State as a Component's Memory",
+          "url": "https://react.dev/learn/state-a-components-memory",
+          "type": "Tutorial",
+          "description": "An official React lesson explaining when components need state and how to use the useState Hook.",
+          "beginnerValue": "It introduces state through practical examples and clearly explains why regular variables are not enough."
+        },
+        {
+          "title": "React: useState Reference",
+          "url": "https://react.dev/reference/react/useState",
+          "type": "Documentation",
+          "description": "The official reference for declaring state variables, setting new values, and using updater functions.",
+          "beginnerValue": "It gives learners an accurate reference for the Hook they will use most often when adding interactivity."
+        },
+        {
+          "title": "React: State as a Snapshot",
+          "url": "https://react.dev/learn/state-as-a-snapshot",
+          "type": "Tutorial",
+          "description": "An official lesson explaining how React state behaves during rendering and event handling.",
+          "beginnerValue": "It helps prevent common mistakes caused by expecting state updates to behave like immediate variable assignments."
+        },
+        {
+          "title": "React: Sharing State Between Components",
+          "url": "https://react.dev/learn/sharing-state-between-components",
+          "type": "Tutorial",
+          "description": "An official lesson explaining how to lift state up and coordinate multiple components.",
+          "beginnerValue": "It teaches learners how state and props work together in realistic component structures."
+        }
+      ]
+    },
+    {
+      "title": "React Props",
+      "keyConcepts": [
+        {
+          "title": "Component Inputs",
+          "description": "Understand that props allow a parent component to configure a child component."
+        },
+        {
+          "title": "Parent-to-Child Flow",
+          "description": "Recognize that data typically moves from a parent component down to its children."
+        },
+        {
+          "title": "Passing Props",
+          "description": "Add props to a component usage with syntax that resembles HTML attributes."
+        },
+        {
+          "title": "Reading Props",
+          "description": "Access props inside a function component through its parameter."
+        },
+        {
+          "title": "Destructuring Props",
+          "description": "Use object destructuring to read specific prop values more clearly."
+        },
+        {
+          "title": "JavaScript Values",
+          "description": "Pass strings, numbers, booleans, arrays, objects, and functions through props."
+        },
+        {
+          "title": "Children Prop",
+          "description": "Use the children prop to provide nested content between a component's opening and closing tags."
+        },
+        {
+          "title": "Event Handler Props",
+          "description": "Pass functions as props so child components can trigger behavior defined by a parent."
+        },
+        {
+          "title": "Read-Only Props",
+          "description": "Treat props as immutable inputs that should not be modified by the receiving component."
+        },
+        {
+          "title": "Props Versus State",
+          "description": "Distinguish between values received from a parent and values remembered and updated by a component."
+        }
+      ],
+      "learningResources": [
+        {
+          "title": "React: Passing Props to a Component",
+          "url": "https://react.dev/learn/passing-props-to-a-component",
+          "type": "Tutorial",
+          "description": "An official React lesson covering how parents pass information to children through props.",
+          "beginnerValue": "It explains props with clear examples and introduces essential patterns such as destructuring and the children prop."
+        },
+        {
+          "title": "React: Sharing State Between Components",
+          "url": "https://react.dev/learn/sharing-state-between-components",
+          "type": "Tutorial",
+          "description": "An official lesson explaining how shared state can be moved to a parent and passed down through props.",
+          "beginnerValue": "It shows how props work in a realistic application rather than as an isolated syntax feature."
+        },
+        {
+          "title": "React: Quick Start",
+          "url": "https://react.dev/learn",
+          "type": "Guide",
+          "description": "The official React learning path introducing components, props, conditional rendering, events, and state.",
+          "beginnerValue": "It helps learners see how props connect with the broader React component model."
+        },
+        {
+          "title": "freeCodeCamp: How to Use React Components",
+          "url": "https://www.freecodecamp.org/news/how-to-use-react-components/",
+          "type": "Tutorial",
+          "description": "A practical tutorial explaining React components and how data can be passed and rendered using props.",
+          "beginnerValue": "It provides additional examples that reinforce the parent-to-child data flow taught in the official documentation."
+        }
+      ]
+    },
+    {
+      "title": "React Effects",
+      "keyConcepts": [
+        {
+          "title": "External Synchronization",
+          "description": "Understand that effects are used to synchronize a component with systems outside React."
+        },
+        {
+          "title": "useEffect Hook",
+          "description": "Run synchronization logic after a component renders by using the useEffect Hook."
+        },
+        {
+          "title": "Post-Render Timing",
+          "description": "Recognize that effect code runs after React updates the screen rather than during rendering."
+        },
+        {
+          "title": "Dependency Arrays",
+          "description": "Specify which reactive values should cause an effect to synchronize again."
+        },
+        {
+          "title": "Reactive Dependencies",
+          "description": "Include the props, state, and values used by an effect when they can change between renders."
+        },
+        {
+          "title": "Cleanup Functions",
+          "description": "Return a cleanup function when an effect needs to stop subscriptions, disconnect systems, or remove listeners."
+        },
+        {
+          "title": "Effect Lifecycle",
+          "description": "Understand that an effect can start synchronizing, stop synchronizing, and restart when dependencies change."
+        },
+        {
+          "title": "Avoiding Extra Effects",
+          "description": "Recognize when a value can be calculated during rendering instead of stored or updated through an effect."
+        },
+        {
+          "title": "Events Versus Effects",
+          "description": "Use event handlers for user-triggered actions and effects for synchronization caused by rendering."
+        }
+      ],
+      "learningResources": [
+        {
+          "title": "React: Synchronizing with Effects",
+          "url": "https://react.dev/learn/synchronizing-with-effects",
+          "type": "Tutorial",
+          "description": "An official React lesson explaining when effects are needed, how they run, and how to write cleanup logic.",
+          "beginnerValue": "It introduces effects using the recommended mental model of synchronizing with external systems."
+        },
+        {
+          "title": "React: useEffect Reference",
+          "url": "https://react.dev/reference/react/useEffect",
+          "type": "Documentation",
+          "description": "The official reference for the useEffect Hook, its parameters, dependencies, cleanup behavior, and common use cases.",
+          "beginnerValue": "It gives learners an accurate reference when writing and debugging their first effects."
+        },
+        {
+          "title": "React: You Might Not Need an Effect",
+          "url": "https://react.dev/learn/you-might-not-need-an-effect",
+          "type": "Guide",
+          "description": "An official React guide explaining common situations where an effect is unnecessary and simpler code should be used.",
+          "beginnerValue": "It helps learners avoid overusing useEffect, which is one of the most common mistakes in beginner React code."
+        },
+        {
+          "title": "React: Lifecycle of Reactive Effects",
+          "url": "https://react.dev/learn/lifecycle-of-reactive-effects",
+          "type": "Tutorial",
+          "description": "An official React lesson explaining how effects start, stop, and re-synchronize when reactive values change.",
+          "beginnerValue": "It deepens the learner's understanding after they are comfortable writing basic effects."
+        }
+      ]
+    }
+  ]
+}

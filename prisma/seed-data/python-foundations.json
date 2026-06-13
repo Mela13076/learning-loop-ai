@@ -1,0 +1,535 @@
+{
+  "learningPath": "Python Foundations",
+  "topics": [
+    {
+      "title": "Variables and Data Types",
+      "keyConcepts": [
+        {
+          "title": "Variable Assignment",
+          "description": "Understand how to store a value in a variable using the assignment operator."
+        },
+        {
+          "title": "Variable Naming",
+          "description": "Choose clear variable names and follow Python naming rules and conventions."
+        },
+        {
+          "title": "Numbers",
+          "description": "Work with integers and floating-point numbers in basic calculations."
+        },
+        {
+          "title": "Strings",
+          "description": "Store and manipulate text values using strings."
+        },
+        {
+          "title": "Booleans",
+          "description": "Use True and False values to represent logical conditions."
+        },
+        {
+          "title": "None Value",
+          "description": "Recognize None as a value that represents the absence of a meaningful result."
+        },
+        {
+          "title": "Type Inspection",
+          "description": "Use type() to check the data type of a value while learning or debugging."
+        },
+        {
+          "title": "Type Conversion",
+          "description": "Convert values between common data types using functions such as int(), float(), and str()."
+        },
+        {
+          "title": "Dynamic Typing",
+          "description": "Understand that Python variables can refer to values of different types without explicit type declarations."
+        }
+      ],
+      "learningResources": [
+        {
+          "title": "Python Tutorial: An Informal Introduction to Python",
+          "url": "https://docs.python.org/3/tutorial/introduction.html",
+          "type": "Documentation",
+          "description": "The official Python tutorial introduces numbers, strings, lists, assignment, and basic expressions.",
+          "beginnerValue": "It provides an authoritative starting point for understanding how Python stores and works with values."
+        },
+        {
+          "title": "Google's Python Class: Python Introduction",
+          "url": "https://developers.google.com/edu/python/introduction",
+          "type": "Tutorial",
+          "description": "Google's introductory guide explains Python syntax, dynamic typing, variables, indentation, and running code.",
+          "beginnerValue": "It gives beginners a practical explanation of how Python differs from other programming languages."
+        },
+        {
+          "title": "freeCodeCamp: The Python Handbook",
+          "url": "https://www.freecodecamp.org/news/the-python-handbook/",
+          "type": "Guide",
+          "description": "A beginner-oriented handbook covering variables, types, operators, strings, and other Python fundamentals.",
+          "beginnerValue": "It reinforces official documentation with approachable explanations and examples."
+        }
+      ]
+    },
+    {
+      "title": "Conditionals",
+      "keyConcepts": [
+        {
+          "title": "Boolean Expressions",
+          "description": "Understand that a conditional decision depends on an expression that evaluates to True or False."
+        },
+        {
+          "title": "Comparison Operators",
+          "description": "Compare values using operators such as ==, !=, <, >, <=, and >=."
+        },
+        {
+          "title": "If Statements",
+          "description": "Run a block of code only when a specific condition is true."
+        },
+        {
+          "title": "Elif Clauses",
+          "description": "Check additional conditions when an earlier condition was false."
+        },
+        {
+          "title": "Else Clauses",
+          "description": "Provide a fallback block of code when no earlier condition is true."
+        },
+        {
+          "title": "Logical Operators",
+          "description": "Combine or invert conditions using and, or, and not."
+        },
+        {
+          "title": "Membership Tests",
+          "description": "Use in and not in to check whether a value appears in a collection."
+        },
+        {
+          "title": "Truthy and Falsy",
+          "description": "Recognize that values such as empty strings, empty collections, zero, and None behave as false in conditions."
+        },
+        {
+          "title": "Nested Conditionals",
+          "description": "Use a conditional inside another conditional when a decision depends on multiple steps."
+        }
+      ],
+      "learningResources": [
+        {
+          "title": "Python Tutorial: More Control Flow Tools",
+          "url": "https://docs.python.org/3/tutorial/controlflow.html#if-statements",
+          "type": "Documentation",
+          "description": "The official Python tutorial explains if, elif, and else statements with examples.",
+          "beginnerValue": "It introduces Python's standard decision-making syntax directly from the language documentation."
+        },
+        {
+          "title": "freeCodeCamp: The Ultimate Python Beginner's Handbook",
+          "url": "https://www.freecodecamp.org/news/the-python-guide-for-beginners/",
+          "type": "Guide",
+          "description": "A beginner handbook covering operators, conditions, loops, collections, and other core Python concepts.",
+          "beginnerValue": "It gives learners additional examples that connect conditionals to common beginner programs."
+        },
+        {
+          "title": "freeCodeCamp: Learn Python Basics",
+          "url": "https://www.freecodecamp.org/news/learn-python-basics/",
+          "type": "Tutorial",
+          "description": "A beginner guide introducing Python syntax, variables, control flow, functions, and collections.",
+          "beginnerValue": "It provides an accessible second explanation for learners practicing their first conditional statements."
+        }
+      ]
+    },
+    {
+      "title": "Loops",
+      "keyConcepts": [
+        {
+          "title": "Repeated Execution",
+          "description": "Understand that loops allow a program to repeat instructions without duplicating code."
+        },
+        {
+          "title": "For Loops",
+          "description": "Use a for loop to process each item in a sequence or collection."
+        },
+        {
+          "title": "While Loops",
+          "description": "Use a while loop to repeat code while a condition remains true."
+        },
+        {
+          "title": "Loop Variables",
+          "description": "Understand how the loop variable changes as the loop processes different values."
+        },
+        {
+          "title": "Range Function",
+          "description": "Use range() to generate a sequence of numbers for counted repetition."
+        },
+        {
+          "title": "Iterating Collections",
+          "description": "Loop through strings, lists, dictionaries, and other iterable values."
+        },
+        {
+          "title": "Break Statement",
+          "description": "Stop a loop early when a specific condition is met."
+        },
+        {
+          "title": "Continue Statement",
+          "description": "Skip the remaining code in the current iteration and move to the next one."
+        },
+        {
+          "title": "Nested Loops",
+          "description": "Use one loop inside another when processing combinations or multi-level data."
+        }
+      ],
+      "learningResources": [
+        {
+          "title": "Python Tutorial: More Control Flow Tools",
+          "url": "https://docs.python.org/3/tutorial/controlflow.html",
+          "type": "Documentation",
+          "description": "The official tutorial covers for loops, range(), break, continue, and related control flow features.",
+          "beginnerValue": "It presents the standard Python loop syntax and explains how iteration works in the language."
+        },
+        {
+          "title": "Google's Python Class: Python Lists",
+          "url": "https://developers.google.com/edu/python/lists",
+          "type": "Tutorial",
+          "description": "Google's guide explains lists, for loops, membership checks, range(), and common list operations.",
+          "beginnerValue": "It shows learners how loops are used with real collections rather than only isolated examples."
+        },
+        {
+          "title": "freeCodeCamp: Python Code Example Handbook",
+          "url": "https://www.freecodecamp.org/news/python-code-examples-sample-script-coding-tutorial-for-beginners/",
+          "type": "Guide",
+          "description": "A practical Python handbook containing examples of for loops, while loops, iteration, and related language features.",
+          "beginnerValue": "It gives beginners many examples they can adapt while practicing loop behavior."
+        }
+      ]
+    },
+    {
+      "title": "Functions",
+      "keyConcepts": [
+        {
+          "title": "Function Purpose",
+          "description": "Understand that functions group reusable instructions into a named block of code."
+        },
+        {
+          "title": "Defining Functions",
+          "description": "Create a function using the def keyword and an indented function body."
+        },
+        {
+          "title": "Calling Functions",
+          "description": "Run a function by writing its name followed by parentheses."
+        },
+        {
+          "title": "Parameters and Arguments",
+          "description": "Pass information into a function and distinguish between a parameter definition and an argument value."
+        },
+        {
+          "title": "Return Values",
+          "description": "Use return to send a result back to the code that called the function."
+        },
+        {
+          "title": "Default Arguments",
+          "description": "Provide a default value for an argument when a caller does not supply one."
+        },
+        {
+          "title": "Keyword Arguments",
+          "description": "Call a function using parameter names to make arguments clearer."
+        },
+        {
+          "title": "Variable Scope",
+          "description": "Understand the difference between variables created inside a function and variables created outside it."
+        },
+        {
+          "title": "Docstrings",
+          "description": "Document the purpose and expected inputs of a function using a short string inside its definition."
+        }
+      ],
+      "learningResources": [
+        {
+          "title": "Python Tutorial: Defining Functions",
+          "url": "https://docs.python.org/3/tutorial/controlflow.html#defining-functions",
+          "type": "Documentation",
+          "description": "The official Python tutorial explains how to define functions and work with arguments.",
+          "beginnerValue": "It provides a reliable explanation of the syntax and conventions used in real Python code."
+        },
+        {
+          "title": "freeCodeCamp: Functions in Python Explained with Code Examples",
+          "url": "https://www.freecodecamp.org/news/functions-in-python-a-beginners-guide/",
+          "type": "Tutorial",
+          "description": "A focused beginner tutorial explaining reusable functions, parameters, arguments, and return values.",
+          "beginnerValue": "It breaks down function concepts gradually and includes code examples learners can run themselves."
+        },
+        {
+          "title": "freeCodeCamp: Learn Python - Full Course for Beginners",
+          "url": "https://www.youtube.com/watch?v=rfscVS0vtbw",
+          "type": "Video",
+          "description": "A free beginner course introducing core Python topics through explanations and small projects.",
+          "beginnerValue": "It helps visual learners practice functions in the context of complete beginner programs."
+        }
+      ]
+    },
+    {
+      "title": "Lists and Dictionaries",
+      "keyConcepts": [
+        {
+          "title": "List Creation",
+          "description": "Create an ordered collection of values using square brackets."
+        },
+        {
+          "title": "Indexing and Slicing",
+          "description": "Access individual list items or portions of a list using positions and slice syntax."
+        },
+        {
+          "title": "List Mutation",
+          "description": "Add, remove, replace, and reorder list items using common list operations."
+        },
+        {
+          "title": "Iterating Lists",
+          "description": "Use loops to process each item stored in a list."
+        },
+        {
+          "title": "Dictionary Creation",
+          "description": "Create a collection of key-value pairs using curly braces."
+        },
+        {
+          "title": "Accessing Values",
+          "description": "Retrieve a dictionary value using its key and understand what happens when a key is missing."
+        },
+        {
+          "title": "Dictionary Updates",
+          "description": "Add new key-value pairs, update existing values, and remove entries."
+        },
+        {
+          "title": "Iterating Dictionaries",
+          "description": "Loop through keys, values, or key-value pairs using dictionary methods."
+        },
+        {
+          "title": "Membership Checks",
+          "description": "Use in to check whether an item appears in a list or a key exists in a dictionary."
+        },
+        {
+          "title": "Nested Collections",
+          "description": "Recognize that lists and dictionaries can contain other collections to represent more complex data."
+        }
+      ],
+      "learningResources": [
+        {
+          "title": "Python Tutorial: Data Structures",
+          "url": "https://docs.python.org/3/tutorial/datastructures.html",
+          "type": "Documentation",
+          "description": "The official tutorial explains lists, list methods, dictionaries, looping techniques, and related collection concepts.",
+          "beginnerValue": "It provides a complete reference for the collection types beginners will use most frequently."
+        },
+        {
+          "title": "Google's Python Class: Python Lists",
+          "url": "https://developers.google.com/edu/python/lists",
+          "type": "Tutorial",
+          "description": "Google's tutorial covers list syntax, indexing, assignment behavior, loops, and common list methods.",
+          "beginnerValue": "It explains list behavior with practical examples and diagrams that make the topic easier to visualize."
+        },
+        {
+          "title": "Google's Python Class: Python Dict and File",
+          "url": "https://developers.google.com/edu/python/dict-files",
+          "type": "Tutorial",
+          "description": "Google's tutorial explains dictionary creation, iteration, keys, values, items, and basic file usage.",
+          "beginnerValue": "It helps learners practice dictionaries through realistic examples that connect multiple Python fundamentals."
+        },
+        {
+          "title": "freeCodeCamp: The Ultimate Python Beginner's Handbook",
+          "url": "https://www.freecodecamp.org/news/the-python-guide-for-beginners/",
+          "type": "Guide",
+          "description": "A beginner reference covering lists, dictionaries, loops, functions, files, and other foundational concepts.",
+          "beginnerValue": "It offers an approachable review resource after learners encounter collections in the official documentation."
+        }
+      ]
+    },
+    {
+      "title": "Classes and Objects",
+      "keyConcepts": [
+        {
+          "title": "Object-Oriented Programming",
+          "description": "Understand that object-oriented programming organizes related data and behavior into reusable objects."
+        },
+        {
+          "title": "Class Definitions",
+          "description": "Create a class as a blueprint for building objects with related properties and behavior."
+        },
+        {
+          "title": "Object Instances",
+          "description": "Create individual objects from a class and recognize that each instance can hold its own data."
+        },
+        {
+          "title": "Attributes",
+          "description": "Store information about an object using attributes."
+        },
+        {
+          "title": "Methods",
+          "description": "Define functions inside a class to describe actions an object can perform."
+        },
+        {
+          "title": "Self Parameter",
+          "description": "Understand how self refers to the specific object that is using a method."
+        },
+        {
+          "title": "Initializer Method",
+          "description": "Use **init**() to set up an object's initial attributes when it is created."
+        },
+        {
+          "title": "Instance Variables",
+          "description": "Recognize that different objects created from the same class can store different values."
+        },
+        {
+          "title": "Inheritance Basics",
+          "description": "Understand that a new class can reuse and extend behavior from an existing class."
+        }
+      ],
+      "learningResources": [
+        {
+          "title": "Python Tutorial: Classes",
+          "url": "https://docs.python.org/3/tutorial/classes.html",
+          "type": "Documentation",
+          "description": "The official Python tutorial explains classes, objects, attributes, methods, instances, and inheritance.",
+          "beginnerValue": "It provides an authoritative introduction to Python's object-oriented features and terminology."
+        },
+        {
+          "title": "freeCodeCamp: Object-Oriented Programming in Python",
+          "url": "https://www.freecodecamp.org/news/object-oriented-programming-in-python/",
+          "type": "Tutorial",
+          "description": "A beginner-focused tutorial explaining classes, objects, instance variables, methods, and core OOP ideas.",
+          "beginnerValue": "It uses straightforward explanations to help learners understand why classes are useful."
+        },
+        {
+          "title": "freeCodeCamp: How to Use Object-Oriented Programming in Python",
+          "url": "https://www.freecodecamp.org/news/how-to-use-oop-in-python/",
+          "type": "Guide",
+          "description": "A practical guide covering class definitions, instance attributes, methods, encapsulation, and inheritance.",
+          "beginnerValue": "It helps learners move from basic class syntax toward organizing larger programs."
+        }
+      ]
+    },
+    {
+      "title": "File Handling",
+      "keyConcepts": [
+        {
+          "title": "File Objects",
+          "description": "Understand that Python represents an opened file as an object that a program can read from or write to."
+        },
+        {
+          "title": "Opening Files",
+          "description": "Use open() with a filename and mode to access a file."
+        },
+        {
+          "title": "File Modes",
+          "description": "Recognize common modes such as read, write, append, and binary modes."
+        },
+        {
+          "title": "Reading Files",
+          "description": "Read an entire file, a single line, or multiple lines depending on the program's needs."
+        },
+        {
+          "title": "Writing Files",
+          "description": "Write or append text data while understanding how the selected mode affects existing content."
+        },
+        {
+          "title": "Context Managers",
+          "description": "Use the with statement so files close automatically after the program finishes working with them."
+        },
+        {
+          "title": "Text Encodings",
+          "description": "Recognize why text files should commonly be opened with an explicit encoding such as UTF-8."
+        },
+        {
+          "title": "Line Processing",
+          "description": "Loop through a text file one line at a time when processing larger files."
+        },
+        {
+          "title": "File Errors",
+          "description": "Recognize that missing files, invalid paths, and permission issues can raise exceptions."
+        }
+      ],
+      "learningResources": [
+        {
+          "title": "Python Tutorial: Reading and Writing Files",
+          "url": "https://docs.python.org/3/tutorial/inputoutput.html#reading-and-writing-files",
+          "type": "Documentation",
+          "description": "The official Python tutorial explains open(), file modes, reading, writing, encodings, and the with statement.",
+          "beginnerValue": "It teaches the recommended patterns for safely working with files in Python."
+        },
+        {
+          "title": "Google's Python Class: Python Dict and File",
+          "url": "https://developers.google.com/edu/python/dict-files",
+          "type": "Tutorial",
+          "description": "Google's tutorial introduces text file reading, writing, Unicode handling, and a word-count exercise.",
+          "beginnerValue": "It connects file handling to a realistic beginner project that also reinforces functions and dictionaries."
+        },
+        {
+          "title": "freeCodeCamp: File Handling in Python",
+          "url": "https://www.freecodecamp.org/news/file-handling-in-python/",
+          "type": "Tutorial",
+          "description": "A beginner tutorial explaining how to create, open, read, write, and close files.",
+          "beginnerValue": "It provides practical examples that make the most common file operations easier to practice."
+        },
+        {
+          "title": "freeCodeCamp: Python Write to File Guide",
+          "url": "https://www.freecodecamp.org/news/python-write-to-file-open-read-append-and-other-file-handling-functions-explained/",
+          "type": "Guide",
+          "description": "A detailed guide covering file creation, reading, writing, appending, context managers, and possible errors.",
+          "beginnerValue": "It works well as a reference when learners begin building small programs that store data."
+        }
+      ]
+    },
+    {
+      "title": "Error Handling",
+      "keyConcepts": [
+        {
+          "title": "Syntax Errors",
+          "description": "Recognize errors caused by invalid Python syntax and use the reported line information to find the issue."
+        },
+        {
+          "title": "Runtime Exceptions",
+          "description": "Understand that valid-looking code can still fail while the program is running."
+        },
+        {
+          "title": "Tracebacks",
+          "description": "Read a traceback to identify the error type, location, and chain of function calls."
+        },
+        {
+          "title": "Common Exceptions",
+          "description": "Recognize frequently encountered exceptions such as TypeError, ValueError, KeyError, IndexError, and FileNotFoundError."
+        },
+        {
+          "title": "Try Blocks",
+          "description": "Place code that may fail inside a try block."
+        },
+        {
+          "title": "Except Blocks",
+          "description": "Catch and respond to expected exceptions without allowing the program to crash unexpectedly."
+        },
+        {
+          "title": "Specific Exceptions",
+          "description": "Catch the most specific exception type that the program can handle appropriately."
+        },
+        {
+          "title": "Else and Finally",
+          "description": "Use else for code that should run after a successful try block and finally for cleanup that should always happen."
+        },
+        {
+          "title": "Raising Exceptions",
+          "description": "Use raise when a function detects an invalid situation that should be reported to its caller."
+        }
+      ],
+      "learningResources": [
+        {
+          "title": "Python Tutorial: Errors and Exceptions",
+          "url": "https://docs.python.org/3/tutorial/errors.html",
+          "type": "Documentation",
+          "description": "The official Python tutorial covers syntax errors, exceptions, handling errors, cleanup actions, and raising exceptions.",
+          "beginnerValue": "It introduces the standard Python approach to understanding and managing program failures."
+        },
+        {
+          "title": "Python Language Reference: Compound Statements",
+          "url": "https://docs.python.org/3/reference/compound_stmts.html#the-try-statement",
+          "type": "Documentation",
+          "description": "The official language reference explains the behavior of try, except, else, and finally clauses.",
+          "beginnerValue": "It serves as a reliable reference once learners begin writing more detailed error-handling logic."
+        },
+        {
+          "title": "freeCodeCamp: How to Handle Exceptions in Python",
+          "url": "https://www.freecodecamp.org/news/exception-handling-python/",
+          "type": "Tutorial",
+          "description": "A visual beginner tutorial covering exceptions, try, except, else, finally, and raise.",
+          "beginnerValue": "It uses step-by-step examples to make error handling easier to understand and apply."
+        }
+      ]
+    }
+  ]
+}

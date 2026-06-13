@@ -5,10 +5,16 @@ import { redirect, notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/topics/ProgressBar";
+import { KeyConceptsCard } from "@/components/topics/KeyConceptsCard";
+import { LearningResourcesCard } from "@/components/topics/LearningResourcesCard";
 import { AiTutorChat } from "@/components/ai/AiTutorChat";
 import { QuizGeneratorButton } from "@/components/quiz/QuizGeneratorButton";
 import { SessionNotesList } from "@/components/topics/SessionNotesList";
 import type { ProgressStatus, Difficulty } from "@/generated/prisma/enums";
+import {
+  parseKeyConcepts,
+  parseLearningResources,
+} from "@/lib/topic-content";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -145,6 +151,8 @@ export default async function TopicPage({
   const status: ProgressStatus = progress?.status ?? "NOT_STARTED";
   const statusCfg = STATUS_CONFIG[status];
   const diffBadge = DIFFICULTY_BADGE[topic.difficulty];
+  const keyConcepts = parseKeyConcepts(topic.keyConcepts);
+  const learningResources = parseLearningResources(topic.learningResources);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -228,6 +236,10 @@ export default async function TopicPage({
               </h2>
               <p className="text-base leading-relaxed">{topic.description}</p>
             </div>
+
+            <KeyConceptsCard concepts={keyConcepts} />
+
+            <LearningResourcesCard resources={learningResources} />
 
             {/* Session Notes */}
             {sessionNotes.length > 0 && (

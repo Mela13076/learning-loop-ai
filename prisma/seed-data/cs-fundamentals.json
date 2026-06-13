@@ -1,0 +1,605 @@
+{
+  "learningPath": "Computer Science Fundamentals",
+  "topics": [
+    {
+      "title": "Big O Notation",
+      "keyConcepts": [
+        {
+          "title": "Algorithm Efficiency",
+          "description": "Understand that multiple algorithms can solve the same problem but require different amounts of time or memory."
+        },
+        {
+          "title": "Input Size",
+          "description": "Recognize n as a representation of how much data an algorithm needs to process."
+        },
+        {
+          "title": "Growth Rates",
+          "description": "Compare algorithms based on how their resource needs increase as the input becomes larger."
+        },
+        {
+          "title": "Constant Time",
+          "description": "Recognize O(1) operations whose cost does not grow with the size of the input."
+        },
+        {
+          "title": "Linear Time",
+          "description": "Recognize O(n) algorithms that may need to process each item once."
+        },
+        {
+          "title": "Logarithmic Time",
+          "description": "Understand O(log n) algorithms that repeatedly reduce the remaining problem size, such as binary search."
+        },
+        {
+          "title": "Quadratic Time",
+          "description": "Recognize O(n²) algorithms that often involve nested loops over the same collection."
+        },
+        {
+          "title": "Common Complexities",
+          "description": "Become familiar with common complexity categories such as O(1), O(log n), O(n), O(n log n), and O(n²)."
+        },
+        {
+          "title": "Dominant Terms",
+          "description": "Understand why Big O notation focuses on the fastest-growing part of an expression and ignores constant factors."
+        },
+        {
+          "title": "Time and Space",
+          "description": "Distinguish between time complexity, which estimates work performed, and space complexity, which estimates additional memory usage."
+        }
+      ],
+      "learningResources": [
+        {
+          "title": "OpenDSA: Asymptotic Analysis and Upper Bounds",
+          "url": "https://opendsa-server.cs.vt.edu/ODSA/Books/Everything/html/AnalAsymptotic.html",
+          "type": "Guide",
+          "description": "An educational module explaining growth rates, upper bounds, and Big O notation.",
+          "beginnerValue": "It introduces algorithm analysis carefully and includes examples that connect notation to practical performance."
+        },
+        {
+          "title": "CS50: Week 3 Algorithms",
+          "url": "https://cs50.harvard.edu/x/weeks/3/",
+          "type": "Video",
+          "description": "Harvard's free CS50 lesson introduces searching, sorting, recursion, and asymptotic notation.",
+          "beginnerValue": "It explains Big O notation in the context of algorithms that beginners can visualize and compare."
+        },
+        {
+          "title": "Khan Academy: Functions in Asymptotic Notation",
+          "url": "https://www.khanacademy.org/computing/computer-science/algorithms/asymptotic-notation/a/functions-in-asymptotic-notation",
+          "type": "Guide",
+          "description": "A free lesson comparing common mathematical growth rates used during algorithm analysis.",
+          "beginnerValue": "It helps learners recognize how common complexities relate to one another before analyzing code."
+        },
+        {
+          "title": "freeCodeCamp: Time Complexity - Big O Notation Course",
+          "url": "https://www.freecodecamp.org/news/learn-big-o-notation/",
+          "type": "Video",
+          "description": "A free course covering common time complexities, space complexity, binary search, and merge sort.",
+          "beginnerValue": "It uses diagrams and coding examples to make an abstract topic more approachable."
+        }
+      ]
+    },
+    {
+      "title": "Arrays",
+      "keyConcepts": [
+        {
+          "title": "Sequential Storage",
+          "description": "Understand that an array stores a sequence of elements in a defined order."
+        },
+        {
+          "title": "Indexes",
+          "description": "Access an array element using its numerical position, typically starting at index zero."
+        },
+        {
+          "title": "Array Length",
+          "description": "Determine how many elements are stored in an array."
+        },
+        {
+          "title": "Reading Elements",
+          "description": "Retrieve values efficiently when the index of an element is known."
+        },
+        {
+          "title": "Updating Elements",
+          "description": "Replace the value stored at a specific index."
+        },
+        {
+          "title": "Traversing Arrays",
+          "description": "Use a loop to process each element in order."
+        },
+        {
+          "title": "Insertion and Removal",
+          "description": "Understand why inserting or removing an element can require shifting other elements."
+        },
+        {
+          "title": "Fixed and Dynamic Arrays",
+          "description": "Recognize the difference between fixed-size arrays and resizable array structures such as dynamic arrays."
+        },
+        {
+          "title": "Operation Complexity",
+          "description": "Compare the typical costs of indexed access, searching, insertion, and deletion."
+        },
+        {
+          "title": "Array Use Cases",
+          "description": "Identify situations where ordered data and fast access by index make arrays a useful choice."
+        }
+      ],
+      "learningResources": [
+        {
+          "title": "VisuAlgo: Array",
+          "url": "https://visualgo.net/en/array",
+          "type": "Interactive Course",
+          "description": "An interactive visualization of array operations and the relationship between arrays and sorted arrays.",
+          "beginnerValue": "It allows learners to see how values are accessed, updated, inserted, and removed."
+        },
+        {
+          "title": "OpenDSA: Chapter Introduction to Lists",
+          "url": "https://opendsa-server.cs.vt.edu/ODSA/Books/Everything/html/ListIntro.html",
+          "type": "Guide",
+          "description": "An educational introduction to list structures and the differences between logical representations and physical implementations.",
+          "beginnerValue": "It prepares learners to compare array-based lists with linked lists and understand their tradeoffs."
+        },
+        {
+          "title": "CS50: Week 5 Data Structures",
+          "url": "https://cs50.harvard.edu/x/weeks/5/",
+          "type": "Video",
+          "description": "Harvard's free CS50 lesson explains foundational data structures and how their memory layouts affect performance.",
+          "beginnerValue": "It helps learners connect array concepts to later topics such as linked lists and hash tables."
+        },
+        {
+          "title": "freeCodeCamp: Data Structures Explained",
+          "url": "https://www.freecodecamp.org/news/learn-all-about-data-structures-used-in-computer-science/",
+          "type": "Video",
+          "description": "A free language-agnostic course introducing arrays and other important data structures.",
+          "beginnerValue": "It provides diagrams and examples without requiring expertise in a specific programming language."
+        }
+      ]
+    },
+    {
+      "title": "Linked Lists",
+      "keyConcepts": [
+        {
+          "title": "Nodes",
+          "description": "Understand that a linked list is built from individual nodes that store data."
+        },
+        {
+          "title": "Next References",
+          "description": "Recognize that each node connects to the next node through a reference or pointer."
+        },
+        {
+          "title": "Head Node",
+          "description": "Understand that the head reference identifies the first node in the list."
+        },
+        {
+          "title": "List Traversal",
+          "description": "Move from one node to the next to access or search the values stored in the list."
+        },
+        {
+          "title": "Node Insertion",
+          "description": "Insert a new node by updating the references between existing nodes."
+        },
+        {
+          "title": "Node Removal",
+          "description": "Remove a node by reconnecting the surrounding references."
+        },
+        {
+          "title": "Singly Linked Lists",
+          "description": "Understand a list structure where each node stores a reference to only the next node."
+        },
+        {
+          "title": "Doubly Linked Lists",
+          "description": "Recognize that a doubly linked list stores references to both the next and previous nodes."
+        },
+        {
+          "title": "Boundary Cases",
+          "description": "Handle operations involving an empty list or changes to the first and last nodes."
+        },
+        {
+          "title": "Array Tradeoffs",
+          "description": "Compare linked lists with arrays in terms of traversal, indexed access, memory usage, insertion, and deletion."
+        }
+      ],
+      "learningResources": [
+        {
+          "title": "VisuAlgo: Linked List, Stack, Queue, and Deque",
+          "url": "https://visualgo.net/en/list",
+          "type": "Interactive Course",
+          "description": "An interactive visualization showing linked-list nodes, references, insertion, removal, traversal, stacks, queues, and deques.",
+          "beginnerValue": "It makes pointer updates visible, which helps beginners understand operations that can be difficult to picture from code alone."
+        },
+        {
+          "title": "OpenDSA: Linked Lists",
+          "url": "https://opendsa-server.cs.vt.edu/ODSA/Books/Everything/html/ListLinked.html",
+          "type": "Guide",
+          "description": "An educational module explaining nodes, next references, dynamic allocation, and linked-list implementation.",
+          "beginnerValue": "It provides diagrams and implementation details while keeping the focus on core linked-list ideas."
+        },
+        {
+          "title": "CS50: Week 5 Data Structures",
+          "url": "https://cs50.harvard.edu/x/weeks/5/",
+          "type": "Video",
+          "description": "Harvard's CS50 lesson includes short videos and lecture materials on singly linked lists and doubly linked lists.",
+          "beginnerValue": "It explains why linked lists exist and demonstrates how they differ from arrays."
+        },
+        {
+          "title": "freeCodeCamp: Data Structures Handbook",
+          "url": "https://www.freecodecamp.org/news/data-structures-the-key-to-scalable-software/",
+          "type": "Guide",
+          "description": "A beginner-friendly handbook introducing arrays, linked lists, stacks, queues, trees, and graphs.",
+          "beginnerValue": "It reinforces the purpose and real-world relevance of linked lists through approachable explanations."
+        }
+      ]
+    },
+    {
+      "title": "Stacks and Queues",
+      "keyConcepts": [
+        {
+          "title": "Abstract Data Types",
+          "description": "Understand that stacks and queues describe rules for adding and removing values rather than one specific implementation."
+        },
+        {
+          "title": "Stack LIFO Order",
+          "description": "Recognize that a stack follows last-in, first-out behavior."
+        },
+        {
+          "title": "Push and Pop",
+          "description": "Add an item to the top of a stack and remove the most recently added item."
+        },
+        {
+          "title": "Stack Peek",
+          "description": "Inspect the item at the top of a stack without removing it."
+        },
+        {
+          "title": "Queue FIFO Order",
+          "description": "Recognize that a queue follows first-in, first-out behavior."
+        },
+        {
+          "title": "Enqueue and Dequeue",
+          "description": "Add an item to the back of a queue and remove the item at the front."
+        },
+        {
+          "title": "Queue Front",
+          "description": "Inspect the next queue item that would be removed."
+        },
+        {
+          "title": "Array Implementations",
+          "description": "Understand how arrays can store stack and queue values while tracking relevant positions."
+        },
+        {
+          "title": "Linked Implementations",
+          "description": "Understand how linked nodes can support efficient stack and queue operations."
+        },
+        {
+          "title": "Common Use Cases",
+          "description": "Recognize stacks in undo features and function calls, and queues in scheduling and task processing."
+        }
+      ],
+      "learningResources": [
+        {
+          "title": "VisuAlgo: Linked List, Stack, Queue, and Deque",
+          "url": "https://visualgo.net/en/list",
+          "type": "Interactive Course",
+          "description": "An interactive visualization for exploring linked lists, stacks, queues, and deques.",
+          "beginnerValue": "It visually demonstrates LIFO and FIFO behavior as learners add and remove values."
+        },
+        {
+          "title": "OpenDSA: Stacks",
+          "url": "https://opendsa-server.cs.vt.edu/ODSA/Books/Everything/html/StackArray.html",
+          "type": "Guide",
+          "description": "An educational module explaining stack terminology and array-based stack implementation.",
+          "beginnerValue": "It clearly connects stack operations such as push and pop to an underlying data structure."
+        },
+        {
+          "title": "CS50: Week 5 Data Structures",
+          "url": "https://cs50.harvard.edu/x/weeks/5/",
+          "type": "Video",
+          "description": "Harvard's CS50 lesson includes videos and lecture materials on stacks, queues, and other foundational structures.",
+          "beginnerValue": "It explains the concepts with concrete examples before learners attempt implementations."
+        },
+        {
+          "title": "freeCodeCamp: Learn Algorithms and Data Structures in Python",
+          "url": "https://www.freecodecamp.org/news/learn-algorithms-and-data-structures-in-python/",
+          "type": "Video",
+          "description": "A free beginner course covering linked lists, stacks, queues, recursion, searching, and sorting.",
+          "beginnerValue": "It gives learners a practical way to see stacks and queues implemented in a familiar programming language."
+        }
+      ]
+    },
+    {
+      "title": "Hash Maps",
+      "keyConcepts": [
+        {
+          "title": "Key-Value Pairs",
+          "description": "Understand that a hash map stores values that can be retrieved using associated keys."
+        },
+        {
+          "title": "Hash Functions",
+          "description": "Understand that a hash function transforms a key into an index used to locate stored data."
+        },
+        {
+          "title": "Buckets",
+          "description": "Recognize that a hash table uses storage locations, often called buckets or slots."
+        },
+        {
+          "title": "Insert Operations",
+          "description": "Store a key-value pair in the location determined by a hash function."
+        },
+        {
+          "title": "Lookup Operations",
+          "description": "Retrieve a stored value by hashing its key and checking the corresponding location."
+        },
+        {
+          "title": "Delete Operations",
+          "description": "Remove a key-value pair while preserving the behavior of later lookups."
+        },
+        {
+          "title": "Hash Collisions",
+          "description": "Understand that different keys can produce the same storage index."
+        },
+        {
+          "title": "Collision Resolution",
+          "description": "Recognize common strategies such as separate chaining and open addressing for handling collisions."
+        },
+        {
+          "title": "Average Complexity",
+          "description": "Understand why insertions, lookups, and deletions are commonly expected to take O(1) time on average."
+        },
+        {
+          "title": "Load Factor",
+          "description": "Recognize that hash-table performance can decline when too many values are stored relative to the number of available buckets."
+        }
+      ],
+      "learningResources": [
+        {
+          "title": "VisuAlgo: Hash Table",
+          "url": "https://visualgo.net/en/hashtable",
+          "type": "Interactive Course",
+          "description": "An interactive visualization of hashing, insertion, removal, searching, collisions, chaining, and open addressing.",
+          "beginnerValue": "It allows learners to see exactly what happens when multiple keys map to the same location."
+        },
+        {
+          "title": "OpenDSA: Introduction to Hashing",
+          "url": "https://opendsa-server.cs.vt.edu/ODSA/Books/Everything/html/HashIntro.html",
+          "type": "Guide",
+          "description": "An educational introduction to hash tables, search keys, storage locations, and hash functions.",
+          "beginnerValue": "It explains why hash maps are useful before introducing implementation details."
+        },
+        {
+          "title": "CS50: Week 5 Data Structures",
+          "url": "https://cs50.harvard.edu/x/weeks/5/",
+          "type": "Video",
+          "description": "Harvard's CS50 lesson includes lecture materials and short videos explaining hash tables.",
+          "beginnerValue": "It connects hash tables to arrays and linked lists, helping learners build on topics they already understand."
+        },
+        {
+          "title": "freeCodeCamp: What Is a Hash Map?",
+          "url": "https://www.freecodecamp.org/news/what-is-a-hash-map/",
+          "type": "Tutorial",
+          "description": "A practical guide explaining hash maps, common operations, time complexity, and a coding-problem example.",
+          "beginnerValue": "It reinforces the concept with approachable examples and explains both average-case and worst-case performance."
+        }
+      ]
+    },
+    {
+      "title": "Recursion",
+      "keyConcepts": [
+        {
+          "title": "Self-Calling Functions",
+          "description": "Understand that a recursive function solves part of a problem by calling itself."
+        },
+        {
+          "title": "Smaller Subproblems",
+          "description": "Break a larger problem into one or more smaller versions of the same problem."
+        },
+        {
+          "title": "Base Cases",
+          "description": "Define a stopping condition that returns a result without making another recursive call."
+        },
+        {
+          "title": "Recursive Cases",
+          "description": "Define how the function reduces the problem and continues toward a base case."
+        },
+        {
+          "title": "Progress Toward Termination",
+          "description": "Ensure that every recursive step moves closer to the stopping condition."
+        },
+        {
+          "title": "Call Stack",
+          "description": "Understand that each recursive call creates a new stack frame that waits for its result."
+        },
+        {
+          "title": "Tracing Calls",
+          "description": "Follow recursive calls forward and return values backward to understand execution order."
+        },
+        {
+          "title": "Infinite Recursion",
+          "description": "Recognize that missing or unreachable base cases can cause a program to exceed its call-stack limit."
+        },
+        {
+          "title": "Recursive Patterns",
+          "description": "Recognize recursion in tasks such as factorial calculations, tree traversal, divide-and-conquer algorithms, and nested structures."
+        },
+        {
+          "title": "Iteration Tradeoffs",
+          "description": "Compare recursive and iterative solutions based on readability, memory usage, and problem structure."
+        }
+      ],
+      "learningResources": [
+        {
+          "title": "OpenDSA: Introduction to Recursion",
+          "url": "https://opendsa-server.cs.vt.edu/ODSA/Books/Everything/html/RecIntro.html",
+          "type": "Guide",
+          "description": "An educational lesson introducing recursive functions as solutions that reduce problems into smaller subproblems.",
+          "beginnerValue": "It establishes the core mental model learners need before writing recursive code."
+        },
+        {
+          "title": "OpenDSA: Writing a Recursive Function",
+          "url": "https://opendsa-server.cs.vt.edu/ODSA/Books/Everything/html/Write.html",
+          "type": "Tutorial",
+          "description": "A guided lesson explaining how to design recursive solutions step by step.",
+          "beginnerValue": "It helps learners move from understanding the idea of recursion to writing their own functions."
+        },
+        {
+          "title": "OpenDSA: Recursion Practice Exercises",
+          "url": "https://opendsa-server.cs.vt.edu/ODSA/Books/Everything/html/CodeCompletionEx.html",
+          "type": "Interactive Course",
+          "description": "A collection of exercises for practicing recursive thinking and code completion.",
+          "beginnerValue": "Recursion becomes easier through repeated tracing and practice, and this resource provides a structured sequence of exercises."
+        },
+        {
+          "title": "CS50: Week 3 Algorithms",
+          "url": "https://cs50.harvard.edu/x/weeks/3/",
+          "type": "Video",
+          "description": "Harvard's free CS50 lesson introduces recursion alongside searching and sorting algorithms.",
+          "beginnerValue": "It demonstrates recursion in an algorithmic context rather than presenting it as an isolated syntax feature."
+        }
+      ]
+    },
+    {
+      "title": "Sorting",
+      "keyConcepts": [
+        {
+          "title": "Sorting Purpose",
+          "description": "Understand that sorting rearranges values or records into a defined order."
+        },
+        {
+          "title": "Comparison Operations",
+          "description": "Recognize that many sorting algorithms determine order by comparing pairs of values."
+        },
+        {
+          "title": "Swap Operations",
+          "description": "Understand how sorting algorithms move values into different positions."
+        },
+        {
+          "title": "Bubble Sort",
+          "description": "Understand a basic sorting algorithm that repeatedly swaps neighboring values that are out of order."
+        },
+        {
+          "title": "Selection Sort",
+          "description": "Understand a basic sorting algorithm that repeatedly selects the next smallest or largest value."
+        },
+        {
+          "title": "Insertion Sort",
+          "description": "Understand a sorting algorithm that places each new value into the correct position within an already sorted portion."
+        },
+        {
+          "title": "Merge Sort",
+          "description": "Understand a divide-and-conquer algorithm that splits data, sorts smaller sections, and merges the results."
+        },
+        {
+          "title": "Sorting Complexity",
+          "description": "Compare O(n²) beginner sorting algorithms with more efficient O(n log n) approaches such as merge sort."
+        },
+        {
+          "title": "Stable Sorting",
+          "description": "Recognize that a stable sorting algorithm preserves the original order of items with equal keys."
+        },
+        {
+          "title": "Algorithm Tradeoffs",
+          "description": "Understand that the best sorting choice can depend on the size, existing order, memory limits, and requirements of the data."
+        }
+      ],
+      "learningResources": [
+        {
+          "title": "VisuAlgo: Sorting",
+          "url": "https://visualgo.net/en/sorting",
+          "type": "Interactive Course",
+          "description": "An interactive visualization comparing bubble sort, selection sort, insertion sort, merge sort, quicksort, and other sorting algorithms.",
+          "beginnerValue": "It makes comparisons, swaps, and performance differences visible as each algorithm runs."
+        },
+        {
+          "title": "CS50: Week 3 Algorithms",
+          "url": "https://cs50.harvard.edu/x/weeks/3/",
+          "type": "Video",
+          "description": "Harvard's free CS50 lesson covers bubble sort, selection sort, merge sort, asymptotic notation, and recursion.",
+          "beginnerValue": "It introduces sorting algorithms in a clear progression from simpler approaches to more efficient ones."
+        },
+        {
+          "title": "OpenDSA: Introduction to Sorting",
+          "url": "https://opendsa-server.cs.vt.edu/ODSA/Books/Everything/html/InSort.html",
+          "type": "Guide",
+          "description": "An educational introduction explaining the sorting problem and why different sorting algorithms exist.",
+          "beginnerValue": "It provides context before learners study individual algorithms and their performance."
+        },
+        {
+          "title": "Khan Academy: Computer Science Algorithms",
+          "url": "https://www.khanacademy.org/computing/computer-science/algorithms",
+          "type": "Interactive Course",
+          "description": "A free algorithms unit covering selection sort, insertion sort, merge sort, recursion, binary search, and asymptotic notation.",
+          "beginnerValue": "It offers a structured sequence of lessons and exercises that connect sorting algorithms to broader CS concepts."
+        }
+      ]
+    },
+    {
+      "title": "Searching",
+      "keyConcepts": [
+        {
+          "title": "Search Problems",
+          "description": "Understand that a search algorithm attempts to find whether a target value exists and often where it is located."
+        },
+        {
+          "title": "Linear Search",
+          "description": "Check elements one at a time until the target is found or the collection ends."
+        },
+        {
+          "title": "Linear Complexity",
+          "description": "Understand why searching an unsorted array with linear search can require O(n) comparisons."
+        },
+        {
+          "title": "Sorted Data",
+          "description": "Recognize that some faster searching techniques require data to already be ordered."
+        },
+        {
+          "title": "Binary Search",
+          "description": "Find a target in sorted data by checking the middle element and repeatedly discarding half of the remaining search area."
+        },
+        {
+          "title": "Search Boundaries",
+          "description": "Track the low, high, and middle positions while narrowing a binary-search interval."
+        },
+        {
+          "title": "Logarithmic Complexity",
+          "description": "Understand why repeatedly halving a search space gives binary search an O(log n) time complexity."
+        },
+        {
+          "title": "Missing Values",
+          "description": "Return a clear result when the target does not exist in the collection."
+        },
+        {
+          "title": "Duplicate Values",
+          "description": "Recognize that additional logic may be needed when a search should find the first or last occurrence of a repeated value."
+        },
+        {
+          "title": "Search Tradeoffs",
+          "description": "Compare the simplicity of linear search with the speed and sorted-data requirement of binary search."
+        }
+      ],
+      "learningResources": [
+        {
+          "title": "OpenDSA: Searching in an Array",
+          "url": "https://opendsa-server.cs.vt.edu/ODSA/Books/Everything/html/BinarySearch.html",
+          "type": "Interactive Course",
+          "description": "An educational module comparing sequential search with binary search on sorted arrays.",
+          "beginnerValue": "It clearly explains why sorting data enables a faster search strategy."
+        },
+        {
+          "title": "CS50: Week 3 Algorithms",
+          "url": "https://cs50.harvard.edu/x/weeks/3/",
+          "type": "Video",
+          "description": "Harvard's free CS50 lesson covers linear search, binary search, sorting, recursion, and asymptotic notation.",
+          "beginnerValue": "It introduces searching with visual examples and directly compares the efficiency of different approaches."
+        },
+        {
+          "title": "freeCodeCamp: Binary Search Algorithm and Time Complexity Explained",
+          "url": "https://www.freecodecamp.org/news/binary-search-algorithm-and-time-complexity-explained/",
+          "type": "Tutorial",
+          "description": "A beginner-friendly guide comparing linear search with binary search and explaining their time complexities.",
+          "beginnerValue": "It provides step-by-step code examples and reinforces the requirement that binary-search input must be sorted."
+        },
+        {
+          "title": "Khan Academy: Computer Science Algorithms",
+          "url": "https://www.khanacademy.org/computing/computer-science/algorithms",
+          "type": "Interactive Course",
+          "description": "A free algorithms unit introducing binary search, sorting, recursion, and asymptotic notation.",
+          "beginnerValue": "It helps learners understand searching as part of a connected progression of foundational algorithm topics."
+        }
+      ]
+    }
+  ]
+}
