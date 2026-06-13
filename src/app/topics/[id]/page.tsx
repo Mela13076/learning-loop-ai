@@ -255,7 +255,7 @@ export default async function TopicPage({
                       <h2 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">
                         Session Notes
                       </h2>
-                      <p className="text-sm leading-relaxed text-muted-foreground">
+                      <p className="text-sm leading-relaxed text-foreground">
                         Review notes from prior study sessions. Open this section
                         to browse, edit, or remove saved notes.
                       </p>

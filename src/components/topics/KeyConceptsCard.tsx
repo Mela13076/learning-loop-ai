@@ -68,12 +68,12 @@ export function KeyConceptsCard({
       <details className="group">
         <summary className="flex cursor-pointer list-none items-start justify-between gap-3">
           <div className="space-y-2">
-            <h2 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">
+            <h2 className="font-semibold text-sm uppercase tracking-wider text-foreground">
               Key Concepts
             </h2>
             <p className="text-sm leading-relaxed text-muted-foreground">
               These are the key concepts you will need to understand for{" "}
-              <span className="font-medium text-foreground">{topicTitle}</span>.
+              <span className="font-medium text-primary">{topicTitle}</span>.
               Once you are comfortable with them, you will be in a better
               position to study and take quizzes on this topic.
             </p>

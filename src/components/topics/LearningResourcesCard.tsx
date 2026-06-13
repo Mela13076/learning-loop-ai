@@ -18,7 +18,7 @@ export function LearningResourcesCard({
             <h2 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">
               Learning Resources
             </h2>
-            <p className="text-sm leading-relaxed text-muted-foreground">
+            <p className="text-sm leading-relaxed text-foreground">
               These are a few resources to help you get started as you learn and
               practice these new concepts. The app is here to guide you in the
               right direction and help you test your knowledge, not replace the
