@@ -71,7 +71,9 @@ export default async function RootLayout({
     <ClerkProvider>
       <html
         lang="en"
-        className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} h-full antialiased ${themeMode === "dark" ? "dark" : ""}`}
+        data-theme={themeMode}
+        data-accent={accentColor}
         suppressHydrationWarning
       >
         <body className="min-h-full flex flex-col">
