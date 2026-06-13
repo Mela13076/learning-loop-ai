@@ -17,7 +17,7 @@ export function DashboardCard({
   return (
     <div
       className={cn(
-        "rounded-xl border border-border bg-card p-5",
+        "rounded-xl border border-primary/50 bg-card p-5",
         className
       )}
     >

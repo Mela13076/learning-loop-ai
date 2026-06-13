@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Neuton, Geist_Mono } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import { cookies } from "next/headers";
@@ -16,8 +16,9 @@ import {
 } from "@/lib/theme";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const neuton = Neuton({
+  weight: ["200", "300", "400", "700", "800"],
+  variable: "--font-sans",
   subsets: ["latin"],
 });
 
@@ -75,7 +76,7 @@ export default async function RootLayout({
     <ClerkProvider>
       <html
         lang="en"
-        className={`${geistSans.variable} ${geistMono.variable} h-full antialiased ${themeMode === "dark" ? "dark" : ""}`}
+        className={`${neuton.variable} ${geistMono.variable} h-full antialiased ${themeMode === "dark" ? "dark" : ""}`}
         data-theme={themeMode}
         data-accent={accentColor}
         suppressHydrationWarning

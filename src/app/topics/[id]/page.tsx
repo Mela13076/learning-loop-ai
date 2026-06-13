@@ -149,7 +149,7 @@ export default async function TopicPage({
   return (
     <div className="flex min-h-screen flex-col">
       {/* Nav */}
-      <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur">
+      <header className="sticky top-0 z-10 border-b border-primary/50 bg-background/80 backdrop-blur">
         <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2 font-bold">
             <span className="grid size-7 place-items-center rounded-md bg-primary text-sm text-primary-foreground">
@@ -222,7 +222,7 @@ export default async function TopicPage({
             </div>
 
             {/* Description */}
-            <div className="rounded-xl border border-border bg-card p-6">
+            <div className="rounded-xl border border-primary/50 bg-card p-6">
               <h2 className="mb-3 font-semibold text-sm uppercase tracking-wider text-muted-foreground">
                 Overview
               </h2>
@@ -231,7 +231,7 @@ export default async function TopicPage({
 
             {/* Session Notes */}
             {sessionNotes.length > 0 && (
-              <div className="rounded-xl border border-border bg-card p-6">
+              <div className="rounded-xl border border-primary/50 bg-card p-6">
                 <h2 className="mb-4 font-semibold text-sm uppercase tracking-wider text-muted-foreground">
                   Session Notes
                 </h2>
@@ -240,7 +240,7 @@ export default async function TopicPage({
             )}
 
             {/* AI Tutor Chat */}
-            <div id="ai-tutor" className="rounded-xl border border-border bg-card p-6">
+            <div id="ai-tutor" className="rounded-xl border border-primary/50 bg-card p-6">
               <h2 className="mb-4 font-semibold text-sm uppercase tracking-wider text-muted-foreground">
                 AI Tutor
               </h2>
@@ -273,7 +273,7 @@ export default async function TopicPage({
           {/* Sidebar — right column */}
           <div className="space-y-4">
             {/* Action buttons */}
-            <div className="rounded-xl border border-border bg-card p-5 space-y-3">
+            <div className="rounded-xl border border-primary/50 bg-card p-5 space-y-3">
               <h2 className="font-semibold text-sm">Start studying</h2>
 
               <Button asChild className="w-full">
@@ -294,7 +294,7 @@ export default async function TopicPage({
             </div>
 
             {/* Progress card */}
-            <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+            <div className="rounded-xl border border-primary/50 bg-card p-5 space-y-4">
               <h2 className="font-semibold text-sm">Your Progress</h2>
 
               <div className="flex items-center gap-2">
@@ -353,7 +353,7 @@ export default async function TopicPage({
             </div>
 
             {/* Path context */}
-            <div className="rounded-xl border border-border bg-card p-5">
+            <div className="rounded-xl border border-primary/50 bg-card p-5">
               <h2 className="mb-3 font-semibold text-sm">Learning Path</h2>
               <Link
                 href={`/paths/${topic.learningPath.id}`}

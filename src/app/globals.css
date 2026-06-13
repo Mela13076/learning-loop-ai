@@ -209,12 +209,12 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-primary/50 outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
   }
   html {
-    @apply font-sans;
+    @apply font-sans text-[25px] sm:text-[20px];
   }
 }
