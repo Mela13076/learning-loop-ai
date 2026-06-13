@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/topics/ProgressBar";
 import { KeyConceptsCard } from "@/components/topics/KeyConceptsCard";
 import { LearningResourcesCard } from "@/components/topics/LearningResourcesCard";
-import { AiTutorChat } from "@/components/ai/AiTutorChat";
+import { AiLearningCoach } from "@/components/ai/AiLearningCoach";
 import { QuizGeneratorButton } from "@/components/quiz/QuizGeneratorButton";
 import { SessionNotesList } from "@/components/topics/SessionNotesList";
 import type { ProgressStatus, Difficulty } from "@/generated/prisma/enums";
@@ -251,12 +251,18 @@ export default async function TopicPage({
               </div>
             )}
 
-            {/* AI Tutor Chat */}
-            <div id="ai-tutor" className="rounded-xl border border-primary/50 bg-card p-6">
+            <div
+              id="ai-learning-coach"
+              className="rounded-xl border border-primary/50 bg-card p-6"
+            >
               <h2 className="mb-4 font-semibold text-sm uppercase tracking-wider text-muted-foreground">
-                AI Tutor
+                AI Learning Coach
               </h2>
-              <AiTutorChat topicId={topic.id} topicTitle={topic.title} />
+              <AiLearningCoach
+                topicId={topic.id}
+                topicTitle={topic.title}
+                concepts={keyConcepts}
+              />
             </div>
 
             {/* Prev / Next navigation */}
@@ -299,7 +305,7 @@ export default async function TopicPage({
                 className="w-full"
                 asChild
               >
-                <a href="#ai-tutor">Ask AI Tutor</a>
+                <a href="#ai-learning-coach">Open AI Learning Coach</a>
               </Button>
 
               <QuizGeneratorButton topicId={topic.id} />

@@ -78,7 +78,6 @@ export default async function QuizResultsPage({
 
         <RecommendedNextStep
           topicId={currentTopic.id}
-          topicTitle={currentTopic.title}
           nextTopic={nextTopic}
           score={attempt.score}
         />
