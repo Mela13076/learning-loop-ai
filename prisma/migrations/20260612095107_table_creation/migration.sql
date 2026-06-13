@@ -22,7 +22,7 @@ CREATE TABLE "User" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "accentColor" TEXT NOT NULL DEFAULT 'teal',
-    "themeMode" TEXT NOT NULL DEFAULT 'dark',
+    "themeMode" TEXT NOT NULL DEFAULT 'light',
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );

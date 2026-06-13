@@ -85,7 +85,7 @@ export type AccentColor = (typeof ACCENT_OPTIONS)[number]["value"];
 export type ThemeMode = "dark" | "light";
 
 export const DEFAULT_ACCENT_COLOR: AccentColor = "teal";
-export const DEFAULT_THEME_MODE: ThemeMode = "dark";
+export const DEFAULT_THEME_MODE: ThemeMode = "light";
 
 export const ACCENT_VALUES = ACCENT_OPTIONS.map((option) => option.value);
 

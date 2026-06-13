@@ -17,14 +17,9 @@ export function ThemeScript({
   const script = `
     (() => {
       const root = document.documentElement;
-      const savedTheme = localStorage.getItem("learning-loop-theme-mode");
-      const savedAccent = localStorage.getItem("learning-loop-accent-color");
-      const themeMode = savedTheme === "light" || savedTheme === "dark" ? savedTheme : "${themeMode}";
-      const accentColor = savedAccent || "${accentColor}";
-
-      root.classList.toggle("dark", themeMode === "dark");
-      root.dataset.theme = themeMode;
-      root.dataset.accent = accentColor;
+      root.classList.toggle("dark", "${themeMode}" === "dark");
+      root.dataset.theme = "${themeMode}";
+      root.dataset.accent = "${accentColor}";
     })();
   `;
 

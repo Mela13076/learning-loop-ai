@@ -1,5 +1,6 @@
 import type { User as ClerkUser } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
+import { DEFAULT_ACCENT_COLOR, DEFAULT_THEME_MODE } from "@/lib/theme";
 
 function getClerkDisplayName(clerkUser: ClerkUser): string | null {
   return (
@@ -30,6 +31,8 @@ export async function syncClerkUser(clerkUser: ClerkUser) {
       clerkId: clerkUser.id,
       email,
       name: clerkName,
+      accentColor: DEFAULT_ACCENT_COLOR,
+      themeMode: DEFAULT_THEME_MODE,
     },
   });
 }

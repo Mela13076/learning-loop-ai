@@ -71,7 +71,7 @@ model User {
 
   // Theme preferences (PLANNING.md /settings). Defaults match the dark/teal preset.
   accentColor String @default("teal")
-  themeMode   String @default("dark")
+  themeMode   String @default("light")
 
   topicProgress  UserTopicProgress[]
   studySessions  StudySession[]

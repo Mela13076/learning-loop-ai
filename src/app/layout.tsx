@@ -54,17 +54,21 @@ export default async function RootLayout({
   const dbThemeMode = dbUser?.themeMode;
 
   let accentColor: AccentColor = DEFAULT_ACCENT_COLOR;
-  if (isAccentColor(dbAccentColor ?? "")) {
-    accentColor = dbAccentColor as AccentColor;
-  } else if (isAccentColor(cookieAccentColor ?? "")) {
-    accentColor = cookieAccentColor as AccentColor;
+  if (userId) {
+    if (isAccentColor(dbAccentColor ?? "")) {
+      accentColor = dbAccentColor as AccentColor;
+    } else if (isAccentColor(cookieAccentColor ?? "")) {
+      accentColor = cookieAccentColor as AccentColor;
+    }
   }
 
   let themeMode: ThemeMode = DEFAULT_THEME_MODE;
-  if (isThemeMode(dbThemeMode ?? "")) {
-    themeMode = dbThemeMode as ThemeMode;
-  } else if (isThemeMode(cookieThemeMode ?? "")) {
-    themeMode = cookieThemeMode as ThemeMode;
+  if (userId) {
+    if (isThemeMode(dbThemeMode ?? "")) {
+      themeMode = dbThemeMode as ThemeMode;
+    } else if (isThemeMode(cookieThemeMode ?? "")) {
+      themeMode = cookieThemeMode as ThemeMode;
+    }
   }
 
   return (
