@@ -238,7 +238,11 @@ export default async function TopicPage({
               <p className="text-base leading-relaxed">{topic.description}</p>
             </div>
 
-            <KeyConceptsCard concepts={keyConcepts} topicTitle={topic.title} />
+            <KeyConceptsCard
+              concepts={keyConcepts}
+              topicId={topic.id}
+              topicTitle={topic.title}
+            />
 
             <LearningResourcesCard resources={learningResources} />
 
