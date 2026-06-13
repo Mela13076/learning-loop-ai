@@ -237,17 +237,23 @@ export default async function DashboardPage() {
                 : "Pick a learning path to start studying."}
             </p>
           </div>
-          {lastSession?.topic ? (
-            <Button asChild className="shrink-0">
-              <Link href={`/topics/${lastSession.topic.id}`}>
-                Continue studying
-              </Link>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            {lastSession?.topic ? (
+              <Button asChild className="shrink-0">
+                <Link href={`/topics/${lastSession.topic.id}`}>
+                  Continue studying
+                </Link>
+              </Button>
+            ) : (
+              <Button asChild className="shrink-0">
+                <Link href="/paths">Browse learning paths</Link>
+              </Button>
+            )}
+
+            <Button asChild variant="outline" className="shrink-0">
+              <Link href="/timer">Open study timer</Link>
             </Button>
-          ) : (
-            <Button asChild className="shrink-0">
-              <Link href="/paths">Browse learning paths</Link>
-            </Button>
-          )}
+          </div>
         </div>
 
         {/* Stat row */}

@@ -9,14 +9,15 @@ import { syncClerkUser } from "@/lib/user";
 export default async function TimerPage({
   searchParams,
 }: {
-  searchParams: Promise<{ topic?: string }>;
+  searchParams: Promise<{ topic?: string; returnTo?: string }>;
 }) {
   const clerkUser = await currentUser();
   if (!clerkUser) redirect("/login");
 
   await syncClerkUser(clerkUser);
 
-  const { topic: initialTopicId } = await searchParams;
+  const { topic: initialTopicId, returnTo: returnToTopicId } =
+    await searchParams;
 
   // Fetch all topics with their learning path title
   const topicRows = await db.topic.findMany({
@@ -75,7 +76,11 @@ export default async function TimerPage({
           </p>
         </div>
 
-        <StudyTimer topics={topics} initialTopicId={initialTopicId} />
+        <StudyTimer
+          topics={topics}
+          initialTopicId={initialTopicId}
+          returnToTopicId={returnToTopicId}
+        />
       </main>
     </div>
   );

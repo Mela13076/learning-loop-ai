@@ -18,6 +18,7 @@ interface Topic {
 interface StudyTimerProps {
   topics: Topic[];
   initialTopicId?: string;
+  returnToTopicId?: string;
 }
 
 type TimerMode = "POMODORO" | "DEEP_WORK" | "CUSTOM";
@@ -38,6 +39,7 @@ interface ModeConfig {
   description: string;
   focusMinutes: number;
   breakMinutes: number;
+  bestFor: string;
 }
 
 const MODE_CONFIGS: Record<TimerMode, ModeConfig> = {
@@ -46,18 +48,24 @@ const MODE_CONFIGS: Record<TimerMode, ModeConfig> = {
     description: "25 min focus · 5 min break",
     focusMinutes: 25,
     breakMinutes: 5,
+    bestFor:
+      "best for shorter study sessions, review blocks, and active recall without mental fatigue",
   },
   DEEP_WORK: {
     label: "Deep Work",
     description: "50 min focus · 10 min break",
     focusMinutes: 50,
     breakMinutes: 10,
+    bestFor:
+      "best for coding, problem solving, and harder CS topics that need longer concentration",
   },
   CUSTOM: {
     label: "Custom",
     description: "Set your own times",
     focusMinutes: 30,
     breakMinutes: 5,
+    bestFor:
+      "best when you want full control over session length, including no-break study sessions",
   },
 };
 
@@ -71,8 +79,13 @@ function formatTime(seconds: number): string {
 // Component
 // ---------------------------------------------------------------------------
 
-export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
+export function StudyTimer({
+  topics,
+  initialTopicId,
+  returnToTopicId,
+}: StudyTimerProps) {
   const [mode, setMode] = useState<TimerMode>("POMODORO");
+  const [hoveredMode, setHoveredMode] = useState<TimerMode | null>(null);
   const [sessionState, setSessionState] = useState<SessionState>("idle");
   const [phase, setPhase] = useState<Phase>("focus");
   const [secondsLeft, setSecondsLeft] = useState(
@@ -132,6 +145,12 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
   useEffect(() => {
     if (secondsLeft === 0 && sessionState === "running") {
       if (phase === "focus") {
+        if (activeConfig.breakMinutes === 0) {
+          endedAtRef.current = new Date();
+          setPomodoroCount((c) => c + 1);
+          setSessionState("ended");
+          return;
+        }
         setPomodoroCount((c) => c + 1);
         setPhase("break");
         setSessionState("break");
@@ -246,6 +265,8 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
 
   const elapsedMinutes = Math.floor(elapsedSeconds / 60);
   const selectedTopic = topics.find((t) => t.id === selectedTopicId);
+  const returnToTopic = topics.find((t) => t.id === returnToTopicId);
+  const modeHint = MODE_CONFIGS[hoveredMode ?? mode];
 
   // Ring progress
   const totalSeconds =
@@ -272,6 +293,10 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
               <button
                 key={m}
                 onClick={() => setMode(m)}
+                onMouseEnter={() => setHoveredMode(m)}
+                onMouseLeave={() => setHoveredMode(null)}
+                onFocus={() => setHoveredMode(m)}
+                onBlur={() => setHoveredMode(null)}
                 className={[
                   "rounded-xl border-2 p-4 text-left transition-all",
                   mode === m
@@ -285,6 +310,12 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
                 </div>
               </button>
             ))}
+          </div>
+          <div className="mt-3 rounded-lg border border-primary/20 bg-[var(--accent-soft)]/60 px-4 py-3 text-sm text-muted-foreground">
+            <span className="font-medium text-foreground">
+              {modeHint.label}
+            </span>{" "}
+            is {modeHint.bestFor}.
           </div>
 
           {mode === "CUSTOM" && (
@@ -310,14 +341,17 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
                 </label>
                 <input
                   type="number"
-                  min={1}
+                  min={0}
                   max={60}
                   value={customBreak}
                   onChange={(e) =>
-                    setCustomBreak(Math.max(1, Number(e.target.value)))
+                    setCustomBreak(Math.max(0, Number(e.target.value)))
                   }
                   className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
                 />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Use <span className="font-medium text-foreground">0</span> for no breaks.
+                </p>
               </div>
             </div>
           )}
@@ -363,6 +397,17 @@ export function StudyTimer({ topics, initialTopicId }: StudyTimerProps) {
   if (sessionState === "ended") {
     return (
       <div className="max-w-xl mx-auto space-y-6 text-center">
+        {saveState === "saved" && returnToTopic && (
+          <div className="flex justify-start">
+            <a
+              href={`/topics/${returnToTopic.id}`}
+              className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-black shadow-sm transition-colors hover:bg-gray-100"
+            >
+              ← Back to Topic
+            </a>
+          </div>
+        )}
+
         {/* Session complete card */}
         <div className="rounded-2xl border-2 border-primary bg-[var(--accent-soft)] p-8">
           <div className="text-4xl mb-3">🎉</div>

@@ -277,7 +277,7 @@ export default async function TopicPage({
               <h2 className="font-semibold text-sm">Start studying</h2>
 
               <Button asChild className="w-full">
-                <Link href={`/timer?topic=${topic.id}`}>
+                <Link href={`/timer?topic=${topic.id}&returnTo=${topic.id}`}>
                   Start Study Timer
                 </Link>
               </Button>
