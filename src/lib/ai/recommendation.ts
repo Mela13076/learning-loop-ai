@@ -3,6 +3,7 @@ import { isMockMode, AI_MODEL } from "./config"
 
 export interface RecommendationInput {
   currentTopicTitle: string
+  isMastered: boolean
   learningPathTitle: string
   masteryScore: number
   recentQuizScores: number[]
@@ -20,7 +21,7 @@ export async function getRecommendation(
 ): Promise<RecommendationResponse> {
   if (isMockMode) {
     const action: RecommendationResponse["action"] =
-      input.masteryScore >= 80
+      input.isMastered
         ? "next_topic"
         : input.masteryScore >= 50
           ? "review"
@@ -51,6 +52,7 @@ export async function getRecommendation(
 - Current topic: ${input.currentTopicTitle}
 - Learning path: ${input.learningPathTitle}
 - Mastery score: ${input.masteryScore}%
+- Mastered: ${input.isMastered ? "yes" : "no"}
 ${avgScore !== null ? `- Average quiz score: ${avgScore}%` : ""}
 ${input.weakTopics.length ? `- Weak areas: ${input.weakTopics.join(", ")}` : ""}
 
@@ -64,7 +66,8 @@ Return a JSON object with this exact shape and nothing else:
 Rules:
 - "continue" if mastery < 60 (more practice on current topic needed)
 - "review" if mastery 60–79 (strengthen weak areas before moving on)
-- "next_topic" if mastery >= 80 (ready to advance)`
+- "next_topic" only if the topic is mastered
+- if the topic is not mastered, never return "next_topic"`
 
   const message = await client.messages.create({
     model: AI_MODEL,

@@ -3,6 +3,12 @@ import { z } from "zod"
 import { db } from "@/lib/db"
 import { getAnswerFeedback } from "@/lib/ai/feedback"
 import { AI_MODEL } from "@/lib/ai/config"
+import { parseKeyConcepts } from "@/lib/topic-content"
+import {
+  computeTopicMastery,
+  isPassingFinalMasteryQuiz,
+  sanitizeCoveredConceptTitles,
+} from "@/lib/topic-progress"
 
 const bodySchema = z.object({
   answers: z.array(
@@ -39,7 +45,9 @@ export async function POST(
       where: { id: quizId },
       include: {
         questions: { orderBy: { orderIndex: "asc" } },
-        topic: { select: { id: true, title: true } },
+        topic: {
+          select: { id: true, title: true, estimatedMinutes: true, keyConcepts: true },
+        },
       },
     }),
   ])
@@ -135,48 +143,71 @@ export async function POST(
   const existing = await db.userTopicProgress.findUnique({
     where: { userId_topicId: { userId: dbUser.id, topicId: quiz.topicId } },
   })
+  const topicConceptTitles = parseKeyConcepts(quiz.topic.keyConcepts).map(
+    (concept) => concept.title
+  )
+  const coveredConceptTitles = sanitizeCoveredConceptTitles({
+    coveredConceptTitles: existing?.coveredConceptTitles ?? [],
+    validConceptTitles: topicConceptTitles,
+  })
+  const passedFinalQuiz =
+    (existing?.finalQuizPassed ?? false) ||
+    isPassingFinalMasteryQuiz({
+      difficulty: quiz.difficulty,
+      questionCount: quiz.questionCount,
+      scorePercent,
+    })
+  const finalQuizPassedAt =
+    !(existing?.finalQuizPassed ?? false) && passedFinalQuiz ? new Date() : existing?.finalQuizPassedAt ?? null
 
   if (existing) {
     const newCompleted = existing.quizzesCompleted + 1
     const newAvg =
       (existing.averageQuizScore * existing.quizzesCompleted + scorePercent) /
       newCompleted
-    const masteryScore = Math.min(
-      100,
-      newAvg * 0.5 +
-        Math.min(existing.totalStudyMinutes / 60, 100) * 0.3 +
-        Math.min(newCompleted * 10, 100) * 0.2
-    )
+    const mastery = computeTopicMastery({
+      averageQuizScore: newAvg,
+      coveredConceptCount: coveredConceptTitles.length,
+      finalQuizPassed: passedFinalQuiz,
+      quizzesCompleted: newCompleted,
+      topicEstimatedMinutes: quiz.topic.estimatedMinutes,
+      totalConceptCount: topicConceptTitles.length,
+      totalStudyMinutes: existing.totalStudyMinutes,
+    })
     await db.userTopicProgress.update({
       where: { userId_topicId: { userId: dbUser.id, topicId: quiz.topicId } },
       data: {
+        coveredConceptTitles,
+        finalQuizPassed: passedFinalQuiz,
+        finalQuizPassedAt,
         quizzesCompleted: newCompleted,
         averageQuizScore: Math.round(newAvg),
-        masteryScore: Math.round(masteryScore),
-        status:
-          masteryScore >= 80
-            ? "MASTERED"
-            : masteryScore >= 40
-              ? "IN_PROGRESS"
-              : "NEEDS_REVIEW",
+        masteryScore: mastery.masteryScore,
+        status: mastery.status,
         lastStudiedAt: new Date(),
       },
     })
   } else {
-    const masteryScore = Math.min(100, scorePercent * 0.5)
+    const mastery = computeTopicMastery({
+      averageQuizScore: scorePercent,
+      coveredConceptCount: 0,
+      finalQuizPassed: passedFinalQuiz,
+      quizzesCompleted: 1,
+      topicEstimatedMinutes: quiz.topic.estimatedMinutes,
+      totalConceptCount: topicConceptTitles.length,
+      totalStudyMinutes: 0,
+    })
     await db.userTopicProgress.create({
       data: {
         userId: dbUser.id,
         topicId: quiz.topicId,
+        coveredConceptTitles: [],
+        finalQuizPassed: passedFinalQuiz,
+        finalQuizPassedAt,
         quizzesCompleted: 1,
         averageQuizScore: scorePercent,
-        masteryScore: Math.round(masteryScore),
-        status:
-          masteryScore >= 80
-            ? "MASTERED"
-            : masteryScore >= 40
-              ? "IN_PROGRESS"
-              : "NEEDS_REVIEW",
+        masteryScore: mastery.masteryScore,
+        status: mastery.status,
         lastStudiedAt: new Date(),
       },
     })

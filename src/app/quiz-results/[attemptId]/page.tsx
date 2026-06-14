@@ -43,6 +43,12 @@ export default async function QuizResultsPage({
   )
 
   const currentTopic = attempt.quiz.topic
+  const progress = await db.userTopicProgress.findUnique({
+    where: {
+      userId_topicId: { userId: dbUser.id, topicId: currentTopic.id },
+    },
+    select: { masteryScore: true, status: true },
+  })
 
   // Find next topic in the learning path
   const nextTopic = await db.topic.findFirst({
@@ -77,9 +83,10 @@ export default async function QuizResultsPage({
         />
 
         <RecommendedNextStep
+          isMastered={progress?.status === "MASTERED"}
+          masteryScore={Math.round(progress?.masteryScore ?? 0)}
           topicId={currentTopic.id}
           nextTopic={nextTopic}
-          score={attempt.score}
         />
       </main>
     </div>

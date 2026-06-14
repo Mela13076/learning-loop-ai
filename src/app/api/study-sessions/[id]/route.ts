@@ -1,6 +1,11 @@
 import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
+import { parseKeyConcepts } from "@/lib/topic-content";
+import {
+  computeTopicMastery,
+  sanitizeCoveredConceptTitles,
+} from "@/lib/topic-progress";
 
 export async function GET(
   _request: Request,
@@ -85,6 +90,58 @@ export async function DELETE(
   if (session.userId !== dbUser.id) return Response.json({ error: "Forbidden" }, { status: 403 })
 
   await db.studySession.delete({ where: { id } })
+
+  if (session.topicId) {
+    const [existingProgress, topic, remainingSessions] = await Promise.all([
+      db.userTopicProgress.findUnique({
+        where: {
+          userId_topicId: { userId: dbUser.id, topicId: session.topicId },
+        },
+      }),
+      db.topic.findUnique({
+        where: { id: session.topicId },
+        select: { estimatedMinutes: true, keyConcepts: true },
+      }),
+      db.studySession.aggregate({
+        where: {
+          userId: dbUser.id,
+          topicId: session.topicId,
+        },
+        _sum: { durationMinutes: true },
+      }),
+    ])
+
+    if (existingProgress && topic) {
+      const topicConceptTitles = parseKeyConcepts(topic.keyConcepts).map(
+        (concept) => concept.title
+      )
+      const coveredConceptTitles = sanitizeCoveredConceptTitles({
+        coveredConceptTitles: existingProgress.coveredConceptTitles,
+        validConceptTitles: topicConceptTitles,
+      })
+      const mastery = computeTopicMastery({
+        averageQuizScore: existingProgress.averageQuizScore,
+        coveredConceptCount: coveredConceptTitles.length,
+        finalQuizPassed: existingProgress.finalQuizPassed,
+        quizzesCompleted: existingProgress.quizzesCompleted,
+        topicEstimatedMinutes: topic.estimatedMinutes,
+        totalConceptCount: topicConceptTitles.length,
+        totalStudyMinutes: remainingSessions._sum.durationMinutes ?? 0,
+      })
+
+      await db.userTopicProgress.update({
+        where: {
+          userId_topicId: { userId: dbUser.id, topicId: session.topicId },
+        },
+        data: {
+          coveredConceptTitles,
+          masteryScore: mastery.masteryScore,
+          status: mastery.status,
+          totalStudyMinutes: remainingSessions._sum.durationMinutes ?? 0,
+        },
+      })
+    }
+  }
 
   return new Response(null, { status: 204 })
 }

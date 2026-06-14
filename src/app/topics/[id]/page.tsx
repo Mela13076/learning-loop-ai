@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/topics/ProgressBar";
 import { KeyConceptsCard } from "@/components/topics/KeyConceptsCard";
 import { LearningResourcesCard } from "@/components/topics/LearningResourcesCard";
+import { MasteryBreakdownInfo } from "@/components/topics/MasteryBreakdownInfo";
 import { AiLearningCoach } from "@/components/ai/AiLearningCoach";
 import { QuizGeneratorButton } from "@/components/quiz/QuizGeneratorButton";
 import { SessionNotesList } from "@/components/topics/SessionNotesList";
@@ -16,6 +17,10 @@ import {
   parseKeyConcepts,
   parseLearningResources,
 } from "@/lib/topic-content";
+import {
+  getStudyMinutesTarget,
+  summarizeTopicMastery,
+} from "@/lib/topic-progress";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -154,6 +159,20 @@ export default async function TopicPage({
   const diffBadge = DIFFICULTY_BADGE[topic.difficulty];
   const keyConcepts = parseKeyConcepts(topic.keyConcepts);
   const learningResources = parseLearningResources(topic.learningResources);
+  const keyConceptTitleSet = new Set(keyConcepts.map((concept) => concept.title));
+  const initialCoveredConceptTitles = (progress?.coveredConceptTitles ?? []).filter(
+    (title) => keyConceptTitleSet.has(title)
+  );
+  const masterySummary = summarizeTopicMastery({
+    averageQuizScore: progress?.averageQuizScore ?? 0,
+    coveredConceptCount: initialCoveredConceptTitles.length,
+    finalQuizPassed: progress?.finalQuizPassed ?? false,
+    quizzesCompleted: progress?.quizzesCompleted ?? 0,
+    topicEstimatedMinutes: topic.estimatedMinutes,
+    totalConceptCount: keyConcepts.length,
+    totalStudyMinutes: progress?.totalStudyMinutes ?? 0,
+  });
+  const studyMinutesTarget = getStudyMinutesTarget(topic.estimatedMinutes);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -240,6 +259,7 @@ export default async function TopicPage({
 
             <KeyConceptsCard
               concepts={keyConcepts}
+              initialCoveredConceptTitles={initialCoveredConceptTitles}
               topicId={topic.id}
               topicTitle={topic.title}
             />
@@ -318,7 +338,10 @@ export default async function TopicPage({
 
             {/* Progress card */}
             <div className="rounded-xl border border-primary/50 bg-card p-5 space-y-4">
-              <h2 className="font-semibold text-sm">Your Progress</h2>
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="font-semibold text-sm">Your Progress</h2>
+                <MasteryBreakdownInfo breakdown={masterySummary.breakdown} />
+              </div>
 
               <div className="flex items-center gap-2">
                 <span className={`size-2 rounded-full ${statusCfg.dotClass}`} />
@@ -335,6 +358,16 @@ export default async function TopicPage({
                       <span>{Math.round(progress.masteryScore)}%</span>
                     </div>
                     <ProgressBar value={progress.masteryScore} />
+                    {!progress.finalQuizPassed && (
+                      <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                        Reach 100% by passing one advanced 15-question final
+                        quiz with a score of at least 80%.
+                      </p>
+                    )}
+                    <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                      Study time reaches full credit for this topic at about{" "}
+                      {formatMinutes(studyMinutesTarget)}.
+                    </p>
                   </div>
 
                   <div className="grid grid-cols-2 gap-3 text-center">

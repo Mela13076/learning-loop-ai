@@ -34,11 +34,12 @@ export async function POST(request: Request) {
 
   const progress = await db.userTopicProgress.findUnique({
     where: { userId_topicId: { userId: dbUser.id, topicId: topic.id } },
-    select: { masteryScore: true },
+    select: { masteryScore: true, status: true },
   })
 
   const input = {
     currentTopicTitle: topic.title,
+    isMastered: progress?.status === "MASTERED",
     learningPathTitle: topic.learningPath.title,
     masteryScore: Math.round(progress?.masteryScore ?? 0),
     recentQuizScores: parsed.data.recentQuizScores,

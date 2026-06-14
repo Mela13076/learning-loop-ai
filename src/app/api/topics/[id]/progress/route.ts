@@ -47,6 +47,9 @@ export async function GET(
         totalStudyMinutes: 0,
         quizzesCompleted: 0,
         averageQuizScore: 0,
+        coveredConceptTitles: [],
+        finalQuizPassed: false,
+        finalQuizPassedAt: null,
         lastStudiedAt: null,
       },
     });

@@ -1,6 +1,11 @@
 import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
+import { parseKeyConcepts } from "@/lib/topic-content";
+import {
+  computeTopicMastery,
+  sanitizeCoveredConceptTitles,
+} from "@/lib/topic-progress";
 
 // ---------------------------------------------------------------------------
 // Validation
@@ -44,11 +49,19 @@ export async function POST(request: Request) {
     parsed.data;
 
   // If a topicId is provided, verify it exists (don't trust client)
+  let topicConceptTitles: string[] = [];
+
   if (topicId) {
-    const topic = await db.topic.findUnique({ where: { id: topicId } });
+    const topic = await db.topic.findUnique({
+      where: { id: topicId },
+      select: { id: true, estimatedMinutes: true, keyConcepts: true },
+    });
     if (!topic) {
       return Response.json({ error: "Topic not found" }, { status: 404 });
     }
+    topicConceptTitles = parseKeyConcepts(topic.keyConcepts).map(
+      (concept) => concept.title
+    );
   }
 
   const session = await db.studySession.create({
@@ -69,28 +82,51 @@ export async function POST(request: Request) {
   // Update topic progress when a session has an associated topic
   if (topicId) {
     const sessionEndedAt = new Date(endedAt);
-    await db.$transaction([
-      db.userTopicProgress.upsert({
-        where: { userId_topicId: { userId: dbUser.id, topicId } },
-        create: {
-          userId: dbUser.id,
-          topicId,
-          status: "IN_PROGRESS",
-          totalStudyMinutes: durationMinutes,
-          lastStudiedAt: sessionEndedAt,
-        },
-        update: {
-          totalStudyMinutes: { increment: durationMinutes },
-          lastStudiedAt: sessionEndedAt,
-        },
-      }),
-      // Promote NOT_STARTED → IN_PROGRESS. No-op if status is already
-      // IN_PROGRESS, NEEDS_REVIEW, or MASTERED (those are preserved).
-      db.userTopicProgress.updateMany({
-        where: { userId: dbUser.id, topicId, status: "NOT_STARTED" },
-        data: { status: "IN_PROGRESS" },
-      }),
-    ]);
+    const existingProgress = await db.userTopicProgress.findUnique({
+      where: { userId_topicId: { userId: dbUser.id, topicId } },
+    });
+    const coveredConceptTitles = sanitizeCoveredConceptTitles({
+      coveredConceptTitles: existingProgress?.coveredConceptTitles ?? [],
+      validConceptTitles: topicConceptTitles,
+    });
+    const mastery = computeTopicMastery({
+      averageQuizScore: existingProgress?.averageQuizScore ?? 0,
+      coveredConceptCount: coveredConceptTitles.length,
+      finalQuizPassed: existingProgress?.finalQuizPassed ?? false,
+      quizzesCompleted: existingProgress?.quizzesCompleted ?? 0,
+      topicEstimatedMinutes: topic.estimatedMinutes,
+      totalConceptCount: topicConceptTitles.length,
+      totalStudyMinutes:
+        (existingProgress?.totalStudyMinutes ?? 0) + durationMinutes,
+    });
+
+    await db.userTopicProgress.upsert({
+      where: { userId_topicId: { userId: dbUser.id, topicId } },
+      create: {
+        userId: dbUser.id,
+        topicId,
+        averageQuizScore: existingProgress?.averageQuizScore ?? 0,
+        coveredConceptTitles,
+        finalQuizPassed: existingProgress?.finalQuizPassed ?? false,
+        finalQuizPassedAt: existingProgress?.finalQuizPassedAt ?? null,
+        lastStudiedAt: sessionEndedAt,
+        masteryScore: mastery.masteryScore,
+        quizzesCompleted: existingProgress?.quizzesCompleted ?? 0,
+        status: mastery.status,
+        totalStudyMinutes:
+          (existingProgress?.totalStudyMinutes ?? 0) + durationMinutes,
+      },
+      update: {
+        coveredConceptTitles,
+        finalQuizPassed: existingProgress?.finalQuizPassed ?? false,
+        finalQuizPassedAt: existingProgress?.finalQuizPassedAt ?? null,
+        lastStudiedAt: sessionEndedAt,
+        masteryScore: mastery.masteryScore,
+        status: mastery.status,
+        totalStudyMinutes:
+          (existingProgress?.totalStudyMinutes ?? 0) + durationMinutes,
+      },
+    });
   }
 
   return Response.json({ session }, { status: 201 });
