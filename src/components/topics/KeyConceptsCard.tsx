@@ -1,66 +1,62 @@
 "use client";
 
 import { CheckCircle2, ChevronDown, Circle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import type { KeyConcept } from "@/lib/topic-content";
 
 interface KeyConceptsCardProps {
   concepts: KeyConcept[];
+  initialCoveredConceptTitles: string[];
   topicId: string;
   topicTitle: string;
 }
 
 export function KeyConceptsCard({
   concepts,
+  initialCoveredConceptTitles,
   topicId,
   topicTitle,
 }: KeyConceptsCardProps) {
-  const [completedConcepts, setCompletedConcepts] = useState<string[]>([]);
-
-  useEffect(() => {
-    const savedValue = window.localStorage.getItem(
-      `topic-key-concepts:${topicId}`
-    );
-
-    if (!savedValue) {
-      setCompletedConcepts([]);
-      return;
-    }
-
-    try {
-      const parsedValue = JSON.parse(savedValue);
-      if (Array.isArray(parsedValue)) {
-        const validTitles = new Set(concepts.map((concept) => concept.title));
-        setCompletedConcepts(
-          parsedValue.filter(
-            (title): title is string =>
-              typeof title === "string" && validTitles.has(title)
-          )
-        );
-        return;
-      }
-    } catch {
-      // Ignore malformed local storage data and reset to an empty checklist.
-    }
-
-    setCompletedConcepts([]);
-  }, [concepts, topicId]);
+  const router = useRouter();
+  const [isRefreshing, startRefresh] = useTransition();
+  const [completedConcepts, setCompletedConcepts] = useState<string[]>(
+    initialCoveredConceptTitles
+  );
+  const [pendingTitle, setPendingTitle] = useState<string | null>(null);
 
   if (concepts.length === 0) return null;
 
-  function toggleConcept(title: string) {
-    setCompletedConcepts((current) => {
-      const next = current.includes(title)
-        ? current.filter((conceptTitle) => conceptTitle !== title)
-        : [...current, title];
+  async function toggleConcept(title: string) {
+    const isCompleted = completedConcepts.includes(title);
+    const next = isCompleted
+      ? completedConcepts.filter((conceptTitle) => conceptTitle !== title)
+      : [...completedConcepts, title];
 
-      window.localStorage.setItem(
-        `topic-key-concepts:${topicId}`,
-        JSON.stringify(next)
-      );
+    setCompletedConcepts(next);
+    setPendingTitle(title);
 
-      return next;
-    });
+    try {
+      const response = await fetch(`/api/topics/${topicId}/concepts`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          completed: !isCompleted,
+        }),
+      });
+
+      if (!response.ok) {
+        setCompletedConcepts(completedConcepts);
+        return;
+      }
+
+      startRefresh(() => {
+        router.refresh();
+      });
+    } finally {
+      setPendingTitle(null);
+    }
   }
 
   return (
@@ -95,8 +91,13 @@ export function KeyConceptsCard({
                 type="button"
                 onClick={() => toggleConcept(concept.title)}
                 aria-pressed={completedConcepts.includes(concept.title)}
-                aria-label={`Mark ${concept.title} as covered`}
-                className="mt-0.5 shrink-0 rounded-full text-primary transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                aria-label={
+                  completedConcepts.includes(concept.title)
+                    ? `Mark ${concept.title} as not covered`
+                    : `Mark ${concept.title} as covered`
+                }
+                disabled={pendingTitle === concept.title || isRefreshing}
+                className="mt-0.5 shrink-0 rounded-full text-primary transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-50"
               >
                 {completedConcepts.includes(concept.title) ? (
                   <CheckCircle2 className="size-5" />

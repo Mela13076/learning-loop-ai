@@ -1,22 +1,24 @@
 import Link from "next/link"
 
 interface RecommendedNextStepProps {
+  isMastered: boolean
+  masteryScore: number
   topicId: string
   nextTopic: { id: string; title: string } | null
-  score: number
 }
 
 export function RecommendedNextStep({
+  isMastered,
+  masteryScore,
   topicId,
   nextTopic,
-  score,
 }: RecommendedNextStepProps) {
   const suggestion =
-    score >= 80
+    isMastered
       ? nextTopic
         ? `You're ready to move on to ${nextTopic.title}.`
         : "You've mastered this topic!"
-      : score >= 40
+      : masteryScore >= 40
         ? "Consider reviewing this topic or using the AI Learning Coach."
         : "Try reviewing the topic and retaking the quiz."
 
@@ -47,7 +49,7 @@ export function RecommendedNextStep({
           Open AI Learning Coach
         </Link>
 
-        {nextTopic && (
+        {isMastered && nextTopic && (
           <Link
             href={`/topics/${nextTopic.id}`}
             className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90"
