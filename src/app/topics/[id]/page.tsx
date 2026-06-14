@@ -229,25 +229,49 @@ export default async function TopicPage({
           <span className="text-primary font-medium">{topic.title}</span>
         </nav>
 
+        <section className="mb-8 space-y-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span
+              className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${diffBadge.className}`}
+            >
+              {diffBadge.label}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              ~{topic.estimatedMinutes} min
+            </span>
+          </div>
+
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <h1 className="text-3xl font-bold tracking-tight">{topic.title}</h1>
+
+            <div className="flex items-center justify-between gap-4 lg:justify-end">
+              {prevTopic ? (
+                <Link
+                  href={`/topics/${prevTopic.id}`}
+                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  ← {prevTopic.title}
+                </Link>
+              ) : (
+                <span />
+              )}
+              {nextTopic ? (
+                <Link
+                  href={`/topics/${nextTopic.id}`}
+                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  {nextTopic.title} →
+                </Link>
+              ) : (
+                <span />
+              )}
+            </div>
+          </div>
+        </section>
+
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Main content — left two columns */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Title & meta */}
-            <div>
-              <div className="flex flex-wrap items-center gap-2 mb-3">
-                <span
-                  className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${diffBadge.className}`}
-                >
-                  {diffBadge.label}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  ~{topic.estimatedMinutes} min
-                </span>
-              </div>
-              <h1 className="text-3xl font-bold tracking-tight">
-                {topic.title}
-              </h1>
-            </div>
 
             {/* Description */}
             <div className="rounded-xl border border-primary/50 bg-card p-6">
@@ -289,28 +313,6 @@ export default async function TopicPage({
                 </details>
               </section>
             )}
-
-            {/* Prev / Next navigation */}
-            <div className="flex items-center justify-between gap-4 pt-2">
-              {prevTopic ? (
-                <Link
-                  href={`/topics/${prevTopic.id}`}
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
-                  ← {prevTopic.title}
-                </Link>
-              ) : (
-                <span />
-              )}
-              {nextTopic && (
-                <Link
-                  href={`/topics/${nextTopic.id}`}
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
-                  {nextTopic.title} →
-                </Link>
-              )}
-            </div>
           </div>
 
           {/* Sidebar — right column */}
