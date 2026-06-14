@@ -50,6 +50,7 @@ export async function POST(request: Request) {
 
   // If a topicId is provided, verify it exists (don't trust client)
   let topicConceptTitles: string[] = [];
+  let topicEstimatedMinutes = 0;
 
   if (topicId) {
     const topic = await db.topic.findUnique({
@@ -59,6 +60,7 @@ export async function POST(request: Request) {
     if (!topic) {
       return Response.json({ error: "Topic not found" }, { status: 404 });
     }
+    topicEstimatedMinutes = topic.estimatedMinutes;
     topicConceptTitles = parseKeyConcepts(topic.keyConcepts).map(
       (concept) => concept.title
     );
@@ -94,7 +96,7 @@ export async function POST(request: Request) {
       coveredConceptCount: coveredConceptTitles.length,
       finalQuizPassed: existingProgress?.finalQuizPassed ?? false,
       quizzesCompleted: existingProgress?.quizzesCompleted ?? 0,
-      topicEstimatedMinutes: topic.estimatedMinutes,
+      topicEstimatedMinutes,
       totalConceptCount: topicConceptTitles.length,
       totalStudyMinutes:
         (existingProgress?.totalStudyMinutes ?? 0) + durationMinutes,

@@ -2,7 +2,6 @@ import { auth } from "@clerk/nextjs/server"
 import { z } from "zod"
 import { db } from "@/lib/db"
 import { getRecommendation } from "@/lib/ai/recommendation"
-import { AI_MODEL } from "@/lib/ai/config"
 
 const bodySchema = z.object({
   topicId: z.string().min(1),
@@ -28,7 +27,9 @@ export async function POST(request: Request) {
 
   const topic = await db.topic.findUnique({
     where: { id: parsed.data.topicId },
-    include: { learningPath: { select: { title: true } } },
+    include: {
+      learningPath: { select: { title: true } },
+    },
   })
   if (!topic) return Response.json({ error: "Topic not found" }, { status: 404 })
 
@@ -46,7 +47,25 @@ export async function POST(request: Request) {
     weakTopics: parsed.data.weakTopics,
   }
 
-  const recommendation = await getRecommendation(input)
+  const recommendation = getRecommendation(input)
+
+  const nextTopic =
+    recommendation.action === "next_topic"
+      ? await db.topic.findFirst({
+          where: {
+            learningPathId: topic.learningPathId,
+            orderIndex: { gt: topic.orderIndex },
+          },
+          orderBy: { orderIndex: "asc" },
+          select: { id: true },
+        })
+      : null
+
+  const response = {
+    ...recommendation,
+    recommendedTopicId:
+      recommendation.action === "next_topic" ? (nextTopic?.id ?? "") : "",
+  }
 
   await db.aiInteraction.create({
     data: {
@@ -54,10 +73,10 @@ export async function POST(request: Request) {
       topicId: topic.id,
       interactionType: "RECOMMENDATION",
       prompt: JSON.stringify(input),
-      response: JSON.stringify(recommendation),
-      modelUsed: AI_MODEL,
+      response: JSON.stringify(response),
+      modelUsed: "rule-based",
     },
   })
 
-  return Response.json(recommendation)
+  return Response.json(response)
 }

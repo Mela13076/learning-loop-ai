@@ -6,7 +6,7 @@ This project is a Next.js application with external dependencies on:
 
 - Clerk for authentication
 - PostgreSQL for persistence
-- Anthropic for real AI mode
+- Gemini for real AI mode
 
 A successful deployment needs hosting, database configuration, auth configuration, and environment variable setup to agree with each other.
 
@@ -17,7 +17,7 @@ You need:
 - a production host for the Next.js app
 - a production PostgreSQL database
 - a Clerk application configured for the deployed domain
-- an Anthropic API key if production will use `AI_MODE=real`
+- a Gemini API key if production will use `AI_MODE=real`
 
 ## Required Environment Variables
 
@@ -31,7 +31,7 @@ These values need to exist in production:
 - `NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL`
 - `DATABASE_URL`
 - `DIRECT_URL`
-- `ANTHROPIC_API_KEY`
+- `GEMINI_API_KEY`
 - `AI_MODE`
 - `AI_MODEL`
 
@@ -74,7 +74,7 @@ For live model-backed behavior:
 
 ```env
 AI_MODE=real
-AI_MODEL=claude-haiku-4-5-20251001
+AI_MODEL=gemini-2.5-flash-lite
 ```
 
 ## Build And Release Flow
@@ -140,7 +140,7 @@ Before deploying, make sure the host can:
 
 - reach the production database
 - reach Clerk
-- reach Anthropic if `AI_MODE=real`
+- reach Gemini API if `AI_MODE=real`
 
 ## Recommended Pre-Deploy Checklist
 
@@ -181,7 +181,7 @@ Cause:
 
 - CLI tasks need a direct DB connection in this setup
 
-### Using `AI_MODE=real` without `ANTHROPIC_API_KEY`
+### Using `AI_MODE=real` without `GEMINI_API_KEY`
 
 Symptoms:
 

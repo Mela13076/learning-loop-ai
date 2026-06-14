@@ -71,18 +71,112 @@ type CoachActionPayload = {
   selectedAnswer?: string
 }
 
+type CoachLessonResponse = Extract<LearningCoachResponse, { type: "lesson" }>
+
 type ContentSegment =
   | { type: "text"; value: string }
   | { type: "code"; language: string; value: string }
 
+const COACH_CACHE_STORAGE_KEY = "learning-loop-ai-coach-cache"
+const CACHEABLE_COACH_ACTIONS = ["start", "explain", "example"] as const
+
+type CacheableCoachAction = (typeof CACHEABLE_COACH_ACTIONS)[number]
+type CoachLessonCache = Record<string, CoachLessonResponse>
+
+function isCacheableCoachAction(
+  action: CoachActionPayload["action"]
+): action is CacheableCoachAction {
+  return CACHEABLE_COACH_ACTIONS.includes(action as CacheableCoachAction)
+}
+
+function buildCoachCacheKey(
+  topicId: string,
+  conceptTitle: string,
+  action: CacheableCoachAction
+): string {
+  return `${topicId}::${conceptTitle}::${action}`
+}
+
+function readCoachLessonCache(): CoachLessonCache {
+  if (typeof window === "undefined") {
+    return {}
+  }
+
+  try {
+    const raw = window.localStorage.getItem(COACH_CACHE_STORAGE_KEY)
+    if (!raw) {
+      return {}
+    }
+
+    const parsed = JSON.parse(raw) as CoachLessonCache
+    return parsed && typeof parsed === "object" ? parsed : {}
+  } catch {
+    return {}
+  }
+}
+
+function getCachedCoachLesson(
+  topicId: string,
+  conceptTitle: string,
+  action: CacheableCoachAction
+): CoachLessonResponse | null {
+  const cache = readCoachLessonCache()
+  return cache[buildCoachCacheKey(topicId, conceptTitle, action)] ?? null
+}
+
+function writeCoachLessonCache(
+  topicId: string,
+  conceptTitle: string,
+  action: CacheableCoachAction,
+  response: CoachLessonResponse
+): void {
+  if (typeof window === "undefined") {
+    return
+  }
+
+  const cache = readCoachLessonCache()
+  cache[buildCoachCacheKey(topicId, conceptTitle, action)] = response
+  window.localStorage.setItem(COACH_CACHE_STORAGE_KEY, JSON.stringify(cache))
+}
+
+function decodeHtmlEntities(value: string): string {
+  return value
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&amp;/g, "&")
+}
+
+function renderInlineMarkdown(text: string): React.ReactNode[] {
+  const parts = text.split(/(`[^`]+`)/g)
+
+  return parts.filter(Boolean).map((part, index) => {
+    if (part.startsWith("`") && part.endsWith("`") && part.length >= 2) {
+      return (
+        <code
+          key={`code-${index}`}
+          className="rounded bg-black/10 px-1.5 py-0.5 font-mono text-[0.95em] dark:bg-white/10"
+        >
+          {part.slice(1, -1)}
+        </code>
+      )
+    }
+
+    return <span key={`text-${index}`}>{part}</span>
+  })
+}
+
 function parseContent(content: string): ContentSegment[] {
+  const normalizedContent = decodeHtmlEntities(content)
   const pattern = /```(\w+)?\n([\s\S]*?)```/g
   const segments: ContentSegment[] = []
   let lastIndex = 0
   let match: RegExpExecArray | null
 
-  while ((match = pattern.exec(content)) !== null) {
-    const before = content.slice(lastIndex, match.index).trim()
+  while ((match = pattern.exec(normalizedContent)) !== null) {
+    const before = normalizedContent.slice(lastIndex, match.index).trim()
     if (before) {
       segments.push({ type: "text", value: before })
     }
@@ -96,12 +190,12 @@ function parseContent(content: string): ContentSegment[] {
     lastIndex = pattern.lastIndex
   }
 
-  const after = content.slice(lastIndex).trim()
+  const after = normalizedContent.slice(lastIndex).trim()
   if (after) {
     segments.push({ type: "text", value: after })
   }
 
-  return segments.length > 0 ? segments : [{ type: "text", value: content }]
+  return segments.length > 0 ? segments : [{ type: "text", value: normalizedContent }]
 }
 
 function RichContent({ content }: { content: string }) {
@@ -117,7 +211,7 @@ function RichContent({ content }: { content: string }) {
                 key={`${index}-${paragraphIndex}`}
                 className="whitespace-pre-wrap text-foreground"
               >
-                {paragraph}
+                {renderInlineMarkdown(paragraph)}
               </p>
             ))}
           </div>
@@ -301,10 +395,23 @@ export function AiLearningCoach({
   const [error, setError] = useState<string | null>(null)
   const [sessionComplete, setSessionComplete] = useState(false)
 
-  async function runCoachAction(
+async function runCoachAction(
     concept: KeyConcept,
     payload: CoachActionPayload
   ): Promise<void> {
+    if (isCacheableCoachAction(payload.action)) {
+      const cachedLesson = getCachedCoachLesson(topicId, concept.title, payload.action)
+      if (cachedLesson) {
+        setResponse(cachedLesson)
+        setCurrentQuiz(null)
+        setQuizHint(null)
+        setSelectedAnswer("")
+        setSessionComplete(false)
+        setError(null)
+        return
+      }
+    }
+
     setLoading(true)
     setError(null)
 
@@ -339,6 +446,12 @@ export function AiLearningCoach({
           ...prev,
           [concept.title]: (prev[concept.title] ?? 0) + 1,
         }))
+      } else {
+        setCurrentQuiz(null)
+        setSelectedAnswer("")
+        if (isCacheableCoachAction(payload.action)) {
+          writeCoachLessonCache(topicId, concept.title, payload.action, data)
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong")
