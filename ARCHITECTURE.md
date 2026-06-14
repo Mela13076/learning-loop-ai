@@ -28,7 +28,7 @@ The core user loop is:
 - shadcn/ui
 - Clerk for auth
 - Prisma 7 with PostgreSQL
-- Anthropic-backed AI service layer with mock/real mode
+- Gemini-backed AI service layer with mock/real mode
 
 ## Project Structure
 
@@ -312,7 +312,7 @@ Critical variables:
 - Clerk keys
 - `DATABASE_URL`
 - `DIRECT_URL`
-- `ANTHROPIC_API_KEY`
+- `GEMINI_API_KEY`
 - `AI_MODE`
 - `AI_MODEL`
 

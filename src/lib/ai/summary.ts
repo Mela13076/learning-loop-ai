@@ -1,5 +1,5 @@
-import Anthropic from "@anthropic-ai/sdk"
-import { isMockMode, AI_MODEL } from "./config"
+import { isMockMode } from "./config"
+import { generateJson } from "./client"
 
 export interface SummaryInput {
   topicTitle: string
@@ -36,8 +36,6 @@ export async function generateSessionSummary(
 ): Promise<SummaryResponse> {
   if (isMockMode) return MOCK_RESPONSE
 
-  const client = new Anthropic()
-
   const userContent = `Session data:
 - Topic: ${input.topicTitle}
 - Learning path: ${input.learningPathTitle}
@@ -55,16 +53,12 @@ Return a JSON object with this exact shape and nothing else:
   "recommendedNext": "one sentence on what to study next"
 }`
 
-  const message = await client.messages.create({
-    model: AI_MODEL,
-    max_tokens: 512,
-    system:
-      "You generate study session summaries. Return only valid JSON — no markdown fences, no preamble, no explanation.",
-    messages: [{ role: "user", content: userContent }],
+  const text = await generateJson({
+    prompt: userContent,
+    systemInstruction:
+      "You generate study session summaries. Return only valid JSON with no markdown fences, preamble, or extra explanation.",
+    maxOutputTokens: 512,
   })
-
-  const text =
-    message.content[0]?.type === "text" ? message.content[0].text.trim() : ""
 
   try {
     const parsed = JSON.parse(text) as Partial<SummaryResponse>

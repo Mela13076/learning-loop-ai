@@ -1,7 +1,7 @@
 import "server-only"
 
-import Anthropic from "@anthropic-ai/sdk"
-import { AI_MODEL, isMockMode } from "./config"
+import { isMockMode } from "./config"
+import { generateJson } from "./client"
 import { getMockConceptFlow, getMockQuizForIndex } from "./mock-learning-coach"
 import type {
   LearningCoachContext,
@@ -10,8 +10,6 @@ import type {
   LearningCoachResponse,
   StoredCoachQuiz,
 } from "./coach-types"
-
-const client = isMockMode ? null : new Anthropic()
 
 function lessonNextActions(
   lessonType: LearningCoachLessonResponse["lessonType"]
@@ -93,10 +91,6 @@ async function createRealLesson(
   context: LearningCoachContext,
   lessonType: "intro" | "explanation" | "example"
 ): Promise<LearningCoachLessonResponse> {
-  if (!client) {
-    throw new Error("Anthropic client unavailable")
-  }
-
   const lessonInstructions: Record<typeof lessonType, string> = {
     intro:
       "Give a short, learner-friendly concept introduction in 2 to 4 sentences. Keep it compact and motivating, and do not turn it into a quiz yet.",
@@ -127,30 +121,17 @@ Rules:
   "content": "string"
 }`
 
-  const message = await client.messages.create({
-    model: AI_MODEL,
-    max_tokens: 900,
-    system: systemPrompt,
-    messages: [
-      {
-        role: "user",
-        content: `Create a ${lessonType} response for ${context.conceptTitle}.`,
-      },
-    ],
+  const text = await generateJson({
+    prompt: `Create a ${lessonType} response for ${context.conceptTitle}.`,
+    systemInstruction: systemPrompt,
+    maxOutputTokens: 900,
   })
-
-  const text =
-    message.content[0].type === "text" ? message.content[0].text.trim() : "{}"
   const parsed = parseTextResponse(text)
 
   return createLessonResponse(lessonType, parsed.title, parsed.content)
 }
 
 async function createRealQuiz(context: LearningCoachContext): Promise<StoredCoachQuiz> {
-  if (!client) {
-    throw new Error("Anthropic client unavailable")
-  }
-
   const systemPrompt = `You are an AI Learning Coach for Learning Loop AI.
 Create one multiple-choice quiz question for a learner studying a single concept.
 
@@ -179,20 +160,11 @@ Rules:
   "incorrectFeedback": "string"
 }`
 
-  const message = await client.messages.create({
-    model: AI_MODEL,
-    max_tokens: 1200,
-    system: systemPrompt,
-    messages: [
-      {
-        role: "user",
-        content: `Generate one quiz question for ${context.conceptTitle}.`,
-      },
-    ],
+  const text = await generateJson({
+    prompt: `Generate one quiz question for ${context.conceptTitle}.`,
+    systemInstruction: systemPrompt,
+    maxOutputTokens: 1200,
   })
-
-  const text =
-    message.content[0].type === "text" ? message.content[0].text.trim() : "{}"
   return parseQuizResponse(text)
 }
 
@@ -247,7 +219,7 @@ export async function createLearningCoachResponse(input: {
     }
   }
 
-  const lessonType = action === "start" ? "intro" : action
+  const lessonType = action === "start" ? "intro" : action === "explain" ? "explanation" : action
   return {
     response: await createRealLesson(context, lessonType),
   }

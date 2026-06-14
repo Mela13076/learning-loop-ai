@@ -161,7 +161,7 @@ Users can also save appearance preferences:
 - Prisma 7
 - PostgreSQL
 - Clerk
-- Anthropic SDK
+- Google Gen AI SDK
 
 ## Running The Project Locally
 
@@ -189,7 +189,7 @@ Required environment variables:
 - `NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL`
 - `DATABASE_URL`
 - `DIRECT_URL`
-- `ANTHROPIC_API_KEY`
+- `GEMINI_API_KEY`
 - `AI_MODE`
 - `AI_MODEL`
 
@@ -319,12 +319,12 @@ In mock mode, the app returns realistic hardcoded AI responses for the coach, qu
 AI_MODE=real
 ```
 
-Use this when you want to test actual Anthropic-backed responses.
+Use this when you want to test actual Gemini-backed responses.
 
 Default model:
 
 ```env
-AI_MODEL=claude-haiku-4-5-20251001
+AI_MODEL=gemini-2.5-flash-lite
 ```
 
 ## Core Data Model

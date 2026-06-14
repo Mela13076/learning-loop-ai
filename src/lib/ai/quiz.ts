@@ -1,5 +1,5 @@
-import Anthropic from "@anthropic-ai/sdk"
-import { isMockMode, AI_MODEL } from "./config"
+import { isMockMode } from "./config"
+import { generateJson } from "./client"
 
 export type QuizDifficulty = "beginner" | "intermediate" | "advanced"
 export type QuizQuestionType = "multiple_choice" | "short_answer" | "mixed"
@@ -101,7 +101,7 @@ function getMockQuiz(input: QuizInput): GeneratedQuiz {
 }
 
 // ---------------------------------------------------------------------------
-// Real Anthropic implementation
+// Real Gemini implementation
 // ---------------------------------------------------------------------------
 
 const DIFFICULTY_GUIDANCE: Record<QuizDifficulty, string> = {
@@ -121,8 +121,6 @@ const TYPE_GUIDANCE: Record<QuizQuestionType, string> = {
 }
 
 async function getRealQuiz(input: QuizInput): Promise<GeneratedQuiz> {
-  const client = new Anthropic()
-
   const systemPrompt = `You are a quiz generator for a CS learning platform. Generate exactly ${input.questionCount} quiz questions about "${input.topicTitle}" (from the "${input.learningPathTitle}" learning path).
 
 Difficulty guidance: ${DIFFICULTY_GUIDANCE[input.difficulty]}
@@ -149,20 +147,11 @@ Rules:
 - orderIndex starts at 1 and increments by 1
 - explanations must be clear and helpful for a learner who got the question wrong`
 
-  const message = await client.messages.create({
-    model: AI_MODEL,
-    max_tokens: 4096,
-    system: systemPrompt,
-    messages: [
-      {
-        role: "user",
-        content: `Generate ${input.questionCount} ${input.difficulty} quiz questions about ${input.topicTitle}.`,
-      },
-    ],
+  const text = await generateJson({
+    prompt: `Generate ${input.questionCount} ${input.difficulty} quiz questions about ${input.topicTitle}.`,
+    systemInstruction: systemPrompt,
+    maxOutputTokens: 4096,
   })
-
-  const text =
-    message.content[0].type === "text" ? message.content[0].text.trim() : "{}"
 
   const parsed = JSON.parse(text) as GeneratedQuiz
   if (!Array.isArray(parsed.questions)) {

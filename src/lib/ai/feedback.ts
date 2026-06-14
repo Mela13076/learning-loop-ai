@@ -1,5 +1,5 @@
-import Anthropic from "@anthropic-ai/sdk"
-import { isMockMode, AI_MODEL } from "./config"
+import { isMockMode } from "./config"
+import { generateJson } from "./client"
 
 export interface FeedbackInput {
   questionText: string
@@ -28,8 +28,6 @@ function getMockFeedback(): FeedbackResponse {
 async function getRealFeedback(
   input: FeedbackInput
 ): Promise<FeedbackResponse> {
-  const client = new Anthropic()
-
   const systemPrompt = `You are a fair quiz grader for a CS learning platform. Evaluate the student's answer.
 
 Topic: ${input.topicTitle}
@@ -49,20 +47,11 @@ Rules:
   "score": 0 | 0.5 | 1
 }`
 
-  const message = await client.messages.create({
-    model: AI_MODEL,
-    max_tokens: 512,
-    system: systemPrompt,
-    messages: [
-      {
-        role: "user",
-        content: `Student answer: ${input.userAnswer}`,
-      },
-    ],
+  const text = await generateJson({
+    prompt: `Student answer: ${input.userAnswer}`,
+    systemInstruction: systemPrompt,
+    maxOutputTokens: 512,
   })
-
-  const text =
-    message.content[0].type === "text" ? message.content[0].text.trim() : "{}"
 
   return JSON.parse(text) as FeedbackResponse
 }
