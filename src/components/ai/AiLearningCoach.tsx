@@ -176,6 +176,7 @@ function CoachLessonCard({
             variant={action === "finish-session" ? "outline" : "secondary"}
             onClick={() => onAction(action)}
             disabled={loading}
+            className="w-full whitespace-normal sm:w-auto"
           >
             {ACTION_LABELS[action]}
           </Button>
@@ -260,7 +261,11 @@ function CoachQuizCard({
       </div>
 
       <div className="mt-5 flex flex-wrap gap-2">
-        <Button onClick={onSubmit} disabled={loading || !selectedAnswer}>
+        <Button
+          onClick={onSubmit}
+          disabled={loading || !selectedAnswer}
+          className="w-full whitespace-normal sm:w-auto"
+        >
           Submit Answer
         </Button>
         {response.nextActions.map((action) => (
@@ -269,6 +274,7 @@ function CoachQuizCard({
             variant="outline"
             onClick={() => onAction(action)}
             disabled={loading}
+            className="w-full whitespace-normal sm:w-auto"
           >
             {ACTION_LABELS[action]}
           </Button>
@@ -455,7 +461,7 @@ export function AiLearningCoach({
           example, and quiz you.
         </p>
 
-        <div className="mt-5 flex flex-wrap gap-2">
+        <div className="mt-5 grid gap-2 sm:flex sm:flex-wrap">
           {concepts.map((concept) => {
             const isActive = selectedConcept?.title === concept.title
             return (
@@ -464,6 +470,7 @@ export function AiLearningCoach({
                 variant={isActive ? "default" : "outline"}
                 onClick={() => void handleSelectConcept(concept)}
                 disabled={loading}
+                className="h-auto w-full justify-start whitespace-normal px-4 py-3 text-left sm:w-auto sm:justify-center"
               >
                 {isActive ? `Learning ${concept.title}` : `Learn ${concept.title}`}
               </Button>

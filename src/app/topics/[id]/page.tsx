@@ -188,7 +188,7 @@ export default async function TopicPage({
           <div className="flex items-center gap-3 sm:gap-4">
             <Link
               href="/dashboard"
-              className="hidden sm:block text-sm text-muted-foreground hover:text-primary transition-colors"
+              className="text-sm text-muted-foreground transition-colors hover:text-primary"
             >
               Dashboard
             </Link>

@@ -215,6 +215,6 @@
     @apply bg-background text-foreground;
   }
   html {
-    @apply font-sans text-[25px] sm:text-[20px];
+    @apply font-sans text-[16px] sm:text-[18px];
   }
 }

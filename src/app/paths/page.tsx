@@ -46,7 +46,7 @@ export default async function PathsPage() {
           <div className="flex items-center gap-3 sm:gap-4">
             <Link
               href="/dashboard"
-              className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
               Dashboard
             </Link>
