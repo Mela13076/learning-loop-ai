@@ -108,27 +108,58 @@ export function StudyTimer({
   // Timestamps recorded at session start/end — not state so they don't trigger re-renders
   const startedAtRef = useRef<Date | null>(null);
   const endedAtRef = useRef<Date | null>(null);
+  const phaseRef = useRef<Phase>("focus");
+  const secondsLeftRef = useRef(MODE_CONFIGS.POMODORO.focusMinutes * 60);
 
   const activeConfig: ModeConfig =
     mode === "CUSTOM"
       ? { ...MODE_CONFIGS.CUSTOM, focusMinutes: customFocus, breakMinutes: customBreak }
       : MODE_CONFIGS[mode];
+  const focusSeconds = activeConfig.focusMinutes * 60;
+  const breakSeconds = activeConfig.breakMinutes * 60;
 
-  // Sync secondsLeft when mode/custom values change and we're idle
   useEffect(() => {
-    if (sessionState === "idle") {
-      setSecondsLeft(activeConfig.focusMinutes * 60);
-      setPhase("focus");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, customFocus, customBreak, sessionState]);
+    phaseRef.current = phase;
+    secondsLeftRef.current = secondsLeft;
+  }, [phase, secondsLeft]);
 
   // Countdown tick
   useEffect(() => {
     if (sessionState === "running") {
       intervalRef.current = setInterval(() => {
-        setSecondsLeft((prev) => (prev <= 1 ? 0 : prev - 1));
         setElapsedSeconds((prev) => prev + 1);
+        const currentSeconds = secondsLeftRef.current;
+
+        if (currentSeconds > 1) {
+          const nextSeconds = currentSeconds - 1;
+          secondsLeftRef.current = nextSeconds;
+          setSecondsLeft(nextSeconds);
+          return;
+        }
+
+        if (phaseRef.current === "focus") {
+          setPomodoroCount((count) => count + 1);
+
+          if (breakSeconds === 0) {
+            endedAtRef.current = new Date();
+            secondsLeftRef.current = 0;
+            setSecondsLeft(0);
+            setSessionState("ended");
+            return;
+          }
+
+          phaseRef.current = "break";
+          secondsLeftRef.current = breakSeconds;
+          setPhase("break");
+          setSessionState("break");
+          setSecondsLeft(breakSeconds);
+          return;
+        }
+
+        phaseRef.current = "focus";
+        secondsLeftRef.current = focusSeconds;
+        setPhase("focus");
+        setSecondsLeft(focusSeconds);
       }, 1000);
     } else {
       if (intervalRef.current) {
@@ -139,42 +170,49 @@ export function StudyTimer({
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
+  }, [breakSeconds, focusSeconds, sessionState]);
+
+  const syncIdleTimerState = useCallback((nextFocusMinutes: number) => {
+    if (sessionState !== "idle") {
+      return;
+    }
+
+    phaseRef.current = "focus";
+    secondsLeftRef.current = nextFocusMinutes * 60;
+    setPhase("focus");
+    setSecondsLeft(nextFocusMinutes * 60);
   }, [sessionState]);
 
-  // Phase transition when timer hits zero
-  useEffect(() => {
-    if (secondsLeft === 0 && sessionState === "running") {
-      if (phase === "focus") {
-        if (activeConfig.breakMinutes === 0) {
-          endedAtRef.current = new Date();
-          setPomodoroCount((c) => c + 1);
-          setSessionState("ended");
-          return;
-        }
-        setPomodoroCount((c) => c + 1);
-        setPhase("break");
-        setSessionState("break");
-        setSecondsLeft(activeConfig.breakMinutes * 60);
-      } else {
-        setPhase("focus");
-        setSessionState("running");
-        setSecondsLeft(activeConfig.focusMinutes * 60);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [secondsLeft]);
+  const handleModeChange = useCallback((nextMode: TimerMode) => {
+    setMode(nextMode);
+    const nextFocusMinutes =
+      nextMode === "CUSTOM" ? customFocus : MODE_CONFIGS[nextMode].focusMinutes;
+    syncIdleTimerState(nextFocusMinutes);
+  }, [customFocus, syncIdleTimerState]);
+
+  const handleCustomFocusChange = useCallback((value: number) => {
+    const nextFocus = Math.max(1, value);
+    setCustomFocus(nextFocus);
+    syncIdleTimerState(nextFocus);
+  }, [syncIdleTimerState]);
+
+  const handleCustomBreakChange = useCallback((value: number) => {
+    setCustomBreak(Math.max(0, value));
+  }, []);
 
   const handleStart = useCallback(() => {
     startedAtRef.current = new Date();
     endedAtRef.current = null;
+    phaseRef.current = "focus";
+    secondsLeftRef.current = focusSeconds;
     setSessionState("running");
     setPhase("focus");
-    setSecondsLeft(activeConfig.focusMinutes * 60);
+    setSecondsLeft(focusSeconds);
     setElapsedSeconds(0);
     setPomodoroCount(0);
     setSaveState("idle");
     setSaveError("");
-  }, [activeConfig.focusMinutes]);
+  }, [focusSeconds]);
 
   const handlePause = useCallback(() => setSessionState("paused"), []);
   const handleResume = useCallback(() => setSessionState("running"), []);
@@ -182,6 +220,7 @@ export function StudyTimer({
 
   const handleEndSession = useCallback(() => {
     endedAtRef.current = new Date();
+    secondsLeftRef.current = 0;
     setSessionState("ended");
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -192,9 +231,11 @@ export function StudyTimer({
   const handleReset = useCallback(() => {
     startedAtRef.current = null;
     endedAtRef.current = null;
+    phaseRef.current = "focus";
+    secondsLeftRef.current = focusSeconds;
     setSessionState("idle");
     setPhase("focus");
-    setSecondsLeft(activeConfig.focusMinutes * 60);
+    setSecondsLeft(focusSeconds);
     setElapsedSeconds(0);
     setPomodoroCount(0);
     setNotes("");
@@ -202,7 +243,7 @@ export function StudyTimer({
     setSaveError("");
     setSummaryState("idle");
     setSummaryData(null);
-  }, [activeConfig.focusMinutes]);
+  }, [focusSeconds]);
 
   const handleSave = useCallback(async () => {
     if (!startedAtRef.current || !endedAtRef.current) return;
@@ -292,7 +333,7 @@ export function StudyTimer({
             {(Object.keys(MODE_CONFIGS) as TimerMode[]).map((m) => (
               <button
                 key={m}
-                onClick={() => setMode(m)}
+                onClick={() => handleModeChange(m)}
                 onMouseEnter={() => setHoveredMode(m)}
                 onMouseLeave={() => setHoveredMode(null)}
                 onFocus={() => setHoveredMode(m)}
@@ -329,9 +370,7 @@ export function StudyTimer({
                   min={1}
                   max={120}
                   value={customFocus}
-                  onChange={(e) =>
-                    setCustomFocus(Math.max(1, Number(e.target.value)))
-                  }
+                  onChange={(e) => handleCustomFocusChange(Number(e.target.value))}
                   className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
                 />
               </div>
@@ -344,9 +383,7 @@ export function StudyTimer({
                   min={0}
                   max={60}
                   value={customBreak}
-                  onChange={(e) =>
-                    setCustomBreak(Math.max(0, Number(e.target.value)))
-                  }
+                  onChange={(e) => handleCustomBreakChange(Number(e.target.value))}
                   className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
                 />
                 <p className="mt-1 text-xs text-muted-foreground">

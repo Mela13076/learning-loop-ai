@@ -93,7 +93,7 @@ export function QuizResultsSummary({
             Areas to Review ({incorrectAnswers.length})
           </h2>
           <ul className="space-y-1.5">
-            {incorrectAnswers.map((a, i) => {
+            {incorrectAnswers.map((a) => {
               const { text } = extractCode(a.question.questionText)
               return (
                 <li key={a.id} className="flex items-start gap-2 text-sm">
