@@ -42,6 +42,12 @@ interface ModeConfig {
   bestFor: string;
 }
 
+interface TimerSoundOption {
+  id: string;
+  label: string;
+  src: string;
+}
+
 const MODE_CONFIGS: Record<TimerMode, ModeConfig> = {
   POMODORO: {
     label: "Pomodoro",
@@ -68,6 +74,27 @@ const MODE_CONFIGS: Record<TimerMode, ModeConfig> = {
       "best when you want full control over session length, including no-break study sessions",
   },
 };
+
+const TIMER_SOUND_FILES = [
+  "magic",
+  "notification",
+  "xylophone",
+  "early_morning",
+  "baking_timer",
+] as const;
+
+function formatSoundLabel(fileName: string): string {
+  return fileName
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+const TIMER_SOUND_OPTIONS: TimerSoundOption[] = TIMER_SOUND_FILES.map((fileName) => ({
+  id: fileName,
+  label: formatSoundLabel(fileName),
+  src: `/timer-sounds/${fileName}.mp3`,
+}));
 
 function formatTime(seconds: number): string {
   const m = Math.floor(seconds / 60);
@@ -99,6 +126,7 @@ export function StudyTimer({
   const [saveError, setSaveError] = useState<string>("");
   const [summaryState, setSummaryState] = useState<SummaryState>("idle");
   const [summaryData, setSummaryData] = useState<SummaryData | null>(null);
+  const [selectedSoundId, setSelectedSoundId] = useState("magic");
 
   // Custom mode input values (in minutes)
   const [customFocus, setCustomFocus] = useState(30);
@@ -110,6 +138,7 @@ export function StudyTimer({
   const endedAtRef = useRef<Date | null>(null);
   const phaseRef = useRef<Phase>("focus");
   const secondsLeftRef = useRef(MODE_CONFIGS.POMODORO.focusMinutes * 60);
+  const timerSoundRef = useRef<HTMLAudioElement | null>(null);
 
   const activeConfig: ModeConfig =
     mode === "CUSTOM"
@@ -117,11 +146,45 @@ export function StudyTimer({
       : MODE_CONFIGS[mode];
   const focusSeconds = activeConfig.focusMinutes * 60;
   const breakSeconds = activeConfig.breakMinutes * 60;
+  const selectedSound =
+    TIMER_SOUND_OPTIONS.find((option) => option.id === selectedSoundId)
+    ?? TIMER_SOUND_OPTIONS[0];
 
   useEffect(() => {
     phaseRef.current = phase;
     secondsLeftRef.current = secondsLeft;
   }, [phase, secondsLeft]);
+
+  useEffect(() => {
+    const audio = new Audio(selectedSound.src);
+    audio.preload = "auto";
+    timerSoundRef.current = audio;
+
+    return () => {
+      audio.pause();
+      audio.currentTime = 0;
+      if (timerSoundRef.current === audio) {
+        timerSoundRef.current = null;
+      }
+    };
+  }, [selectedSound]);
+
+  const playTimerSound = useCallback(() => {
+    const audio = timerSoundRef.current;
+    if (!audio) {
+      return;
+    }
+
+    audio.pause();
+    audio.currentTime = 0;
+    void audio.play().catch(() => {
+      // Ignore browser playback restrictions or asset load failures.
+    });
+  }, []);
+
+  const handleSoundChange = useCallback((soundId: string) => {
+    setSelectedSoundId(soundId);
+  }, []);
 
   // Countdown tick
   useEffect(() => {
@@ -139,6 +202,7 @@ export function StudyTimer({
 
         if (phaseRef.current === "focus") {
           setPomodoroCount((count) => count + 1);
+          playTimerSound();
 
           if (breakSeconds === 0) {
             endedAtRef.current = new Date();
@@ -156,6 +220,7 @@ export function StudyTimer({
           return;
         }
 
+        playTimerSound();
         phaseRef.current = "focus";
         secondsLeftRef.current = focusSeconds;
         setPhase("focus");
@@ -170,7 +235,7 @@ export function StudyTimer({
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [breakSeconds, focusSeconds, sessionState]);
+  }, [breakSeconds, focusSeconds, playTimerSound, sessionState]);
 
   const syncIdleTimerState = useCallback((nextFocusMinutes: number) => {
     if (sessionState !== "idle") {
@@ -414,6 +479,35 @@ export function StudyTimer({
               </optgroup>
             ))}
           </select>
+        </div>
+
+        <div>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-3">
+            Timer Sound
+          </h2>
+          <div className="flex gap-3">
+            <select
+              value={selectedSoundId}
+              onChange={(e) => handleSoundChange(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
+            >
+              {TIMER_SOUND_OPTIONS.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={playTimerSound}
+            >
+              Preview
+            </Button>
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            The selected sound plays when focus ends and when break time ends.
+          </p>
         </div>
 
         <Button
