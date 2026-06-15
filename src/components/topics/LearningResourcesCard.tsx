@@ -15,10 +15,10 @@ export function LearningResourcesCard({
       <details className="group">
         <summary className="flex cursor-pointer list-none items-start justify-between gap-3">
           <div className="space-y-2">
-            <h2 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">
+            <h2 className="font-semibold text-sm uppercase tracking-wider text-foreground">
               Learning Resources
             </h2>
-            <p className="text-sm leading-relaxed text-foreground">
+            <p className="text-sm leading-relaxed text-muted-foreground">
               These are a few resources to help you get started as you learn and
               practice these new concepts. The app is here to guide you in the
               right direction and help you test your knowledge, not replace the

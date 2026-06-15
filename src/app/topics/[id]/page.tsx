@@ -12,6 +12,7 @@ import { MasteryBreakdownInfo } from "@/components/topics/MasteryBreakdownInfo";
 import { AiLearningCoach } from "@/components/ai/AiLearningCoach";
 import { QuizGeneratorButton } from "@/components/quiz/QuizGeneratorButton";
 import { SessionNotesList } from "@/components/topics/SessionNotesList";
+import { TopicQuizAttemptsList } from "@/components/topics/TopicQuizAttemptsList";
 import type { ProgressStatus, Difficulty } from "@/generated/prisma/enums";
 import {
   parseKeyConcepts,
@@ -130,6 +131,33 @@ export default async function TopicPage({
           notes: true,
           durationMinutes: true,
           endedAt: true,
+        },
+      })
+    : [];
+
+  const quizAttempts = dbUser
+    ? await db.quizAttempt.findMany({
+        where: {
+          userId: dbUser.id,
+          quiz: {
+            topicId: id,
+          },
+          completedAt: { not: null },
+        },
+        orderBy: { completedAt: "desc" },
+        select: {
+          id: true,
+          score: true,
+          totalQuestions: true,
+          completedAt: true,
+          quiz: {
+            select: {
+              id: true,
+              title: true,
+              difficulty: true,
+              questionCount: true,
+            },
+          },
         },
       })
     : [];
@@ -268,18 +296,26 @@ export default async function TopicPage({
             </div>
           </div>
         </section>
+        {/* Overview Section */}
+        <div className="rounded-xl border border-primary/50 bg-card p-6 mb-8">
+              <h2 className="mb-3 font-semibold text-sm uppercase tracking-wider text-foreground">
+                Overview
+              </h2>
+              <p className="text-base leading-relaxed">{topic.description}</p>
+              <p className="mt-3 text-base leading-relaxed text-muted-foreground">
+                To get started, review the key concepts and learning resources for
+                this topic. When you are ready, start studying by setting a timer,
+                then test yourself by generating a quiz. You can master this topic
+                by building study time, covering the core concepts, and passing an
+                advanced 15-question final quiz with a score of at least 80%. If
+                you need extra help along the way, the AI Learning Coach is here
+                to guide you.
+              </p>
+        </div>
 
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Main content — left two columns */}
           <div className="lg:col-span-2 space-y-6">
-
-            {/* Description */}
-            <div className="rounded-xl border border-primary/50 bg-card p-6">
-              <h2 className="mb-3 font-semibold text-sm uppercase tracking-wider text-muted-foreground">
-                Overview
-              </h2>
-              <p className="text-base leading-relaxed">{topic.description}</p>
-            </div>
 
             <KeyConceptsCard
               concepts={keyConcepts}
@@ -313,6 +349,30 @@ export default async function TopicPage({
                 </details>
               </section>
             )}
+            
+            {/* Quiz Attempts */}
+            {quizAttempts.length > 0 && (
+              <section className="rounded-xl border border-primary/50 bg-card p-6">
+              <details className="group">
+                <summary className="flex cursor-pointer list-none items-start justify-between gap-3">
+                  <div className="space-y-2">
+                    <h2 className="font-semibold text-sm uppercase tracking-wider text-foreground">
+                      Quizzes Taken
+                    </h2>
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      Review quiz attempts for this topic and jump back into past
+                      results or retake a quiz.
+                    </p>
+                  </div>
+                  <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+
+                <div className="mt-4">
+                  <TopicQuizAttemptsList attempts={quizAttempts} />
+                </div>
+              </details>
+            </section>
+            )}            
           </div>
 
           {/* Sidebar — right column */}
@@ -410,19 +470,6 @@ export default async function TopicPage({
               )}
             </div>
 
-            {/* Path context */}
-            <div className="rounded-xl border border-primary/50 bg-card p-5">
-              <h2 className="mb-3 font-semibold text-sm">Learning Path</h2>
-              <Link
-                href={`/paths/${topic.learningPath.id}`}
-                className="text-sm font-medium transition-colors hover:text-primary"
-              >
-                {topic.learningPath.title}
-              </Link>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Topic {topic.orderIndex}
-              </p>
-            </div>
           </div>
         </div>
 
