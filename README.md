@@ -365,11 +365,11 @@ The seeded curriculum currently lives in:
 
 ## Useful Project Files
 
-- [ARCHITECTURE.md](/Volumes/Mac Mini Drive/Code/learning-loop-ai/ARCHITECTURE.md) - app structure, data flow, and major system responsibilities
-- [DEPLOYMENT.md](/Volumes/Mac Mini Drive/Code/learning-loop-ai/DEPLOYMENT.md) - environment, database, auth, and production launch checklist
-- [TESTING.md](/Volumes/Mac Mini Drive/Code/learning-loop-ai/TESTING.md) - practical manual test plan for the current product flows
-- [prisma/schema.prisma](/Volumes/Mac Mini Drive/Code/learning-loop-ai/prisma/schema.prisma) - database schema
-- [src/lib/topic-progress.ts](/Volumes/Mac Mini Drive/Code/learning-loop-ai/src/lib/topic-progress.ts) - mastery scoring rules
+- [ARCHITECTURE.md](/ARCHITECTURE.md) - app structure, data flow, and major system responsibilities
+- [DEPLOYMENT.md](/DEPLOYMENT.md) - environment, database, auth, and production launch checklist
+- [TESTING.md](/TESTING.md) - practical manual test plan for the current product flows
+- [prisma/schema.prisma](/prisma/schema.prisma) - database schema
+- [src/lib/topic-progress.ts](/src/lib/topic-progress.ts) - mastery scoring rules
 
 ## Available Scripts
 
