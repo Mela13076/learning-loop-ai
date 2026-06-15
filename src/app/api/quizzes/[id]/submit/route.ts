@@ -118,26 +118,90 @@ export async function POST(
   const totalScore =
     gradedAnswers.reduce((sum, a) => sum + a.score, 0) / quiz.questions.length
   const scorePercent = Math.round(totalScore * 100)
+  const completedAt = new Date()
 
-  // Save attempt + answers
-  const attempt = await db.quizAttempt.create({
-    data: {
+  const existingAttemptsForQuiz = await db.quizAttempt.findMany({
+    where: {
       quizId,
       userId: dbUser.id,
-      score: scorePercent,
-      totalQuestions: quiz.questions.length,
-      completedAt: new Date(),
-      answers: {
-        create: gradedAnswers.map((a) => ({
-          questionId: a.questionId,
-          userAnswer: a.userAnswer,
-          isCorrect: a.isCorrect,
-          feedback: a.feedback,
-        })),
-      },
     },
+    orderBy: [{ completedAt: "desc" }, { startedAt: "desc" }],
     select: { id: true },
   })
+
+  const attempt = existingAttemptsForQuiz[0]
+    ? await db.quizAttempt.update({
+        where: { id: existingAttemptsForQuiz[0].id },
+        data: {
+          score: scorePercent,
+          totalQuestions: quiz.questions.length,
+          startedAt: completedAt,
+          completedAt,
+          answers: {
+            deleteMany: {},
+            create: gradedAnswers.map((a) => ({
+              questionId: a.questionId,
+              userAnswer: a.userAnswer,
+              isCorrect: a.isCorrect,
+              feedback: a.feedback,
+            })),
+          },
+        },
+        select: { id: true },
+      })
+    : await db.quizAttempt.create({
+        data: {
+          quizId,
+          userId: dbUser.id,
+          score: scorePercent,
+          totalQuestions: quiz.questions.length,
+          completedAt,
+          answers: {
+            create: gradedAnswers.map((a) => ({
+              questionId: a.questionId,
+              userAnswer: a.userAnswer,
+              isCorrect: a.isCorrect,
+              feedback: a.feedback,
+            })),
+          },
+        },
+        select: { id: true },
+      })
+
+  const topicAttempts = await db.quizAttempt.findMany({
+    where: {
+      userId: dbUser.id,
+      completedAt: { not: null },
+      quiz: {
+        topicId: quiz.topicId,
+      },
+    },
+    orderBy: [{ completedAt: "desc" }, { startedAt: "desc" }],
+    select: {
+      quizId: true,
+      score: true,
+    },
+  })
+
+  const latestAttemptsByQuiz = new Map<string, { score: number }>()
+  for (const topicAttempt of topicAttempts) {
+    if (!latestAttemptsByQuiz.has(topicAttempt.quizId)) {
+      latestAttemptsByQuiz.set(topicAttempt.quizId, {
+        score: topicAttempt.score,
+      })
+    }
+  }
+
+  const uniqueCompletedQuizzes = latestAttemptsByQuiz.size
+  const averageQuizScore =
+    uniqueCompletedQuizzes > 0
+      ? Math.round(
+          Array.from(latestAttemptsByQuiz.values()).reduce(
+            (sum, topicAttempt) => sum + topicAttempt.score,
+            0
+          ) / uniqueCompletedQuizzes
+        )
+      : 0
 
   // Update UserTopicProgress mastery score
   const existing = await db.userTopicProgress.findUnique({
@@ -160,58 +224,41 @@ export async function POST(
   const finalQuizPassedAt =
     !(existing?.finalQuizPassed ?? false) && passedFinalQuiz ? new Date() : existing?.finalQuizPassedAt ?? null
 
-  if (existing) {
-    const newCompleted = existing.quizzesCompleted + 1
-    const newAvg =
-      (existing.averageQuizScore * existing.quizzesCompleted + scorePercent) /
-      newCompleted
-    const mastery = computeTopicMastery({
-      averageQuizScore: newAvg,
-      coveredConceptCount: coveredConceptTitles.length,
+  const mastery = computeTopicMastery({
+    averageQuizScore,
+    coveredConceptCount: coveredConceptTitles.length,
+    finalQuizPassed: passedFinalQuiz,
+    quizzesCompleted: uniqueCompletedQuizzes,
+    topicEstimatedMinutes: quiz.topic.estimatedMinutes,
+    totalConceptCount: topicConceptTitles.length,
+    totalStudyMinutes: existing?.totalStudyMinutes ?? 0,
+  })
+
+  await db.userTopicProgress.upsert({
+    where: { userId_topicId: { userId: dbUser.id, topicId: quiz.topicId } },
+    create: {
+      userId: dbUser.id,
+      topicId: quiz.topicId,
+      coveredConceptTitles,
       finalQuizPassed: passedFinalQuiz,
-      quizzesCompleted: newCompleted,
-      topicEstimatedMinutes: quiz.topic.estimatedMinutes,
-      totalConceptCount: topicConceptTitles.length,
-      totalStudyMinutes: existing.totalStudyMinutes,
-    })
-    await db.userTopicProgress.update({
-      where: { userId_topicId: { userId: dbUser.id, topicId: quiz.topicId } },
-      data: {
-        coveredConceptTitles,
-        finalQuizPassed: passedFinalQuiz,
-        finalQuizPassedAt,
-        quizzesCompleted: newCompleted,
-        averageQuizScore: Math.round(newAvg),
-        masteryScore: mastery.masteryScore,
-        status: mastery.status,
-        lastStudiedAt: new Date(),
-      },
-    })
-  } else {
-    const mastery = computeTopicMastery({
-      averageQuizScore: scorePercent,
-      coveredConceptCount: 0,
+      finalQuizPassedAt,
+      quizzesCompleted: uniqueCompletedQuizzes,
+      averageQuizScore,
+      masteryScore: mastery.masteryScore,
+      status: mastery.status,
+      lastStudiedAt: completedAt,
+    },
+    update: {
+      coveredConceptTitles,
       finalQuizPassed: passedFinalQuiz,
-      quizzesCompleted: 1,
-      topicEstimatedMinutes: quiz.topic.estimatedMinutes,
-      totalConceptCount: topicConceptTitles.length,
-      totalStudyMinutes: 0,
-    })
-    await db.userTopicProgress.create({
-      data: {
-        userId: dbUser.id,
-        topicId: quiz.topicId,
-        coveredConceptTitles: [],
-        finalQuizPassed: passedFinalQuiz,
-        finalQuizPassedAt,
-        quizzesCompleted: 1,
-        averageQuizScore: scorePercent,
-        masteryScore: mastery.masteryScore,
-        status: mastery.status,
-        lastStudiedAt: new Date(),
-      },
-    })
-  }
+      finalQuizPassedAt,
+      quizzesCompleted: uniqueCompletedQuizzes,
+      averageQuizScore,
+      masteryScore: mastery.masteryScore,
+      status: mastery.status,
+      lastStudiedAt: completedAt,
+    },
+  })
 
   return Response.json({ attemptId: attempt.id, score: scorePercent })
 }

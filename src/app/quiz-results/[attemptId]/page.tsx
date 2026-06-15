@@ -85,6 +85,7 @@ export default async function QuizResultsPage({
         <RecommendedNextStep
           isMastered={progress?.status === "MASTERED"}
           masteryScore={Math.round(progress?.masteryScore ?? 0)}
+          quizId={attempt.quiz.id}
           topicId={currentTopic.id}
           nextTopic={nextTopic}
         />

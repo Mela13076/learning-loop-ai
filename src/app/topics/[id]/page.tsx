@@ -161,6 +161,17 @@ export default async function TopicPage({
         },
       })
     : [];
+  const latestQuizAttempts = quizAttempts.reduce<typeof quizAttempts>(
+    (uniqueAttempts, attempt) => {
+      if (uniqueAttempts.some((entry) => entry.quiz.id === attempt.quiz.id)) {
+        return uniqueAttempts;
+      }
+
+      uniqueAttempts.push(attempt);
+      return uniqueAttempts;
+    },
+    []
+  );
 
   // Adjacent topics for prev/next navigation
   const [prevTopic, nextTopic] = await Promise.all([
@@ -351,9 +362,9 @@ export default async function TopicPage({
             )}
             
             {/* Quiz Attempts */}
-            {quizAttempts.length > 0 && (
+            {latestQuizAttempts.length > 0 && (
               <section className="rounded-xl border border-primary/50 bg-card p-6">
-              <details className="group">
+                <details className="group">
                 <summary className="flex cursor-pointer list-none items-start justify-between gap-3">
                   <div className="space-y-2">
                     <h2 className="font-semibold text-sm uppercase tracking-wider text-foreground">
@@ -367,12 +378,12 @@ export default async function TopicPage({
                   <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
                 </summary>
 
-                <div className="mt-4">
-                  <TopicQuizAttemptsList attempts={quizAttempts} />
-                </div>
-              </details>
-            </section>
-            )}            
+                  <div className="mt-4">
+                    <TopicQuizAttemptsList attempts={latestQuizAttempts} />
+                  </div>
+                </details>
+              </section>
+            )}
           </div>
 
           {/* Sidebar — right column */}

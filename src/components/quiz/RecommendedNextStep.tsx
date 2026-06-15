@@ -3,6 +3,7 @@ import Link from "next/link"
 interface RecommendedNextStepProps {
   isMastered: boolean
   masteryScore: number
+  quizId: string
   topicId: string
   nextTopic: { id: string; title: string } | null
 }
@@ -10,6 +11,7 @@ interface RecommendedNextStepProps {
 export function RecommendedNextStep({
   isMastered,
   masteryScore,
+  quizId,
   topicId,
   nextTopic,
 }: RecommendedNextStepProps) {
@@ -57,6 +59,12 @@ export function RecommendedNextStep({
             Next Topic: {nextTopic.title} →
           </Link>
         )}
+        <Link
+          href={`/quizzes/${quizId}`}
+          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90"
+        >
+          Retake
+        </Link>
       </div>
     </div>
   )
