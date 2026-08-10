@@ -3,6 +3,7 @@ import { Neuton, Geist_Mono } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import { cookies } from "next/headers";
+import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { ThemeScript } from "@/components/theme/ThemeScript";
 import { db } from "@/lib/db";
@@ -86,6 +87,7 @@ export default async function RootLayout({
           <ThemeProvider accentColor={accentColor} themeMode={themeMode}>
             {children}
           </ThemeProvider>
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>
