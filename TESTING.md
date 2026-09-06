@@ -281,6 +281,28 @@ Verify:
 - low quiz results can move a topic to `NEEDS_REVIEW`
 - mastery never reaches `100` without the final quiz gate
 
+### Direct progress write protection
+
+While signed in, use a valid topic ID in the browser console:
+
+```js
+const url = "/api/topics/TOPIC_ID/progress";
+const before = await fetch(url).then((response) => response.json());
+const response = await fetch(url, {
+  method: "PATCH",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ status: "MASTERED", masteryScore: 100 }),
+});
+const after = await fetch(url).then((response) => response.json());
+console.log(response.status, before, after);
+```
+
+Verify the response status is `405` and progress is unchanged. Repeat with
+`totalStudyMinutes`, `quizzesCompleted`, or `averageQuizScore`: direct updates
+must also be rejected. Do not perform another study action between the reads.
+Then follow the mastery progression steps above to verify that concept toggles,
+saved study sessions, and quiz submissions still update progress normally.
+
 ### Final mastery gate
 
 Goal:

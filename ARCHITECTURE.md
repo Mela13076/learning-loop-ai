@@ -140,6 +140,11 @@ That record is updated from several flows:
 - when a concept is marked covered or uncovered
 - when a quiz is submitted
 
+`/api/topics/[id]/progress` is read-only. It exposes authenticated `GET`
+requests; direct `PATCH` requests return `405 Method Not Allowed`. Mastery and
+statistics are calculated by the activity handlers above, rather than accepted
+as direct progress updates from the client.
+
 ## AI Service Layer
 
 All AI behavior lives under `src/lib/ai/`.
