@@ -228,6 +228,15 @@ Verify:
 - the quiz title references the topic and difficulty
 - questions render in order
 
+### Quiz answer protection
+
+1. While signed in, request `/api/quizzes/<quizId>` for a quiz you own before submitting it.
+2. Verify each question contains only `id`, `questionText`, `questionType`, `options`, and `orderIndex`; neither `correctAnswer` nor `explanation` is returned.
+3. Repeat after submitting the quiz: this endpoint must still omit answer fields.
+4. Verify another user's quiz returns `403` and a missing quiz returns `404`.
+5. Verify signed-out requests cannot retrieve quiz data (authentication may redirect or reject the request).
+6. Submit your quiz and open its results page; correct answers and feedback should remain available there.
+
 ### Quiz submission and results
 
 Goal:
