@@ -161,6 +161,23 @@ Verify:
 - topic-linked sessions increase `totalStudyMinutes`
 - topic notes appear later on the topic page
 
+### Focus time excludes breaks
+
+1. Select Custom mode with a 1-minute focus and a 1-minute break, and attach a topic.
+2. Finish the focus period, start the break, and let it finish.
+3. End the session immediately when focus resumes, then save it.
+4. Verify the saved session and topic study total increase by 1 minute, not 2.
+5. Repeat, but pause during focus and during the break. Paused time must not
+   increase study time; resumed breaks must still count down normally.
+6. Complete two 1-minute focus periods separated by a 1-minute break. Verify
+   2 study minutes are saved, not 3. Also test ending partway through a break.
+7. Test a custom session with a zero-minute break: it must end after focus and
+   save the focus minutes. Verify reset clears the displayed study minutes.
+
+The equivalent Pomodoro check is 25 minutes of focus plus a 5-minute break:
+save 25 study minutes. Keep the tab active for these checks; background timer
+drift and the existing one-minute minimum for saved sessions are separate behaviors.
+
 ### AI session summary
 
 Goal:

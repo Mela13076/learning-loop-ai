@@ -80,7 +80,8 @@ The timer supports three modes:
 How it works:
 
 - a user optionally attaches the session to a topic
-- the timer tracks focus time and break transitions in the client
+- the timer tracks focus time and break transitions in the client; running breaks
+  and pauses do not count toward saved study minutes
 - when the session ends, the app saves a `StudySession`
 - if a topic was selected, topic progress is updated with the new study minutes
 - if notes are added, the app can generate an AI session summary

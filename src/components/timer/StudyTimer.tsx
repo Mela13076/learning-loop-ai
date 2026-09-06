@@ -190,7 +190,10 @@ export function StudyTimer({
   useEffect(() => {
     if (sessionState === "running") {
       intervalRef.current = setInterval(() => {
-        setElapsedSeconds((prev) => prev + 1);
+        // Study minutes exclude breaks, including the tick that ends a break.
+        if (phaseRef.current === "focus") {
+          setElapsedSeconds((prev) => prev + 1);
+        }
         const currentSeconds = secondsLeftRef.current;
 
         if (currentSeconds > 1) {
