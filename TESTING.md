@@ -242,8 +242,20 @@ levels. They test application behavior, not topic knowledge or advanced content.
 For the final gate, generate an advanced 15-question multiple-choice quiz and
 score at least 80%. Verify `finalQuizPassed` is recorded; `MASTERED` still also
 requires the weighted mastery threshold. A 5- or 10-question quiz must not set
-the final gate on a fresh topic. The mock-mode API-key requirement remains a
-separate known issue.
+the final gate on a fresh topic.
+
+### Mock mode without an AI key
+
+1. Set `AI_MODE=mock` in your local environment, temporarily unset both
+   `GEMINI_API_KEY` and `GOOGLE_API_KEY`, and restart the development server.
+   Keep Clerk and database configuration in place.
+2. Generate and submit a quiz, including a short-answer or code-reading answer.
+3. Use the coach's introduction, explanation, example, quiz, hint, and answer actions.
+4. Save a topic-linked study session with notes and generate its summary.
+5. Verify all these mock flows work without a missing-key error.
+6. With both keys still absent, switch to `AI_MODE=real` and restart. A real AI
+   request must fail with `Gemini API key is not configured` in server logs.
+7. Restore your desired environment settings and restart the server.
 
 ### Mock answer grading
 

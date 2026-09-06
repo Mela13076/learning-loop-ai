@@ -189,7 +189,7 @@ Required environment variables:
 - `NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL`
 - `DATABASE_URL`
 - `DIRECT_URL`
-- `GEMINI_API_KEY`
+- `GEMINI_API_KEY` (required only for real AI mode; `GOOGLE_API_KEY` is a fallback)
 - `AI_MODE`
 - `AI_MODEL`
 
@@ -312,6 +312,9 @@ Use this for:
 - avoiding API costs
 
 In mock mode, the app returns realistic hardcoded AI responses for the coach, quiz generation, feedback, summaries, and recommendations.
+
+Mock mode does not require a Gemini API key. Real mode initializes the Gemini
+client on the first AI request and requires `GEMINI_API_KEY` or `GOOGLE_API_KEY`.
 
 Mock quizzes use one shared bank of 15 questions and honor the requested count
 (5, 10, or 15) and format (multiple choice, short answer, or mixed). The bank is
