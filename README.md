@@ -313,6 +313,11 @@ Use this for:
 
 In mock mode, the app returns realistic hardcoded AI responses for the coach, quiz generation, feedback, summaries, and recommendations.
 
+Mock quizzes use one shared bank of 15 questions and honor the requested count
+(5, 10, or 15) and format (multiple choice, short answer, or mixed). The bank is
+the same for every topic and difficulty; it supports testing quiz flows and the
+final mastery gate, rather than evaluating topic-specific knowledge.
+
 ### Real mode
 
 ```env

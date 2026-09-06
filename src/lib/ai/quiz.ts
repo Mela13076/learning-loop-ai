@@ -31,10 +31,11 @@ export interface GeneratedQuiz {
 }
 
 // ---------------------------------------------------------------------------
-// Mock data — 5 realistic CS fundamentals questions
+// Shared development fixtures, not a topic-specific or difficulty-graded exam.
+// Every question has choices so it can also be rendered as multiple choice.
 // ---------------------------------------------------------------------------
 
-const MOCK_QUESTIONS: GeneratedQuestion[] = [
+const MOCK_QUESTIONS: (GeneratedQuestion & { options: string[] })[] = [
   {
     questionText:
       "What is the time complexity of searching for an element in an unsorted array?",
@@ -47,10 +48,16 @@ const MOCK_QUESTIONS: GeneratedQuestion[] = [
   },
   {
     questionText:
-      "In your own words, explain what a function's return value is and why it matters.",
+      "What is a function's return value?",
     questionType: "short_answer",
+    options: [
+      "Data sent back to the caller",
+      "The function's name",
+      "The number of parameters",
+      "Text that must be printed to the screen",
+    ],
     correctAnswer:
-      "A return value is the data a function sends back to the caller after completing its work. It matters because it lets functions produce results that other parts of the program can use.",
+      "Data sent back to the caller",
     explanation:
       "Functions can optionally send data back to the code that called them using a return statement. Without return values, functions can only produce side effects like printing to the screen.",
     orderIndex: 2,
@@ -89,14 +96,102 @@ const MOCK_QUESTIONS: GeneratedQuestion[] = [
       "Dividing by zero is undefined in mathematics and raises a `ZeroDivisionError` in Python. The fix is to check `if b == 0` before dividing.",
     orderIndex: 5,
   },
+  {
+    questionText: "Which data structure uses FIFO (First In, First Out) ordering?",
+    questionType: "multiple_choice",
+    options: ["Stack", "Queue", "Tree", "Set"],
+    correctAnswer: "Queue",
+    explanation: "A queue removes items in the order they were added.",
+    orderIndex: 6,
+  },
+  {
+    questionText: "What is the stopping condition in a recursive function called?",
+    questionType: "short_answer",
+    options: ["Loop counter", "Parameter", "Base case", "Return type"],
+    correctAnswer: "Base case",
+    explanation: "The base case ends recursion without making another recursive call.",
+    orderIndex: 7,
+  },
+  {
+    questionText: "What does this Python code print?\n\n```python\nvalues = [10, 20, 30]\nprint(values[0])\n```",
+    questionType: "code_reading",
+    options: ["0", "10", "20", "30"],
+    correctAnswer: "10",
+    explanation: "Python list indexing starts at zero, so values[0] is the first element.",
+    orderIndex: 8,
+  },
+  {
+    questionText: "Which HTML element creates a hyperlink?",
+    questionType: "multiple_choice",
+    options: ["<p>", "<div>", "<span>", "<a>"],
+    correctAnswer: "<a>",
+    explanation: "The anchor element <a> creates a hyperlink when supplied with an href.",
+    orderIndex: 9,
+  },
+  {
+    questionText: "What is wrong with this Python code?\n\n```python\nitems = [1, 2]\nprint(items[2])\n```",
+    questionType: "debugging",
+    options: ["The index is outside the list", "Lists cannot contain numbers", "print requires two arguments", "The list must be sorted"],
+    correctAnswer: "The index is outside the list",
+    explanation: "A two-element list has indices 0 and 1. Accessing index 2 raises IndexError.",
+    orderIndex: 10,
+  },
+  {
+    questionText: "Which CSS property sets the text color?",
+    questionType: "short_answer",
+    options: ["background-color", "font-size", "color", "display"],
+    correctAnswer: "color",
+    explanation: "The color property controls the foreground color of text.",
+    orderIndex: 11,
+  },
+  {
+    questionText: "What does this Python code print?\n\n```python\ntotal = 0\nfor value in [1, 2, 3]:\n    total += value\nprint(total)\n```",
+    questionType: "code_reading",
+    options: ["3", "5", "6", "0"],
+    correctAnswer: "6",
+    explanation: "The loop adds 1, then 2, then 3 to total, producing 6.",
+    orderIndex: 12,
+  },
+  {
+    questionText: "Which Python collection stores key-value pairs?",
+    questionType: "multiple_choice",
+    options: ["List", "Tuple", "Set", "Dictionary"],
+    correctAnswer: "Dictionary",
+    explanation: "A dictionary maps keys to values.",
+    orderIndex: 13,
+  },
+  {
+    questionText: "What ordering does a numeric array need for standard binary search?",
+    questionType: "short_answer",
+    options: ["Random order", "Sorted order", "Insertion order only", "Alternating positive and negative values"],
+    correctAnswer: "Sorted order",
+    explanation: "Binary search uses sorted order to discard half of the remaining search range at each step.",
+    orderIndex: 14,
+  },
+  {
+    questionText: "Why does this Python code print None?\n\n```python\ndef double(value):\n    result = value * 2\nprint(double(3))\n```",
+    questionType: "debugging",
+    options: ["Multiplication is unsupported", "The argument must be a string", "The function does not return its result", "Functions cannot be passed to print"],
+    correctAnswer: "The function does not return its result",
+    explanation: "Without an explicit return statement, a Python function returns None.",
+    orderIndex: 15,
+  },
 ]
 
 function getMockQuiz(input: QuizInput): GeneratedQuiz {
-  const count = Math.min(input.questionCount, MOCK_QUESTIONS.length)
-  const questions = MOCK_QUESTIONS.slice(0, count).map((q, i) => ({
-    ...q,
-    orderIndex: i + 1,
-  }))
+  const questions = MOCK_QUESTIONS.slice(0, input.questionCount).map((q, i) => {
+    const { options, ...question } = q
+    const questionType = input.questionType === "mixed"
+      ? q.questionType
+      : input.questionType
+
+    return {
+      ...question,
+      questionType,
+      ...(questionType === "short_answer" ? {} : { options: [...options] }),
+      orderIndex: i + 1,
+    }
+  })
   return { questions }
 }
 

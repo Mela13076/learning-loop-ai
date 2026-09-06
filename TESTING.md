@@ -228,6 +228,23 @@ Verify:
 - the quiz title references the topic and difficulty
 - questions render in order
 
+### Mock quiz settings
+
+With `AI_MODE=mock`, generate each combination of 5, 10, and 15 questions with
+`multiple_choice`, `short_answer`, and `mixed` (nine combinations).
+Verify exact counts and sequential question ordering. Multiple-choice questions
+must have four choices; short-answer questions must use text inputs without
+choices; mixed quizzes must include multiple-choice, short-answer, code-reading,
+and debugging questions.
+
+Mock quizzes share a fixed bank of 15 questions across all topics and difficulty
+levels. They test application behavior, not topic knowledge or advanced content.
+For the final gate, generate an advanced 15-question multiple-choice quiz and
+score at least 80%. Verify `finalQuizPassed` is recorded; `MASTERED` still also
+requires the weighted mastery threshold. A 5- or 10-question quiz must not set
+the final gate on a fresh topic. Mock grading and the API-key requirement remain
+separate known issues; use multiple-choice quizzes for deterministic scoring.
+
 ### Quiz answer protection
 
 1. While signed in, request `/api/quizzes/<quizId>` for a quiz you own before submitting it.
