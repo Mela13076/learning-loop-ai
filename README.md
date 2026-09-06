@@ -318,6 +318,11 @@ Mock quizzes use one shared bank of 15 questions and honor the requested count
 the same for every topic and difficulty; it supports testing quiz flows and the
 final mastery gate, rather than evaluating topic-specific knowledge.
 
+Mock short-answer grading compares against the stored answer, ignoring case
+and whitespace differences. Mock code-reading grading preserves case and
+internal spacing. Blank or nonmatching answers receive zero credit; there is
+no semantic matching or partial credit in mock mode.
+
 ### Real mode
 
 ```env

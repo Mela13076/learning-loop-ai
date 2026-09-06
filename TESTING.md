@@ -242,8 +242,26 @@ levels. They test application behavior, not topic knowledge or advanced content.
 For the final gate, generate an advanced 15-question multiple-choice quiz and
 score at least 80%. Verify `finalQuizPassed` is recorded; `MASTERED` still also
 requires the weighted mastery threshold. A 5- or 10-question quiz must not set
-the final gate on a fresh topic. Mock grading and the API-key requirement remain
-separate known issues; use multiple-choice quizzes for deterministic scoring.
+the final gate on a fresh topic. The mock-mode API-key requirement remains a
+separate known issue.
+
+### Mock answer grading
+
+With `AI_MODE=mock`, generate a five-question mixed quiz. Answer questions 1,
+2, and 4 correctly (`O(n)`, `Data sent back to the caller`, and `Stack`), answer
+question 3 incorrectly (`2`), and leave question 5 blank. Verify a score of 60%
+and per-answer feedback matching those outcomes.
+
+For short-answer quizzes, verify blank/whitespace-only and incorrect answers
+receive zero credit. Correct answers tolerate capitalization, surrounding
+whitespace, and repeated internal whitespace. Paraphrases are not recognized
+by this simple fixture matcher, and no partial credit is awarded. Code-reading
+answers must match the expected output after trimming surrounding whitespace;
+case and internal spacing are significant.
+
+Verify an all-incorrect submission scores 0%, an all-correct submission scores
+100%, and topic quiz statistics reflect the submitted score. Real AI grading
+is unchanged.
 
 ### Quiz answer protection
 

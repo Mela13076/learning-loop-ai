@@ -79,6 +79,7 @@ export async function POST(
           correctAnswer: question.correctAnswer,
           userAnswer,
           topicTitle: quiz.topic.title,
+          questionType: question.questionType,
         })
         await db.aiInteraction.create({
           data: {

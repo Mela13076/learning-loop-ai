@@ -6,6 +6,7 @@ export interface FeedbackInput {
   correctAnswer: string
   userAnswer: string
   topicTitle: string
+  questionType?: "SHORT_ANSWER" | "CODE_READING"
 }
 
 export interface FeedbackResponse {
@@ -15,13 +16,24 @@ export interface FeedbackResponse {
   score: 0 | 0.5 | 1
 }
 
-function getMockFeedback(): FeedbackResponse {
+function getMockFeedback(input: FeedbackInput): FeedbackResponse {
+  // Preserve case and internal spacing for code output. Short-answer fixtures
+  // tolerate capitalization and whitespace, but do not attempt semantic grading.
+  const normalize = (answer: string) => input.questionType === "CODE_READING"
+    ? answer.trim()
+    : answer.trim().replace(/\s+/g, " ").toLowerCase()
+  const answer = normalize(input.userAnswer)
+  const isCorrect = answer.length > 0 && answer === normalize(input.correctAnswer)
+
   return {
-    isCorrect: true,
+    isCorrect,
     isPartiallyCorrect: false,
-    feedback:
-      "Great job! Your answer captures the key idea. Keep applying this concept as you progress through the topic.",
-    score: 1,
+    feedback: isCorrect
+      ? "Correct! Your answer matches the expected answer."
+      : answer.length === 0
+        ? `No answer was provided. The expected answer is: ${input.correctAnswer}.`
+        : `Your answer does not match the expected answer: ${input.correctAnswer}.`,
+    score: isCorrect ? 1 : 0,
   }
 }
 
@@ -60,7 +72,7 @@ export async function getAnswerFeedback(
   input: FeedbackInput
 ): Promise<FeedbackResponse> {
   if (isMockMode) {
-    return getMockFeedback()
+    return getMockFeedback(input)
   }
   return getRealFeedback(input)
 }
