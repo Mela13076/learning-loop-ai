@@ -1,5 +1,6 @@
 import { isMockMode } from "./config"
 import { generateJson } from "./client"
+import { parseGeneratedQuiz } from "./quiz-schema"
 
 export type QuizDifficulty = "beginner" | "intermediate" | "advanced"
 export type QuizQuestionType = "multiple_choice" | "short_answer" | "mixed"
@@ -238,7 +239,8 @@ Rules:
 }
 - options must contain exactly 4 items for multiple_choice, code_reading, and debugging questions
 - short_answer questions must NOT include an options field
-- correctAnswer for multiple_choice must exactly match one of the options strings
+- options must be distinct
+- correctAnswer for multiple_choice, code_reading, and debugging must exactly match one of the options strings
 - orderIndex starts at 1 and increments by 1
 - explanations must be clear and helpful for a learner who got the question wrong`
 
@@ -248,11 +250,7 @@ Rules:
     maxOutputTokens: 4096,
   })
 
-  const parsed = JSON.parse(text) as GeneratedQuiz
-  if (!Array.isArray(parsed.questions)) {
-    throw new Error("AI returned invalid quiz structure")
-  }
-  return parsed
+  return parseGeneratedQuiz(text, input)
 }
 
 // ---------------------------------------------------------------------------

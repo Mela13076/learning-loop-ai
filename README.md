@@ -119,6 +119,8 @@ How it works:
 
 - the app calls the quiz generation service in `src/lib/ai/quiz.ts`
 - the generated quiz is stored in the database as a `Quiz` with `QuizQuestion` records
+- real AI quizzes are validated for count, format, required fields, ordering, and
+  answer choices before saving; invalid output shows a retry message without creating a quiz
 - the user takes the quiz in the UI
 - answers are submitted to `/api/quizzes/[id]/submit`
 - short-answer and code-reading responses can use AI grading and feedback

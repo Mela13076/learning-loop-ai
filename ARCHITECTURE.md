@@ -286,6 +286,14 @@ Flow:
 6. `QuizAttempt` and `QuizAnswer` records are created
 7. topic mastery is recalculated
 
+Real quiz generation validates provider JSON through `src/lib/ai/quiz-schema.ts`
+before persistence. It checks requested count/type, nonempty fields, sequential
+ordering, four distinct choices for choice-based questions, and matching answer
+keys. Short-answer questions cannot include choices. Invalid JSON or schema
+violations return `502` with a retry message through the generation endpoint;
+the rejected response does not create a quiz. This validates structure, not the
+educational correctness of the content. Grading-output validation is separate.
+
 ## Mastery System
 
 The mastery calculation lives in `src/lib/topic-progress.ts`.

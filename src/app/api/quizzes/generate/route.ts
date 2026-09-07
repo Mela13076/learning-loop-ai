@@ -2,6 +2,7 @@ import { auth } from "@clerk/nextjs/server"
 import { z } from "zod"
 import { db } from "@/lib/db"
 import { generateQuiz } from "@/lib/ai/quiz"
+import { InvalidQuizResponseError } from "@/lib/ai/quiz-schema"
 import { AI_MODEL } from "@/lib/ai/config"
 import type { QuizDifficulty, QuizQuestionType, GeneratedQuestionType } from "@/lib/ai/quiz"
 
@@ -57,13 +58,21 @@ export async function POST(request: Request) {
     return Response.json({ error: "Topic not found" }, { status: 404 })
   }
 
-  const generated = await generateQuiz({
-    topicTitle: topic.title,
-    learningPathTitle: topic.learningPath.title,
-    difficulty: difficulty as QuizDifficulty,
-    questionCount: questionCount as 5 | 10 | 15,
-    questionType: questionType as QuizQuestionType,
-  })
+  let generated
+  try {
+    generated = await generateQuiz({
+      topicTitle: topic.title,
+      learningPathTitle: topic.learningPath.title,
+      difficulty: difficulty as QuizDifficulty,
+      questionCount: questionCount as 5 | 10 | 15,
+      questionType: questionType as QuizQuestionType,
+    })
+  } catch (error) {
+    if (error instanceof InvalidQuizResponseError) {
+      return Response.json({ error: error.message }, { status: 502 })
+    }
+    throw error
+  }
 
   const quiz = await db.quiz.create({
     data: {

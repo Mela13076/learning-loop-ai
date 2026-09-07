@@ -28,8 +28,6 @@ export function getDashboardRecommendation(
   const topics = learningPaths.flatMap((path) =>
     path.topics.map((topic) => ({ ...topic, pathTitle: path.title })),
   );
-  console.log("topics", topics)
-  console.log("progress", progressByTopicId)
   if (topics.length === 0) return { kind: "empty" };
 
   const priorities = [

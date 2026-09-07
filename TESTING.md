@@ -290,6 +290,21 @@ Verify:
 - the quiz title references the topic and difficulty
 - questions render in order
 
+### Real AI quiz validation
+
+Run `npm run test:quiz-validation` to exercise schema checks, the real service
+with a stubbed provider, and the generation handler with mocked database writes.
+Coverage includes malformed JSON, wrong counts/types, missing fields, invalid
+choices/answers, and incorrect ordering. Invalid responses must return `502`
+without creating a quiz; valid responses must still save normally.
+
+For browser testing, generate quizzes in real mode with each count and format.
+Verify valid quizzes open normally. With a malformed provider response injected
+in a local test setup, verify the generator displays the retry error and stays
+on the topic page; a subsequent valid response should create and open a quiz.
+Do not rely on the live model randomly returning invalid output for regression
+testing. These checks do not evaluate the factual quality of generated questions.
+
 ### Mock quiz settings
 
 With `AI_MODE=mock`, generate each combination of 5, 10, and 15 questions with
