@@ -8,6 +8,7 @@ import { DashboardCard, StatValue } from "@/components/dashboard/DashboardCard";
 import { StreakCard } from "@/components/dashboard/StreakCard";
 import type { ProgressStatus, Difficulty } from "@/generated/prisma/enums";
 import { syncClerkUser } from "@/lib/user";
+import { getDashboardRecommendation } from "@/lib/dashboard-recommendation";
 
 // ---------------------------------------------------------------------------
 // Data helpers
@@ -163,29 +164,8 @@ export default async function DashboardPage() {
     ? learningPaths.find((lp) => lp.id === currentPathId) ?? null
     : null;
 
-  // Recommended next topic: first IN_PROGRESS, then first NOT_STARTED in order
-  let recommendedTopic: {
-    id: string;
-    title: string;
-    pathTitle: string;
-    estimatedMinutes: number;
-  } | null = null;
-
-  for (const lp of learningPaths) {
-    for (const topic of lp.topics) {
-      const p = progressByTopicId.get(topic.id);
-      if (!p || p.status === "IN_PROGRESS") {
-        recommendedTopic = {
-          id: topic.id,
-          title: topic.title,
-          pathTitle: lp.title,
-          estimatedMinutes: topic.estimatedMinutes,
-        };
-        break;
-      }
-    }
-    if (recommendedTopic) break;
-  }
+  const recommendation = getDashboardRecommendation(learningPaths, progressByTopicId);
+  const recommendedTopic = recommendation.kind === "topic" ? recommendation.topic : null;
 
   const greetingName = clerkUser.firstName ?? dbUser.name?.split(" ")[0] ?? "there";
 
@@ -439,7 +419,7 @@ export default async function DashboardPage() {
                 <div className="flex gap-2">
                   <Button asChild size="sm">
                     <Link href={`/topics/${recommendedTopic.id}`}>
-                      Start topic
+                      {recommendation.kind === "topic" ? recommendation.actionLabel : "Start topic"}
                     </Link>
                   </Button>
                   <Button asChild variant="outline" size="sm">
@@ -451,7 +431,9 @@ export default async function DashboardPage() {
               </div>
             ) : (
               <p className="text-sm text-muted-foreground">
-                You&apos;ve mastered all available topics — great work!
+                {recommendation.kind === "empty"
+                  ? "No topics are available yet."
+                  : "You've mastered all available topics — great work!"}
               </p>
             )}
           </DashboardCard>

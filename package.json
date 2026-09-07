@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test:study-sessions": "node --test tests/study-session-saves.test.mjs",
+    "test:dashboard": "node --test tests/dashboard-recommendation.test.mjs",
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",

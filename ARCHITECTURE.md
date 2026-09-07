@@ -145,6 +145,13 @@ requests; direct `PATCH` requests return `405 Method Not Allowed`. Mastery and
 statistics are calculated by the activity handlers above, rather than accepted
 as direct progress updates from the client.
 
+Dashboard topic selection lives in `src/lib/dashboard-recommendation.ts` and
+runs server-side using the current user's progress. It prioritizes `IN_PROGRESS`,
+then `NEEDS_REVIEW`, then explicit or implicit `NOT_STARTED` across all paths,
+preserving the supplied curriculum order for ties. Empty curriculum and completed
+curriculum are separate results. Quiz-result and AI recommendation flows retain
+their existing rules.
+
 ## AI Service Layer
 
 All AI behavior lives under `src/lib/ai/`.

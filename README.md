@@ -54,6 +54,11 @@ The dashboard is the main study snapshot for a signed-in user. It shows:
 - weak topics that need review
 - a recommended next topic based on existing progress
 
+The dashboard prioritizes in-progress topics, then topics needing review, then
+unstarted topics across all paths. Ties follow curriculum order. The action reads
+Continue, Review, or Start to match the recommendation. An empty curriculum has
+its own message; completion is shown only when all available topics are mastered.
+
 ### Topic pages
 
 Each topic page is the main learning surface. It includes:

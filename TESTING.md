@@ -10,6 +10,25 @@ they do not replace live PostgreSQL concurrency or browser testing.
 
 This document is a practical checklist for testing the current app.
 
+Run `npm run test:dashboard` for pure dashboard recommendation tests, including
+all 125 combinations of three topics' progress states (including absent rows).
+
+### Dashboard recommendations
+
+Using disposable local test data, verify these dashboard cases:
+
+- An in-progress topic is recommended even when an earlier topic has no progress.
+- With no in-progress topics, a topic needing review is recommended before new work.
+- Explicit `NOT_STARTED` rows and topics without progress rows are both eligible.
+- Ties follow the displayed path/topic curriculum order.
+- The button says Continue topic, Review topic, or Start topic as appropriate and
+  links to the selected topic; the timer link uses the same topic ID.
+- Only an entirely mastered curriculum shows the mastery completion message.
+- With no available topics (including empty paths), show “No topics are available yet.”
+
+Use isolated test fixtures to set progress states; the read-only progress API
+must remain unable to modify them.
+
 ## Recommended Local Setup
 
 Before testing:
