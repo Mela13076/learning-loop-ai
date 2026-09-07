@@ -2,7 +2,11 @@
 
 ## Overview
 
-This repo does not currently include an automated test suite. The most reliable way to validate changes today is targeted manual testing against the real product flows.
+The repo includes focused study-session save regression tests. Run them with
+`npm run test:study-sessions`. They execute the real handler and timer callbacks
+with mocked authentication, network calls, and an in-memory transaction model.
+They cover duplicate requests, conflict retries, rollback, and client retry IDs;
+they do not replace live PostgreSQL concurrency or browser testing.
 
 This document is a practical checklist for testing the current app.
 
@@ -160,6 +164,28 @@ Verify:
 - the saved session appears in the database
 - topic-linked sessions increase `totalStudyMinutes`
 - topic notes appear later on the topic page
+
+### Duplicate session saves
+
+1. Reload the app after updating so the timer sends the new required `sessionId`.
+2. Complete and save a topic-linked timer session. In DevTools Network, copy the
+   JSON body of `POST /api/study-sessions`, including its `sessionId`.
+3. Replay the exact request twice (also try two concurrent requests). The first
+   creation returns `201`; retries return `200` with the same session ID. Verify
+   one session exists and the topic's study minutes increased only once.
+4. Reuse the ID with different minutes or notes: expect `409` and unchanged data.
+   Reusing it from another account must also return `409` without session data.
+5. Start a new timer session: verify a different ID and a separate saved session.
+6. Repeat without a topic: the session should still be deduplicated.
+7. Simulate a lost response after the server commits, then choose Try Again.
+   The retry must send the identical ID and body, returning the existing session.
+   Notes are frozen after the first save attempt; edit the saved notes afterward.
+
+Live database integration check: force the progress update to fail in an isolated
+test database, then verify the session insert rolled back. Also save two distinct
+sessions concurrently for the same topic and verify both minute increments.
+Never inject database failures into production. Persistent database conflicts
+return `503` after three attempts; retry with the same request body.
 
 ### Focus time excludes breaks
 

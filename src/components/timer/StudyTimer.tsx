@@ -136,6 +136,10 @@ export function StudyTimer({
   // Timestamps recorded at session start/end — not state so they don't trigger re-renders
   const startedAtRef = useRef<Date | null>(null);
   const endedAtRef = useRef<Date | null>(null);
+  const sessionIdRef = useRef<string | null>(null);
+  const saveInFlightRef = useRef(false);
+  const savedRef = useRef(false);
+  const savePayloadRef = useRef<string | null>(null);
   const phaseRef = useRef<Phase>("focus");
   const secondsLeftRef = useRef(MODE_CONFIGS.POMODORO.focusMinutes * 60);
   const timerSoundRef = useRef<HTMLAudioElement | null>(null);
@@ -269,6 +273,9 @@ export function StudyTimer({
   }, []);
 
   const handleStart = useCallback(() => {
+    sessionIdRef.current = crypto.randomUUID();
+    savePayloadRef.current = null;
+    savedRef.current = false;
     startedAtRef.current = new Date();
     endedAtRef.current = null;
     phaseRef.current = "focus";
@@ -297,6 +304,10 @@ export function StudyTimer({
   }, []);
 
   const handleReset = useCallback(() => {
+    if (saveInFlightRef.current) return;
+    sessionIdRef.current = null;
+    savePayloadRef.current = null;
+    savedRef.current = false;
     startedAtRef.current = null;
     endedAtRef.current = null;
     phaseRef.current = "focus";
@@ -314,24 +325,36 @@ export function StudyTimer({
   }, [focusSeconds]);
 
   const handleSave = useCallback(async () => {
-    if (!startedAtRef.current || !endedAtRef.current) return;
+    if (!startedAtRef.current || !endedAtRef.current || !sessionIdRef.current) return;
+    if (saveInFlightRef.current || savedRef.current) return;
+    saveInFlightRef.current = true;
     setSaveState("saving");
     setSaveError("");
 
     const durationMinutes = Math.max(1, Math.floor(elapsedSeconds / 60));
 
+    // Keep the same payload after an uncertain network failure: the server may
+    // already have committed it. Notes can be edited on the saved session later.
+    savePayloadRef.current ??= JSON.stringify({
+      sessionId: sessionIdRef.current,
+      durationMinutes,
+      timerMode: mode,
+      topicId: selectedTopicId || undefined,
+      notes: notes.trim() || undefined,
+      startedAt: startedAtRef.current.toISOString(),
+      endedAt: endedAtRef.current.toISOString(),
+    });
+    const savedInput = JSON.parse(savePayloadRef.current) as {
+      topicId?: string;
+      durationMinutes: number;
+      notes?: string;
+    };
+
     try {
       const res = await fetch("/api/study-sessions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          durationMinutes,
-          timerMode: mode,
-          topicId: selectedTopicId || undefined,
-          notes: notes.trim() || undefined,
-          startedAt: startedAtRef.current.toISOString(),
-          endedAt: endedAtRef.current.toISOString(),
-        }),
+        body: savePayloadRef.current,
       });
 
       if (!res.ok) {
@@ -339,24 +362,26 @@ export function StudyTimer({
         throw new Error(data.error ?? "Failed to save session");
       }
 
+      savedRef.current = true;
       setSaveState("saved");
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : "Something went wrong");
       setSaveState("error");
+      saveInFlightRef.current = false;
       return;
     }
 
     // Auto-generate AI summary only if a topic was selected AND notes were written
-    if (selectedTopicId && notes.trim()) {
+    if (savedInput.topicId && savedInput.notes) {
       setSummaryState("loading");
       try {
         const res = await fetch("/api/ai/session-summary", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            topicId: selectedTopicId,
-            durationMinutes,
-            notes: notes.trim() || undefined,
+            topicId: savedInput.topicId,
+            durationMinutes: savedInput.durationMinutes,
+            notes: savedInput.notes,
           }),
         });
         if (res.ok) {
@@ -370,6 +395,7 @@ export function StudyTimer({
         setSummaryState("error");
       }
     }
+    saveInFlightRef.current = false;
   }, [elapsedSeconds, mode, notes, selectedTopicId]);
 
   const elapsedMinutes = Math.floor(elapsedSeconds / 60);
@@ -583,14 +609,17 @@ export function StudyTimer({
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            disabled={saveState === "saved"}
+            disabled={saveState !== "idle"}
             rows={4}
             placeholder="What did you learn? Any questions? Notes for next time…"
             className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm resize-none disabled:opacity-50"
           />
           <p className="mt-1.5 text-xs text-muted-foreground">
             Notes are saved with your session so you can review them later.{" "}
-            {saveState !== "saved" && (
+            {saveState === "error" && (
+              <span>Retrying keeps your original notes. You can edit them after saving.</span>
+            )}
+            {saveState === "idle" && (
               <span className="text-primary">
                 Adding notes also unlocks an AI-generated session summary.
               </span>
@@ -599,7 +628,7 @@ export function StudyTimer({
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <Button variant="outline" onClick={handleReset}>
+          <Button variant="outline" onClick={handleReset} disabled={saveState === "saving" || summaryState === "loading"}>
             Start New Session
           </Button>
           <Button

@@ -83,6 +83,8 @@ How it works:
 - the timer tracks focus time and break transitions in the client; running breaks
   and pauses do not count toward saved study minutes
 - when the session ends, the app saves a `StudySession`
+- saving retries reuse the same session ID, so a lost response does not count
+  study time twice; session creation and its progress update commit together
 - if a topic was selected, topic progress is updated with the new study minutes
 - if notes are added, the app can generate an AI session summary
 

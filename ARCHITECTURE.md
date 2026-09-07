@@ -228,6 +228,15 @@ Flow:
 4. if a topic is attached, `UserTopicProgress.totalStudyMinutes` is updated
 5. if the user saved notes, an AI session summary can be generated
 
+Study-session saves use a UUID generated when the timer starts, stored in the
+existing `StudySession.id` field. `POST /api/study-sessions` requires `sessionId`;
+matching retries return the existing session (`200`), new saves return `201`,
+and conflicting ID reuse returns `409`. The timer retains the original payload
+for retries and prevents overlapping saves. Creation and topic-progress updates
+share a serializable transaction, retried up to three times on Prisma uniqueness
+or serialization conflicts. Existing historical IDs remain valid; no schema
+migration is needed. Other progress-writing flows retain their existing behavior.
+
 ### AI learning coach flow
 
 UI:
