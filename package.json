@@ -10,6 +10,8 @@
     "test:study-sessions": "node --test tests/study-session-saves.test.mjs",
     "test:dashboard": "node --test tests/dashboard-recommendation.test.mjs",
     "test:quiz-validation": "node --test tests/quiz-validation.test.mjs",
+    "test:feedback-validation": "node --test tests/feedback-validation.test.mjs",
+    "test:quiz-results-test": "node --test tests/quiz-results.test.mjs",
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",

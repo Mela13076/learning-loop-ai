@@ -334,6 +334,21 @@ the final gate on a fresh topic.
    request must fail with `Gemini API key is not configured` in server logs.
 7. Restore your desired environment settings and restart the server.
 
+### Real AI grading validation
+
+Run `npm run test:feedback-validation`. Tests cover all score/flag combinations,
+invalid fields and JSON, real-service validation with stubbed AI, unchanged mock
+grading, submission rejection without result/progress writes, valid partial
+credit, and client answer preservation after an error.
+
+In a local test setup, inject one malformed grading response into a mixed or
+short-answer quiz submission. Verify `502`, a visible retry message, retained
+answers, and no new or overwritten quiz attempt or mastery update. Retry with
+valid grades and verify successful submission. A score of 1 requires only
+`isCorrect=true`; 0.5 requires only `isPartiallyCorrect=true`; 0 requires both
+false. Valid feedback must be nonempty. Provider/DB stubs are used in automated
+tests; live AI and browser behavior still require manual checks.
+
 ### Mock answer grading
 
 With `AI_MODE=mock`, generate a five-question mixed quiz. Answer questions 1,

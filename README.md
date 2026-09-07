@@ -124,6 +124,8 @@ How it works:
 - the user takes the quiz in the UI
 - answers are submitted to `/api/quizzes/[id]/submit`
 - short-answer and code-reading responses can use AI grading and feedback
+- real AI grades require valid scores, consistent correctness flags, and nonempty
+  feedback; invalid grades reject submission before results or mastery are updated
 - the completed attempt is stored in `QuizAttempt` and `QuizAnswer`
 - topic mastery is recalculated after submission
 

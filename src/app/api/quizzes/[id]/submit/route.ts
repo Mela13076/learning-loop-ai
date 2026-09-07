@@ -2,6 +2,7 @@ import { auth } from "@clerk/nextjs/server"
 import { z } from "zod"
 import { db } from "@/lib/db"
 import { getAnswerFeedback } from "@/lib/ai/feedback"
+import { InvalidFeedbackResponseError } from "@/lib/ai/feedback-schema"
 import { AI_MODEL } from "@/lib/ai/config"
 import { parseKeyConcepts } from "@/lib/topic-content"
 import {
@@ -65,56 +66,64 @@ export async function POST(
   const { answers } = parsed.data
 
   // Grade each answer
-  const gradedAnswers = await Promise.all(
-    quiz.questions.map(async (question) => {
-      const submitted = answers.find((a) => a.questionId === question.id)
-      const userAnswer = submitted?.userAnswer ?? ""
+  let gradedAnswers
+  try {
+    gradedAnswers = await Promise.all(
+      quiz.questions.map(async (question) => {
+        const submitted = answers.find((a) => a.questionId === question.id)
+        const userAnswer = submitted?.userAnswer ?? ""
 
-      if (
-        question.questionType === "SHORT_ANSWER" ||
-        question.questionType === "CODE_READING"
-      ) {
-        const feedbackResult = await getAnswerFeedback({
-          questionText: question.questionText,
-          correctAnswer: question.correctAnswer,
-          userAnswer,
-          topicTitle: quiz.topic.title,
-          questionType: question.questionType,
-        })
-        await db.aiInteraction.create({
-          data: {
-            userId: dbUser.id,
-            topicId: quiz.topicId,
-            interactionType: "ANSWER_FEEDBACK",
-            prompt: `Q: ${question.questionText}\nCorrect: ${question.correctAnswer}\nUser: ${userAnswer}`,
-            response: JSON.stringify(feedbackResult),
-            modelUsed: AI_MODEL,
-          },
-        })
+        if (
+          question.questionType === "SHORT_ANSWER" ||
+          question.questionType === "CODE_READING"
+        ) {
+          const feedbackResult = await getAnswerFeedback({
+            questionText: question.questionText,
+            correctAnswer: question.correctAnswer,
+            userAnswer,
+            topicTitle: quiz.topic.title,
+            questionType: question.questionType,
+          })
+          await db.aiInteraction.create({
+            data: {
+              userId: dbUser.id,
+              topicId: quiz.topicId,
+              interactionType: "ANSWER_FEEDBACK",
+              prompt: `Q: ${question.questionText}\nCorrect: ${question.correctAnswer}\nUser: ${userAnswer}`,
+              response: JSON.stringify(feedbackResult),
+              modelUsed: AI_MODEL,
+            },
+          })
+          return {
+            questionId: question.id,
+            userAnswer,
+            isCorrect: feedbackResult.isCorrect,
+            feedback: feedbackResult.feedback,
+            score: feedbackResult.score,
+          }
+        }
+
+        // Multiple choice and debugging — exact string match
+        const isCorrect =
+          userAnswer.trim().toLowerCase() ===
+          question.correctAnswer.trim().toLowerCase()
         return {
           questionId: question.id,
           userAnswer,
-          isCorrect: feedbackResult.isCorrect,
-          feedback: feedbackResult.feedback,
-          score: feedbackResult.score,
+          isCorrect,
+          feedback: isCorrect
+            ? "Correct!"
+            : `The correct answer is: ${question.correctAnswer}. ${question.explanation}`,
+          score: isCorrect ? 1 : 0,
         }
-      }
-
-      // Multiple choice and debugging — exact string match
-      const isCorrect =
-        userAnswer.trim().toLowerCase() ===
-        question.correctAnswer.trim().toLowerCase()
-      return {
-        questionId: question.id,
-        userAnswer,
-        isCorrect,
-        feedback: isCorrect
-          ? "Correct!"
-          : `The correct answer is: ${question.correctAnswer}. ${question.explanation}`,
-        score: isCorrect ? 1 : 0,
-      }
-    })
-  )
+      })
+    )
+  } catch (error) {
+    if (error instanceof InvalidFeedbackResponseError) {
+      return Response.json({ error: error.message }, { status: 502 })
+    }
+    throw error
+  }
 
   const totalScore =
     gradedAnswers.reduce((sum, a) => sum + a.score, 0) / quiz.questions.length
@@ -144,6 +153,7 @@ export async function POST(
               questionId: a.questionId,
               userAnswer: a.userAnswer,
               isCorrect: a.isCorrect,
+              score: a.score,
               feedback: a.feedback,
             })),
           },
@@ -162,6 +172,7 @@ export async function POST(
               questionId: a.questionId,
               userAnswer: a.userAnswer,
               isCorrect: a.isCorrect,
+              score: a.score,
               feedback: a.feedback,
             })),
           },

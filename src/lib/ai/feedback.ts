@@ -1,5 +1,6 @@
 import { isMockMode } from "./config"
 import { generateJson } from "./client"
+import { parseFeedbackResponse } from "./feedback-schema"
 
 export interface FeedbackInput {
   questionText: string
@@ -50,6 +51,8 @@ Rules:
 - isCorrect: true only if the student's answer captures the core meaning accurately
 - isPartiallyCorrect: true if the answer shows understanding but is incomplete or imprecise
 - score: 1 for correct, 0.5 for partially correct, 0 for incorrect
+- Flags must agree with score: 1 means isCorrect=true and isPartiallyCorrect=false;
+  0.5 means isCorrect=false and isPartiallyCorrect=true; 0 means both flags are false
 - feedback: 1-2 sentences explaining what was right or wrong — encouraging tone, never harsh
 - Return ONLY valid JSON matching this exact shape:
 {
@@ -65,7 +68,7 @@ Rules:
     maxOutputTokens: 512,
   })
 
-  return JSON.parse(text) as FeedbackResponse
+  return parseFeedbackResponse(text)
 }
 
 export async function getAnswerFeedback(

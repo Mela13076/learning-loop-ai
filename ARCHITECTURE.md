@@ -292,7 +292,13 @@ ordering, four distinct choices for choice-based questions, and matching answer
 keys. Short-answer questions cannot include choices. Invalid JSON or schema
 violations return `502` with a retry message through the generation endpoint;
 the rejected response does not create a quiz. This validates structure, not the
-educational correctness of the content. Grading-output validation is separate.
+educational correctness of the content.
+
+Real grading uses `src/lib/ai/feedback-schema.ts` to validate scores (0, 0.5, 1),
+consistent correctness flags, and nonempty feedback. Invalid grades return `502`
+before attempts, answers, or progress are written. Existing attempts are preserved
+on rejection; valid individual AI interactions may still be logged. The quiz UI
+retains submitted answers in component state for retry. Mock grading is unchanged.
 
 ## Mastery System
 
