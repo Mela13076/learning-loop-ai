@@ -34,17 +34,18 @@ function answerGrade(answer: AnswerWithQuestion) {
   const points = answer.score ?? (answer.isCorrect ? 1 : null)
   if (points === 1) return {
     label: "Correct", points: "1 / 1 point", icon: "✓",
-    color: "text-primary", background: "border-primary/20 bg-[var(--accent-soft)]/60",
+    color: "text-green-600 dark:text-green-400", 
+    background: "border-green-600 bg-green-50 dark:border-green-800 dark:bg-green-900/10",
   }
   if (points === 0.5) return {
     label: "Partially correct", points: "0.5 / 1 point", icon: "½",
     color: "text-yellow-700 dark:text-yellow-400",
-    background: "border-yellow-200 bg-yellow-50/50 dark:border-yellow-800 dark:bg-yellow-900/10",
+    background: "border-yellow-600 bg-yellow-50/50 dark:border-yellow-800 dark:bg-yellow-900/10",
   }
   if (points === 0) return {
     label: "Incorrect", points: "0 / 1 point", icon: "✗",
     color: "text-red-600 dark:text-red-400",
-    background: "border-red-200 bg-red-50/50 dark:border-red-800 dark:bg-red-900/10",
+    background: "border-red-600 bg-red-50/50 dark:border-red-800 dark:bg-red-900/10",
   }
   return {
     label: "Needs review", points: "Points unavailable for this older answer", icon: "?",
@@ -171,7 +172,7 @@ export function QuizResultsSummary({
                       Question {i + 1}
                     </span>
                   </div>
-                  <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                  <span className="rounded-full border border-black/50 bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
                     {TYPE_LABEL[answer.question.questionType]}
                   </span>
                 </div>
@@ -213,7 +214,7 @@ export function QuizResultsSummary({
 
                   {/* Feedback / explanation */}
                   {(answer.feedback ?? answer.question.explanation) && (
-                    <p className="mt-2 rounded-lg bg-muted/60 px-3 py-2 text-muted-foreground">
+                    <p className="mt-2 rounded-lg border border-black/50 bg-muted/60 px-3 py-2 text-muted-foreground">
                       {answer.feedback ?? answer.question.explanation}
                     </p>
                   )}
