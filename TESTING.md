@@ -321,6 +321,18 @@ score at least 80%. Verify `finalQuizPassed` is recorded; `MASTERED` still also
 requires the weighted mastery threshold. A 5- or 10-question quiz must not set
 the final gate on a fresh topic.
 
+### Mock interaction logging
+
+Run `npm run test:mock-interaction-logs`. It verifies that mock quiz generation,
+summaries, and recommendations create no `AiInteraction` rows, while their
+real-mode equivalents retain one. It also verifies that mock coach lessons,
+hints, and answers create no records, but a mock coach quiz persists exactly one
+`modelUsed: "mock"` state record so hint and answer actions continue to work.
+
+In a local database, use each mock flow and inspect `AiInteraction` in Prisma
+Studio. Existing rows are historical data and are not deleted. Switch to real
+mode to verify ordinary audit logging still occurs.
+
 ### Mock mode without an AI key
 
 1. Set `AI_MODE=mock` in your local environment, temporarily unset both

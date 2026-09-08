@@ -152,6 +152,12 @@ preserving the supplied curriculum order for ties. Empty curriculum and complete
 curriculum are separate results. Quiz-result and AI recommendation flows retain
 their existing rules.
 
+Mock mode does not write `AiInteraction` audit records for generated quizzes,
+answer feedback, summaries, or rule-based recommendations. The coach's stored
+quiz state remains an `AiInteraction` record because hint and answer requests
+retrieve it by ID; that record has `modelUsed: "mock"`. Real mode keeps all
+current audit logging. Separating coach state from audit records is deferred.
+
 ## AI Service Layer
 
 All AI behavior lives under `src/lib/ai/`.

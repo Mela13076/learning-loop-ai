@@ -2,7 +2,7 @@ import { auth } from "@clerk/nextjs/server"
 import { z } from "zod"
 import { db } from "@/lib/db"
 import { generateSessionSummary } from "@/lib/ai/summary"
-import { AI_MODEL } from "@/lib/ai/config"
+import { AI_MODEL, isMockMode } from "@/lib/ai/config"
 
 const bodySchema = z.object({
   topicId: z.string().min(1),
@@ -51,16 +51,18 @@ export async function POST(request: Request) {
 
   const summary = await generateSessionSummary(input)
 
-  await db.aiInteraction.create({
-    data: {
-      userId: dbUser.id,
-      topicId: topic.id,
-      interactionType: "STUDY_SUMMARY",
-      prompt: JSON.stringify(input),
-      response: JSON.stringify(summary),
-      modelUsed: AI_MODEL,
-    },
-  })
+  if (!isMockMode) {
+    await db.aiInteraction.create({
+      data: {
+        userId: dbUser.id,
+        topicId: topic.id,
+        interactionType: "STUDY_SUMMARY",
+        prompt: JSON.stringify(input),
+        response: JSON.stringify(summary),
+        modelUsed: AI_MODEL,
+      },
+    })
+  }
 
   return Response.json(summary)
 }

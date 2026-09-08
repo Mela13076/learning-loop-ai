@@ -3,7 +3,7 @@ import { z } from "zod"
 import { db } from "@/lib/db"
 import { getAnswerFeedback } from "@/lib/ai/feedback"
 import { InvalidFeedbackResponseError } from "@/lib/ai/feedback-schema"
-import { AI_MODEL } from "@/lib/ai/config"
+import { AI_MODEL, isMockMode } from "@/lib/ai/config"
 import { parseKeyConcepts } from "@/lib/topic-content"
 import {
   computeTopicMastery,
@@ -84,16 +84,18 @@ export async function POST(
             topicTitle: quiz.topic.title,
             questionType: question.questionType,
           })
-          await db.aiInteraction.create({
-            data: {
-              userId: dbUser.id,
-              topicId: quiz.topicId,
-              interactionType: "ANSWER_FEEDBACK",
-              prompt: `Q: ${question.questionText}\nCorrect: ${question.correctAnswer}\nUser: ${userAnswer}`,
-              response: JSON.stringify(feedbackResult),
-              modelUsed: AI_MODEL,
-            },
-          })
+          if (!isMockMode) {
+            await db.aiInteraction.create({
+              data: {
+                userId: dbUser.id,
+                topicId: quiz.topicId,
+                interactionType: "ANSWER_FEEDBACK",
+                prompt: `Q: ${question.questionText}\nCorrect: ${question.correctAnswer}\nUser: ${userAnswer}`,
+                response: JSON.stringify(feedbackResult),
+                modelUsed: AI_MODEL,
+              },
+            })
+          }
           return {
             questionId: question.id,
             userAnswer,

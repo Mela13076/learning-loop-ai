@@ -3,7 +3,7 @@ import { z } from "zod"
 import { db } from "@/lib/db"
 import { generateQuiz } from "@/lib/ai/quiz"
 import { InvalidQuizResponseError } from "@/lib/ai/quiz-schema"
-import { AI_MODEL } from "@/lib/ai/config"
+import { AI_MODEL, isMockMode } from "@/lib/ai/config"
 import type { QuizDifficulty, QuizQuestionType, GeneratedQuestionType } from "@/lib/ai/quiz"
 
 const bodySchema = z.object({
@@ -95,16 +95,18 @@ export async function POST(request: Request) {
     select: { id: true },
   })
 
-  await db.aiInteraction.create({
-    data: {
-      userId: dbUser.id,
-      topicId: topic.id,
-      interactionType: "QUIZ_GENERATION",
-      prompt: `Generate ${questionCount} ${difficulty} ${questionType} questions about ${topic.title}`,
-      response: JSON.stringify(generated),
-      modelUsed: AI_MODEL,
-    },
-  })
+  if (!isMockMode) {
+    await db.aiInteraction.create({
+      data: {
+        userId: dbUser.id,
+        topicId: topic.id,
+        interactionType: "QUIZ_GENERATION",
+        prompt: `Generate ${questionCount} ${difficulty} ${questionType} questions about ${topic.title}`,
+        response: JSON.stringify(generated),
+        modelUsed: AI_MODEL,
+      },
+    })
+  }
 
   return Response.json({ quizId: quiz.id })
 }

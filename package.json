@@ -11,6 +11,7 @@
     "test:dashboard": "node --test tests/dashboard-recommendation.test.mjs",
     "test:quiz-validation": "node --test tests/quiz-validation.test.mjs",
     "test:feedback-validation": "node --test tests/feedback-validation.test.mjs",
+    "test:mock-interaction-logs": "node --test tests/mock-interaction-logs.test.mjs",
     "test:quiz-results-test": "node --test tests/quiz-results.test.mjs",
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",

@@ -338,6 +338,10 @@ and whitespace differences. Mock code-reading grading preserves case and
 internal spacing. Blank or nonmatching answers receive zero credit; there is
 no semantic matching or partial credit in mock mode.
 
+Mock quiz generation, grading, summaries, and recommendations do not create AI
+audit logs. Mock coach quizzes retain one `mock`-labeled record only because the
+current hint and answer flow needs persisted quiz state.
+
 ### Real mode
 
 ```env

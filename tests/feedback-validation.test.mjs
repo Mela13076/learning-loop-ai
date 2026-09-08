@@ -53,9 +53,10 @@ test('mock grading remains deterministic and does not call provider', async () =
   }
 });
 
-function submissionHarness(provider, previous = false) {
+function submissionHarness(provider, previous = false, mock = false) {
   let saved, progress;
   const writes = [];
+  const logs = [];
   const questions = ['SHORT_ANSWER', 'CODE_READING'].map((questionType, i) => ({
     id: `q${i}`, questionType, questionText: `Question ${i}`, correctAnswer: 'Answer', explanation: 'Explanation',
   }));
@@ -63,7 +64,7 @@ function submissionHarness(provider, previous = false) {
     user: { findUnique: async () => ({ id: 'user' }) },
     quiz: { findUnique: async () => ({ id: 'quiz', userId: 'user', topicId: 'topic', difficulty: 'BEGINNER', questionCount: 2,
       questions, topic: { title: 'Topic', estimatedMinutes: 40, keyConcepts: [] } }) },
-    aiInteraction: { create: async () => ({}) },
+    aiInteraction: { create: async ({ data }) => { logs.push(data); return {}; } },
     quizAttempt: {
       findMany: async ({ where }) => where.quizId ? (previous ? [{ id: 'old' }] : []) : [{ quizId: 'quiz', score: saved.score }],
       create: async ({ data }) => { writes.push('attempt'); saved = data; return { id: 'attempt' }; },
@@ -77,10 +78,10 @@ function submissionHarness(provider, previous = false) {
   const route = load('../src/app/api/quizzes/[id]/submit/route.ts', {
     '@clerk/nextjs/server': { auth: async () => ({ userId: 'clerk' }) }, zod,
     '@/lib/db': { db }, '@/lib/ai/feedback': service(provider), '@/lib/ai/feedback-schema': schema,
-    '@/lib/ai/config': { AI_MODEL: 'test' }, '@/lib/topic-content': load('../src/lib/topic-content.ts'),
+    '@/lib/ai/config': { AI_MODEL: 'test', isMockMode: mock }, '@/lib/topic-content': load('../src/lib/topic-content.ts'),
     '@/lib/topic-progress': load('../src/lib/topic-progress.ts'),
   });
-  return { writes, saved: () => saved, progress: () => progress, submit: () => route.POST(new Request('http://localhost/test', {
+  return { writes, logs, saved: () => saved, progress: () => progress, submit: () => route.POST(new Request('http://localhost/test', {
     method: 'POST', body: JSON.stringify({ answers: questions.map(q => ({ questionId: q.id, userAnswer: 'Answer' })) }),
   }), { params: Promise.resolve({ id: 'quiz' }) }) };
 }
@@ -110,6 +111,15 @@ test('valid grades including partial credit persist correct quiz score and progr
   assert.equal(h.saved().answers.create[1].isCorrect, false);
   assert.equal(h.saved().answers.create[0].score, 1);
   assert.equal(h.saved().answers.create[1].score, 0.5);
+  assert.equal(h.logs.length, 2);
+});
+
+test('mock answer grading persists quiz results but does not create audit logs', async () => {
+  const h = submissionHarness(async () => JSON.stringify(valid(1)), false, true);
+  assert.equal((await h.submit()).status, 200);
+  assert.equal(h.saved().score, 100);
+  assert.equal(h.progress().averageQuizScore, 100);
+  assert.deepEqual(h.logs, []);
 });
 
 test('QuizTaker preserves answers and re-enables submission after grading error', async () => {
