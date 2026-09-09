@@ -145,28 +145,30 @@ export async function POST(request: Request) {
             selectedAnswer: payload.selectedAnswer ?? "",
           })
 
-    await db.aiInteraction.create({
-      data: {
-        userId: dbUser.id,
-        topicId: topic.id,
-        interactionType: "TUTOR_QUESTION",
-        prompt:
-          payload.action === "hint"
-            ? JSON.stringify({
-                action: "hint",
-                conceptTitle: context.conceptTitle,
-                interactionId: interaction.id,
-              })
-            : JSON.stringify({
-                action: "answer",
-                conceptTitle: context.conceptTitle,
-                interactionId: interaction.id,
-                selectedAnswer: payload.selectedAnswer,
-              }),
-        response: response.content,
-        modelUsed: getModelLabel(),
-      },
-    })
+    if (!isMockMode) {
+      await db.aiInteraction.create({
+        data: {
+          userId: dbUser.id,
+          topicId: topic.id,
+          interactionType: "TUTOR_QUESTION",
+          prompt:
+            payload.action === "hint"
+              ? JSON.stringify({
+                  action: "hint",
+                  conceptTitle: context.conceptTitle,
+                  interactionId: interaction.id,
+                })
+              : JSON.stringify({
+                  action: "answer",
+                  conceptTitle: context.conceptTitle,
+                  interactionId: interaction.id,
+                  selectedAnswer: payload.selectedAnswer,
+                }),
+          response: response.content,
+          modelUsed: getModelLabel(),
+        },
+      })
+    }
 
     return Response.json(response)
   }
@@ -200,22 +202,24 @@ export async function POST(request: Request) {
     })
   }
 
-  await db.aiInteraction.create({
-    data: {
-      userId: dbUser.id,
-      topicId: topic.id,
-      interactionType: "TUTOR_QUESTION",
-      prompt: JSON.stringify({
-        action: payload.action,
-        conceptTitle: context.conceptTitle,
-      }),
-      response:
-        coachResult.response.type === "lesson"
-          ? coachResult.response.content
-          : coachResult.response.question,
-      modelUsed: getModelLabel(),
-    },
-  })
+  if (!isMockMode) {
+    await db.aiInteraction.create({
+      data: {
+        userId: dbUser.id,
+        topicId: topic.id,
+        interactionType: "TUTOR_QUESTION",
+        prompt: JSON.stringify({
+          action: payload.action,
+          conceptTitle: context.conceptTitle,
+        }),
+        response:
+          coachResult.response.type === "lesson"
+            ? coachResult.response.content
+            : coachResult.response.question,
+        modelUsed: getModelLabel(),
+      },
+    })
+  }
 
   return Response.json(coachResult.response)
 }

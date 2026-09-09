@@ -140,6 +140,24 @@ That record is updated from several flows:
 - when a concept is marked covered or uncovered
 - when a quiz is submitted
 
+`/api/topics/[id]/progress` is read-only. It exposes authenticated `GET`
+requests; direct `PATCH` requests return `405 Method Not Allowed`. Mastery and
+statistics are calculated by the activity handlers above, rather than accepted
+as direct progress updates from the client.
+
+Dashboard topic selection lives in `src/lib/dashboard-recommendation.ts` and
+runs server-side using the current user's progress. It prioritizes `IN_PROGRESS`,
+then `NEEDS_REVIEW`, then explicit or implicit `NOT_STARTED` across all paths,
+preserving the supplied curriculum order for ties. Empty curriculum and completed
+curriculum are separate results. Quiz-result and AI recommendation flows retain
+their existing rules.
+
+Mock mode does not write `AiInteraction` audit records for generated quizzes,
+answer feedback, summaries, or rule-based recommendations. The coach's stored
+quiz state remains an `AiInteraction` record because hint and answer requests
+retrieve it by ID; that record has `modelUsed: "mock"`. Real mode keeps all
+current audit logging. Separating coach state from audit records is deferred.
+
 ## AI Service Layer
 
 All AI behavior lives under `src/lib/ai/`.
@@ -223,6 +241,15 @@ Flow:
 4. if a topic is attached, `UserTopicProgress.totalStudyMinutes` is updated
 5. if the user saved notes, an AI session summary can be generated
 
+Study-session saves use a UUID generated when the timer starts, stored in the
+existing `StudySession.id` field. `POST /api/study-sessions` requires `sessionId`;
+matching retries return the existing session (`200`), new saves return `201`,
+and conflicting ID reuse returns `409`. The timer retains the original payload
+for retries and prevents overlapping saves. Creation and topic-progress updates
+share a serializable transaction, retried up to three times on Prisma uniqueness
+or serialization conflicts. Existing historical IDs remain valid; no schema
+migration is needed. Other progress-writing flows retain their existing behavior.
+
 ### AI learning coach flow
 
 UI:
@@ -264,6 +291,20 @@ Flow:
 5. answers are graded
 6. `QuizAttempt` and `QuizAnswer` records are created
 7. topic mastery is recalculated
+
+Real quiz generation validates provider JSON through `src/lib/ai/quiz-schema.ts`
+before persistence. It checks requested count/type, nonempty fields, sequential
+ordering, four distinct choices for choice-based questions, and matching answer
+keys. Short-answer questions cannot include choices. Invalid JSON or schema
+violations return `502` with a retry message through the generation endpoint;
+the rejected response does not create a quiz. This validates structure, not the
+educational correctness of the content.
+
+Real grading uses `src/lib/ai/feedback-schema.ts` to validate scores (0, 0.5, 1),
+consistent correctness flags, and nonempty feedback. Invalid grades return `502`
+before attempts, answers, or progress are written. Existing attempts are preserved
+on rejection; valid individual AI interactions may still be logged. The quiz UI
+retains submitted answers in component state for retry. Mock grading is unchanged.
 
 ## Mastery System
 

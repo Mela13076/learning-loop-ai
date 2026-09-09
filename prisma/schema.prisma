@@ -221,6 +221,8 @@ model QuizAnswer {
   questionId    String
   userAnswer    String
   isCorrect     Boolean
+  // Null for older attempts whose per-answer points were not saved.
+  score         Float?
   feedback      String?
 
   attempt  QuizAttempt  @relation(fields: [quizAttemptId], references: [id], onDelete: Cascade)

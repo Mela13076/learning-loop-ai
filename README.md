@@ -54,6 +54,11 @@ The dashboard is the main study snapshot for a signed-in user. It shows:
 - weak topics that need review
 - a recommended next topic based on existing progress
 
+The dashboard prioritizes in-progress topics, then topics needing review, then
+unstarted topics across all paths. Ties follow curriculum order. The action reads
+Continue, Review, or Start to match the recommendation. An empty curriculum has
+its own message; completion is shown only when all available topics are mastered.
+
 ### Topic pages
 
 Each topic page is the main learning surface. It includes:
@@ -80,8 +85,11 @@ The timer supports three modes:
 How it works:
 
 - a user optionally attaches the session to a topic
-- the timer tracks focus time and break transitions in the client
+- the timer tracks focus time and break transitions in the client; running breaks
+  and pauses do not count toward saved study minutes
 - when the session ends, the app saves a `StudySession`
+- saving retries reuse the same session ID, so a lost response does not count
+  study time twice; session creation and its progress update commit together
 - if a topic was selected, topic progress is updated with the new study minutes
 - if notes are added, the app can generate an AI session summary
 
@@ -111,9 +119,13 @@ How it works:
 
 - the app calls the quiz generation service in `src/lib/ai/quiz.ts`
 - the generated quiz is stored in the database as a `Quiz` with `QuizQuestion` records
+- real AI quizzes are validated for count, format, required fields, ordering, and
+  answer choices before saving; invalid output shows a retry message without creating a quiz
 - the user takes the quiz in the UI
 - answers are submitted to `/api/quizzes/[id]/submit`
 - short-answer and code-reading responses can use AI grading and feedback
+- real AI grades require valid scores, consistent correctness flags, and nonempty
+  feedback; invalid grades reject submission before results or mastery are updated
 - the completed attempt is stored in `QuizAttempt` and `QuizAnswer`
 - topic mastery is recalculated after submission
 
@@ -189,7 +201,7 @@ Required environment variables:
 - `NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL`
 - `DATABASE_URL`
 - `DIRECT_URL`
-- `GEMINI_API_KEY`
+- `GEMINI_API_KEY` (required only for real AI mode; `GOOGLE_API_KEY` is a fallback)
 - `AI_MODE`
 - `AI_MODEL`
 
@@ -312,6 +324,23 @@ Use this for:
 - avoiding API costs
 
 In mock mode, the app returns realistic hardcoded AI responses for the coach, quiz generation, feedback, summaries, and recommendations.
+
+Mock mode does not require a Gemini API key. Real mode initializes the Gemini
+client on the first AI request and requires `GEMINI_API_KEY` or `GOOGLE_API_KEY`.
+
+Mock quizzes use one shared bank of 15 questions and honor the requested count
+(5, 10, or 15) and format (multiple choice, short answer, or mixed). The bank is
+the same for every topic and difficulty; it supports testing quiz flows and the
+final mastery gate, rather than evaluating topic-specific knowledge.
+
+Mock short-answer grading compares against the stored answer, ignoring case
+and whitespace differences. Mock code-reading grading preserves case and
+internal spacing. Blank or nonmatching answers receive zero credit; there is
+no semantic matching or partial credit in mock mode.
+
+Mock quiz generation, grading, summaries, and recommendations do not create AI
+audit logs. Mock coach quizzes retain one `mock`-labeled record only because the
+current hint and answer flow needs persisted quiz state.
 
 ### Real mode
 

@@ -22,7 +22,7 @@ export function DashboardCard({
       )}
     >
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+        <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider">
           {title}
         </h2>
         {action && (

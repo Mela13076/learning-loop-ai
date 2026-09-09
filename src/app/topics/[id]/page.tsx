@@ -343,10 +343,10 @@ export default async function TopicPage({
                 <details className="group">
                   <summary className="flex cursor-pointer list-none items-start justify-between gap-3">
                     <div className="space-y-2">
-                      <h2 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">
+                      <h2 className="font-semibold text-sm uppercase tracking-wider text-foreground">
                         Session Notes
                       </h2>
-                      <p className="text-sm leading-relaxed text-foreground">
+                      <p className="text-sm leading-relaxed text-muted-foreground">
                         Review notes from prior study sessions. Open this section
                         to browse, edit, or remove saved notes.
                       </p>
@@ -488,7 +488,7 @@ export default async function TopicPage({
           id="ai-learning-coach"
           className="mt-8 rounded-xl border border-primary/50 bg-card p-6"
         >
-          <h2 className="mb-4 font-semibold text-sm uppercase tracking-wider text-muted-foreground">
+          <h2 className="mb-4 font-semibold text-sm uppercase tracking-wider text-foreground">
             AI Learning Coach
           </h2>
           <AiLearningCoach

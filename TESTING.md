@@ -2,9 +2,32 @@
 
 ## Overview
 
-This repo does not currently include an automated test suite. The most reliable way to validate changes today is targeted manual testing against the real product flows.
+The repo includes focused study-session save regression tests. Run them with
+`npm run test:study-sessions`. They execute the real handler and timer callbacks
+with mocked authentication, network calls, and an in-memory transaction model.
+They cover duplicate requests, conflict retries, rollback, and client retry IDs;
+they do not replace live PostgreSQL concurrency or browser testing.
 
 This document is a practical checklist for testing the current app.
+
+Run `npm run test:dashboard` for pure dashboard recommendation tests, including
+all 125 combinations of three topics' progress states (including absent rows).
+
+### Dashboard recommendations
+
+Using disposable local test data, verify these dashboard cases:
+
+- An in-progress topic is recommended even when an earlier topic has no progress.
+- With no in-progress topics, a topic needing review is recommended before new work.
+- Explicit `NOT_STARTED` rows and topics without progress rows are both eligible.
+- Ties follow the displayed path/topic curriculum order.
+- The button says Continue topic, Review topic, or Start topic as appropriate and
+  links to the selected topic; the timer link uses the same topic ID.
+- Only an entirely mastered curriculum shows the mastery completion message.
+- With no available topics (including empty paths), show “No topics are available yet.”
+
+Use isolated test fixtures to set progress states; the read-only progress API
+must remain unable to modify them.
 
 ## Recommended Local Setup
 
@@ -161,6 +184,45 @@ Verify:
 - topic-linked sessions increase `totalStudyMinutes`
 - topic notes appear later on the topic page
 
+### Duplicate session saves
+
+1. Reload the app after updating so the timer sends the new required `sessionId`.
+2. Complete and save a topic-linked timer session. In DevTools Network, copy the
+   JSON body of `POST /api/study-sessions`, including its `sessionId`.
+3. Replay the exact request twice (also try two concurrent requests). The first
+   creation returns `201`; retries return `200` with the same session ID. Verify
+   one session exists and the topic's study minutes increased only once.
+4. Reuse the ID with different minutes or notes: expect `409` and unchanged data.
+   Reusing it from another account must also return `409` without session data.
+5. Start a new timer session: verify a different ID and a separate saved session.
+6. Repeat without a topic: the session should still be deduplicated.
+7. Simulate a lost response after the server commits, then choose Try Again.
+   The retry must send the identical ID and body, returning the existing session.
+   Notes are frozen after the first save attempt; edit the saved notes afterward.
+
+Live database integration check: force the progress update to fail in an isolated
+test database, then verify the session insert rolled back. Also save two distinct
+sessions concurrently for the same topic and verify both minute increments.
+Never inject database failures into production. Persistent database conflicts
+return `503` after three attempts; retry with the same request body.
+
+### Focus time excludes breaks
+
+1. Select Custom mode with a 1-minute focus and a 1-minute break, and attach a topic.
+2. Finish the focus period, start the break, and let it finish.
+3. End the session immediately when focus resumes, then save it.
+4. Verify the saved session and topic study total increase by 1 minute, not 2.
+5. Repeat, but pause during focus and during the break. Paused time must not
+   increase study time; resumed breaks must still count down normally.
+6. Complete two 1-minute focus periods separated by a 1-minute break. Verify
+   2 study minutes are saved, not 3. Also test ending partway through a break.
+7. Test a custom session with a zero-minute break: it must end after focus and
+   save the focus minutes. Verify reset clears the displayed study minutes.
+
+The equivalent Pomodoro check is 25 minutes of focus plus a 5-minute break:
+save 25 study minutes. Keep the tab active for these checks; background timer
+drift and the existing one-minute minimum for saved sessions are separate behaviors.
+
 ### AI session summary
 
 Goal:
@@ -228,6 +290,104 @@ Verify:
 - the quiz title references the topic and difficulty
 - questions render in order
 
+### Real AI quiz validation
+
+Run `npm run test:quiz-validation` to exercise schema checks, the real service
+with a stubbed provider, and the generation handler with mocked database writes.
+Coverage includes malformed JSON, wrong counts/types, missing fields, invalid
+choices/answers, and incorrect ordering. Invalid responses must return `502`
+without creating a quiz; valid responses must still save normally.
+
+For browser testing, generate quizzes in real mode with each count and format.
+Verify valid quizzes open normally. With a malformed provider response injected
+in a local test setup, verify the generator displays the retry error and stays
+on the topic page; a subsequent valid response should create and open a quiz.
+Do not rely on the live model randomly returning invalid output for regression
+testing. These checks do not evaluate the factual quality of generated questions.
+
+### Mock quiz settings
+
+With `AI_MODE=mock`, generate each combination of 5, 10, and 15 questions with
+`multiple_choice`, `short_answer`, and `mixed` (nine combinations).
+Verify exact counts and sequential question ordering. Multiple-choice questions
+must have four choices; short-answer questions must use text inputs without
+choices; mixed quizzes must include multiple-choice, short-answer, code-reading,
+and debugging questions.
+
+Mock quizzes share a fixed bank of 15 questions across all topics and difficulty
+levels. They test application behavior, not topic knowledge or advanced content.
+For the final gate, generate an advanced 15-question multiple-choice quiz and
+score at least 80%. Verify `finalQuizPassed` is recorded; `MASTERED` still also
+requires the weighted mastery threshold. A 5- or 10-question quiz must not set
+the final gate on a fresh topic.
+
+### Mock interaction logging
+
+Run `npm run test:mock-interaction-logs`. It verifies that mock quiz generation,
+summaries, and recommendations create no `AiInteraction` rows, while their
+real-mode equivalents retain one. It also verifies that mock coach lessons,
+hints, and answers create no records, but a mock coach quiz persists exactly one
+`modelUsed: "mock"` state record so hint and answer actions continue to work.
+
+In a local database, use each mock flow and inspect `AiInteraction` in Prisma
+Studio. Existing rows are historical data and are not deleted. Switch to real
+mode to verify ordinary audit logging still occurs.
+
+### Mock mode without an AI key
+
+1. Set `AI_MODE=mock` in your local environment, temporarily unset both
+   `GEMINI_API_KEY` and `GOOGLE_API_KEY`, and restart the development server.
+   Keep Clerk and database configuration in place.
+2. Generate and submit a quiz, including a short-answer or code-reading answer.
+3. Use the coach's introduction, explanation, example, quiz, hint, and answer actions.
+4. Save a topic-linked study session with notes and generate its summary.
+5. Verify all these mock flows work without a missing-key error.
+6. With both keys still absent, switch to `AI_MODE=real` and restart. A real AI
+   request must fail with `Gemini API key is not configured` in server logs.
+7. Restore your desired environment settings and restart the server.
+
+### Real AI grading validation
+
+Run `npm run test:feedback-validation`. Tests cover all score/flag combinations,
+invalid fields and JSON, real-service validation with stubbed AI, unchanged mock
+grading, submission rejection without result/progress writes, valid partial
+credit, and client answer preservation after an error.
+
+In a local test setup, inject one malformed grading response into a mixed or
+short-answer quiz submission. Verify `502`, a visible retry message, retained
+answers, and no new or overwritten quiz attempt or mastery update. Retry with
+valid grades and verify successful submission. A score of 1 requires only
+`isCorrect=true`; 0.5 requires only `isPartiallyCorrect=true`; 0 requires both
+false. Valid feedback must be nonempty. Provider/DB stubs are used in automated
+tests; live AI and browser behavior still require manual checks.
+
+### Mock answer grading
+
+With `AI_MODE=mock`, generate a five-question mixed quiz. Answer questions 1,
+2, and 4 correctly (`O(n)`, `Data sent back to the caller`, and `Stack`), answer
+question 3 incorrectly (`2`), and leave question 5 blank. Verify a score of 60%
+and per-answer feedback matching those outcomes.
+
+For short-answer quizzes, verify blank/whitespace-only and incorrect answers
+receive zero credit. Correct answers tolerate capitalization, surrounding
+whitespace, and repeated internal whitespace. Paraphrases are not recognized
+by this simple fixture matcher, and no partial credit is awarded. Code-reading
+answers must match the expected output after trimming surrounding whitespace;
+case and internal spacing are significant.
+
+Verify an all-incorrect submission scores 0%, an all-correct submission scores
+100%, and topic quiz statistics reflect the submitted score. Real AI grading
+is unchanged.
+
+### Quiz answer protection
+
+1. While signed in, request `/api/quizzes/<quizId>` for a quiz you own before submitting it.
+2. Verify each question contains only `id`, `questionText`, `questionType`, `options`, and `orderIndex`; neither `correctAnswer` nor `explanation` is returned.
+3. Repeat after submitting the quiz: this endpoint must still omit answer fields.
+4. Verify another user's quiz returns `403` and a missing quiz returns `404`.
+5. Verify signed-out requests cannot retrieve quiz data (authentication may redirect or reject the request).
+6. Submit your quiz and open its results page; correct answers and feedback should remain available there.
+
 ### Quiz submission and results
 
 Goal:
@@ -271,6 +431,28 @@ Verify:
 - concept coverage affects the score
 - low quiz results can move a topic to `NEEDS_REVIEW`
 - mastery never reaches `100` without the final quiz gate
+
+### Direct progress write protection
+
+While signed in, use a valid topic ID in the browser console:
+
+```js
+const url = "/api/topics/TOPIC_ID/progress";
+const before = await fetch(url).then((response) => response.json());
+const response = await fetch(url, {
+  method: "PATCH",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ status: "MASTERED", masteryScore: 100 }),
+});
+const after = await fetch(url).then((response) => response.json());
+console.log(response.status, before, after);
+```
+
+Verify the response status is `405` and progress is unchanged. Repeat with
+`totalStudyMinutes`, `quizzesCompleted`, or `averageQuizScore`: direct updates
+must also be rejected. Do not perform another study action between the reads.
+Then follow the mastery progression steps above to verify that concept toggles,
+saved study sessions, and quiz submissions still update progress normally.
 
 ### Final mastery gate
 

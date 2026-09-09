@@ -2,6 +2,7 @@ import { auth } from "@clerk/nextjs/server"
 import { z } from "zod"
 import { db } from "@/lib/db"
 import { getRecommendation } from "@/lib/ai/recommendation"
+import { isMockMode } from "@/lib/ai/config"
 
 const bodySchema = z.object({
   topicId: z.string().min(1),
@@ -67,16 +68,18 @@ export async function POST(request: Request) {
       recommendation.action === "next_topic" ? (nextTopic?.id ?? "") : "",
   }
 
-  await db.aiInteraction.create({
-    data: {
-      userId: dbUser.id,
-      topicId: topic.id,
-      interactionType: "RECOMMENDATION",
-      prompt: JSON.stringify(input),
-      response: JSON.stringify(response),
-      modelUsed: "rule-based",
-    },
-  })
+  if (!isMockMode) {
+    await db.aiInteraction.create({
+      data: {
+        userId: dbUser.id,
+        topicId: topic.id,
+        interactionType: "RECOMMENDATION",
+        prompt: JSON.stringify(input),
+        response: JSON.stringify(response),
+        modelUsed: "rule-based",
+      },
+    })
+  }
 
   return Response.json(response)
 }

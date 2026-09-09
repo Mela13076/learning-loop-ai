@@ -55,5 +55,5 @@ DEPLOYMENT.md
 
 /src/generated/prisma
 
-building_docs/
-
+building_docs/*
+!building_docs/MVP_AUDIT.md

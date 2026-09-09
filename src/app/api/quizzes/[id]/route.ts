@@ -22,6 +22,14 @@ export async function GET(
     include: {
       questions: {
         orderBy: { orderIndex: "asc" },
+        // Only load fields needed to take the quiz; answers belong in results.
+        select: {
+          id: true,
+          questionText: true,
+          questionType: true,
+          options: true,
+          orderIndex: true,
+        },
       },
       topic: { select: { id: true, title: true } },
     },

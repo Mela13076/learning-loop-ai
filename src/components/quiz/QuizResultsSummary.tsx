@@ -2,6 +2,7 @@ interface AnswerWithQuestion {
   id: string
   userAnswer: string
   isCorrect: boolean
+  score: number | null
   feedback: string | null
   question: {
     id: string
@@ -29,6 +30,29 @@ const TYPE_LABEL: Record<AnswerWithQuestion["question"]["questionType"], string>
   DEBUGGING: "Find the Bug",
 }
 
+function answerGrade(answer: AnswerWithQuestion) {
+  const points = answer.score ?? (answer.isCorrect ? 1 : null)
+  if (points === 1) return {
+    label: "Correct", points: "1 / 1 point", icon: "✓",
+    color: "text-green-600 dark:text-green-400", 
+    background: "border-green-600 bg-green-50 dark:border-green-800 dark:bg-green-900/10",
+  }
+  if (points === 0.5) return {
+    label: "Partially correct", points: "0.5 / 1 point", icon: "½",
+    color: "text-yellow-700 dark:text-yellow-400",
+    background: "border-yellow-600 bg-yellow-50/50 dark:border-yellow-800 dark:bg-yellow-900/10",
+  }
+  if (points === 0) return {
+    label: "Incorrect", points: "0 / 1 point", icon: "✗",
+    color: "text-red-600 dark:text-red-400",
+    background: "border-red-600 bg-red-50/50 dark:border-red-800 dark:bg-red-900/10",
+  }
+  return {
+    label: "Needs review", points: "Points unavailable for this older answer", icon: "?",
+    color: "text-muted-foreground", background: "border-border bg-muted/30",
+  }
+}
+
 const CODE_BLOCK_RE = /```(?:\w+)?\n([\s\S]*?)```/
 
 function extractCode(text: string): { code: string | null; text: string } {
@@ -48,6 +72,10 @@ export function QuizResultsSummary({
   answers,
 }: QuizResultsSummaryProps) {
   const correctCount = answers.filter((a) => a.isCorrect).length
+  const partialCount = answers.filter((a) => a.score === 0.5).length
+  const totalPoints = answers.every((a) => a.score !== null)
+    ? answers.reduce((sum, a) => sum + (a.score ?? 0), 0)
+    : null
   const incorrectAnswers = answers.filter((a) => !a.isCorrect)
 
   const scoreColor =
@@ -81,8 +109,13 @@ export function QuizResultsSummary({
           {Math.round(score)}%
         </p>
         <p className="mt-2 text-lg font-semibold text-foreground">
-          {correctCount} / {totalQuestions} correct
+          {correctCount} / {totalQuestions} fully correct{partialCount > 0 && ` · ${partialCount} partially correct`}
         </p>
+        {totalPoints !== null && (
+          <p className="mt-1 text-sm text-muted-foreground">
+            {totalPoints} / {totalQuestions} points earned. Partial credit earns 0.5 of 1 point.
+          </p>
+        )}
         <p className="mt-1 text-sm text-muted-foreground">{scoreLabel}</p>
       </div>
 
@@ -95,11 +128,13 @@ export function QuizResultsSummary({
           <ul className="space-y-1.5">
             {incorrectAnswers.map((a) => {
               const { text } = extractCode(a.question.questionText)
+              const grade = answerGrade(a)
               return (
                 <li key={a.id} className="flex items-start gap-2 text-sm">
-                  <span className="mt-0.5 shrink-0 text-red-500">✗</span>
-                  <span className="text-muted-foreground line-clamp-1">
+                  <span aria-hidden="true" className={`mt-0.5 shrink-0 ${grade.color}`}>{grade.icon}</span>
+                  <span className="text-muted-foreground">
                     Q{answers.indexOf(a) + 1}: {text}
+                    <span className={`ml-2 ${grade.color}`}>{grade.label} · {grade.points}</span>
                   </span>
                 </li>
               )
@@ -114,6 +149,7 @@ export function QuizResultsSummary({
         <div className="space-y-4">
           {answers.map((answer, i) => {
             const { code, text } = extractCode(answer.question.questionText)
+            const grade = answerGrade(answer)
             const isCodeQuestion =
               answer.question.questionType === "CODE_READING" ||
               answer.question.questionType === "DEBUGGING"
@@ -121,28 +157,29 @@ export function QuizResultsSummary({
             return (
               <div
                 key={answer.id}
-                className={`rounded-xl border p-5 ${
-                  answer.isCorrect
-                    ? "border-primary/20 bg-[var(--accent-soft)]/60"
-                    : "border-red-200 bg-red-50/50 dark:border-red-800 dark:bg-red-900/10"
-                }`}
+                className={`rounded-xl border p-5 ${grade.background}`}
               >
                 {/* Question header */}
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2">
                     <span
-                      className={`text-lg font-bold ${answer.isCorrect ? "text-primary" : "text-red-500"}`}
+                      aria-hidden="true"
+                      className={`text-lg font-bold ${grade.color}`}
                     >
-                      {answer.isCorrect ? "✓" : "✗"}
+                      {grade.icon}
                     </span>
                     <span className="text-sm font-medium text-foreground">
                       Question {i + 1}
                     </span>
                   </div>
-                  <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                  <span className="rounded-full border border-black/50 bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
                     {TYPE_LABEL[answer.question.questionType]}
                   </span>
                 </div>
+
+                <p className={`mb-3 text-sm font-medium ${grade.color}`}>
+                  {grade.label} · {grade.points}
+                </p>
 
                 {/* Code block */}
                 {isCodeQuestion && code && (
@@ -159,11 +196,7 @@ export function QuizResultsSummary({
                   <div className="flex flex-wrap gap-1.5">
                     <span className="font-medium text-muted-foreground">Your answer:</span>
                     <span
-                      className={
-                        answer.isCorrect
-                          ? "text-primary"
-                          : "text-red-600 dark:text-red-400"
-                      }
+                      className={grade.color}
                     >
                       {answer.userAnswer || "(no answer)"}
                     </span>
@@ -181,7 +214,7 @@ export function QuizResultsSummary({
 
                   {/* Feedback / explanation */}
                   {(answer.feedback ?? answer.question.explanation) && (
-                    <p className="mt-2 rounded-lg bg-muted/60 px-3 py-2 text-muted-foreground">
+                    <p className="mt-2 rounded-lg border border-black/50 bg-muted/60 px-3 py-2 text-muted-foreground">
                       {answer.feedback ?? answer.question.explanation}
                     </p>
                   )}

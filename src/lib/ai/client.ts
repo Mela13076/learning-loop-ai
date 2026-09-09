@@ -11,7 +11,13 @@ function getApiKey(): string {
   return apiKey
 }
 
-const client = new GoogleGenAI({ apiKey: getApiKey() })
+let client: GoogleGenAI | undefined
+
+function getClient(): GoogleGenAI {
+  // Mock services import this module too; only real requests need credentials.
+  client ??= new GoogleGenAI({ apiKey: getApiKey() })
+  return client
+}
 
 interface GenerateJsonInput {
   prompt: string
@@ -20,7 +26,7 @@ interface GenerateJsonInput {
 }
 
 export async function generateJson(input: GenerateJsonInput): Promise<string> {
-  const response = await client.models.generateContent({
+  const response = await getClient().models.generateContent({
     model: AI_MODEL,
     contents: input.prompt,
     config: {
