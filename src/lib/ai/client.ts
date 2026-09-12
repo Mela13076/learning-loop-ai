@@ -23,6 +23,13 @@ interface GenerateJsonInput {
   prompt: string
   systemInstruction: string
   maxOutputTokens: number
+  onUsage?: (usage: AiUsageMetadata) => void
+}
+
+export interface AiUsageMetadata {
+  promptTokenCount?: number
+  outputTokenCount?: number
+  totalTokenCount?: number
 }
 
 export async function generateJson(input: GenerateJsonInput): Promise<string> {
@@ -40,6 +47,12 @@ export async function generateJson(input: GenerateJsonInput): Promise<string> {
   if (!text) {
     throw new Error("Gemini returned an empty response")
   }
+
+  input.onUsage?.({
+    promptTokenCount: response.usageMetadata?.promptTokenCount,
+    outputTokenCount: response.usageMetadata?.candidatesTokenCount,
+    totalTokenCount: response.usageMetadata?.totalTokenCount,
+  })
 
   return text
 }

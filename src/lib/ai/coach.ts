@@ -2,6 +2,7 @@ import "server-only"
 
 import { isMockMode } from "./config"
 import { generateJson } from "./client"
+import type { AiUsageMetadata } from "./client"
 import { getMockConceptFlow, getMockQuizForIndex } from "./mock-learning-coach"
 import type {
   LearningCoachContext,
@@ -90,7 +91,7 @@ function parseQuizResponse(text: string): StoredCoachQuiz {
 async function createRealLesson(
   context: LearningCoachContext,
   lessonType: "intro" | "explanation" | "example"
-): Promise<LearningCoachLessonResponse> {
+): Promise<{ response: LearningCoachLessonResponse; usage?: AiUsageMetadata }> {
   const lessonInstructions: Record<typeof lessonType, string> = {
     intro:
       "Give a short, learner-friendly concept introduction in 2 to 4 sentences. Keep it compact and motivating, and do not turn it into a quiz yet.",
@@ -121,17 +122,19 @@ Rules:
   "content": "string"
 }`
 
+  let usage: AiUsageMetadata | undefined
   const text = await generateJson({
     prompt: `Create a ${lessonType} response for ${context.conceptTitle}.`,
     systemInstruction: systemPrompt,
     maxOutputTokens: 900,
+    onUsage: (metadata) => { usage = metadata },
   })
   const parsed = parseTextResponse(text)
 
-  return createLessonResponse(lessonType, parsed.title, parsed.content)
+  return { response: createLessonResponse(lessonType, parsed.title, parsed.content), usage }
 }
 
-async function createRealQuiz(context: LearningCoachContext): Promise<StoredCoachQuiz> {
+async function createRealQuiz(context: LearningCoachContext): Promise<{ storedQuiz: StoredCoachQuiz; usage?: AiUsageMetadata }> {
   const systemPrompt = `You are an AI Learning Coach for Learning Loop AI.
 Create one multiple-choice quiz question for a learner studying a single concept.
 
@@ -160,19 +163,21 @@ Rules:
   "incorrectFeedback": "string"
 }`
 
+  let usage: AiUsageMetadata | undefined
   const text = await generateJson({
     prompt: `Generate one quiz question for ${context.conceptTitle}.`,
     systemInstruction: systemPrompt,
     maxOutputTokens: 1200,
+    onUsage: (metadata) => { usage = metadata },
   })
-  return parseQuizResponse(text)
+  return { storedQuiz: parseQuizResponse(text), usage }
 }
 
 export async function createLearningCoachResponse(input: {
   context: LearningCoachContext
   action: "start" | "explain" | "example" | "quiz"
   quizIndex?: number
-}): Promise<{ response: LearningCoachResponse; storedQuiz?: StoredCoachQuiz }> {
+}): Promise<{ response: LearningCoachResponse; storedQuiz?: StoredCoachQuiz; usage?: AiUsageMetadata }> {
   const { context, action, quizIndex = 0 } = input
 
   if (isMockMode) {
@@ -212,17 +217,17 @@ export async function createLearningCoachResponse(input: {
   }
 
   if (action === "quiz") {
-    const storedQuiz = await createRealQuiz(context)
+    const { storedQuiz, usage } = await createRealQuiz(context)
     return {
       response: createQuizResponse(storedQuiz),
       storedQuiz,
+      usage,
     }
   }
 
   const lessonType = action === "start" ? "intro" : action === "explain" ? "explanation" : action
-  return {
-    response: await createRealLesson(context, lessonType),
-  }
+  const { response, usage } = await createRealLesson(context, lessonType)
+  return { response, usage }
 }
 
 export function createHintResponse(quiz: StoredCoachQuiz): LearningCoachLessonResponse {

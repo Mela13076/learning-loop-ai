@@ -4,6 +4,8 @@ import { db } from "@/lib/db"
 import { getAnswerFeedback } from "@/lib/ai/feedback"
 import { InvalidFeedbackResponseError } from "@/lib/ai/feedback-schema"
 import { AI_MODEL, isMockMode } from "@/lib/ai/config"
+import { AiQuotaExceededError, aiQuotaExceededResponse, reserveAiUsage } from "@/lib/ai/usage-limits"
+import { aiUsageLogData } from "@/lib/ai/usage-metadata"
 import { parseKeyConcepts } from "@/lib/topic-content"
 import {
   computeTopicMastery,
@@ -65,6 +67,20 @@ export async function POST(
 
   const { answers } = parsed.data
 
+  const aiGradedQuestionCount = quiz.questions.filter(
+    (question) =>
+      question.questionType === "SHORT_ANSWER" || question.questionType === "CODE_READING"
+  ).length
+
+  if (!isMockMode && aiGradedQuestionCount > 0) {
+    try {
+      await reserveAiUsage(dbUser.id, aiGradedQuestionCount)
+    } catch (error) {
+      if (error instanceof AiQuotaExceededError) return aiQuotaExceededResponse(error)
+      throw error
+    }
+  }
+
   // Grade each answer
   let gradedAnswers
   try {
@@ -93,6 +109,7 @@ export async function POST(
                 prompt: `Q: ${question.questionText}\nCorrect: ${question.correctAnswer}\nUser: ${userAnswer}`,
                 response: JSON.stringify(feedbackResult),
                 modelUsed: AI_MODEL,
+                ...aiUsageLogData(feedbackResult.usage),
               },
             })
           }

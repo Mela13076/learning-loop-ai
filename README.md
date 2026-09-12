@@ -205,6 +205,26 @@ Required environment variables:
 - `AI_MODE`
 - `AI_MODEL`
 
+Optional AI quota variables:
+
+These are optional: if they are not added to the environment, Learning Loop AI
+uses the built-in defaults below. If they are added with valid positive integer
+values, they override those defaults.
+
+```env
+# Per authenticated user; enforced only when AI_MODE=real.
+AI_USAGE_LIMIT_PER_MINUTE=20
+AI_USAGE_LIMIT_PER_DAY=40
+```
+
+- Each paid Gemini call consumes one unit. A quiz submission consumes one unit
+  for each short-answer or code-reading answer that needs AI grading.
+- Limits use fixed UTC minute and UTC day windows. If omitted, invalid, zero,
+  or negative, the values above are used as safe defaults.
+- The minute limit must be at least 15 to allow the largest all-AI-graded quiz
+  submission. `20` is the built-in default.
+- Mock mode does not consume quota.
+
 Notes:
 
 - `DATABASE_URL` is the app runtime connection string.

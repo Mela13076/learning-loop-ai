@@ -80,6 +80,8 @@ function submissionHarness(provider, previous = false, mock = false) {
     '@/lib/db': { db }, '@/lib/ai/feedback': service(provider), '@/lib/ai/feedback-schema': schema,
     '@/lib/ai/config': { AI_MODEL: 'test', isMockMode: mock }, '@/lib/topic-content': load('../src/lib/topic-content.ts'),
     '@/lib/topic-progress': load('../src/lib/topic-progress.ts'),
+    '@/lib/ai/usage-limits': { AiQuotaExceededError: class extends Error {}, aiQuotaExceededResponse: () => new Response(), reserveAiUsage: async () => {} },
+    '@/lib/ai/usage-metadata': { aiUsageLogData: () => ({}) },
   });
   return { writes, logs, saved: () => saved, progress: () => progress, submit: () => route.POST(new Request('http://localhost/test', {
     method: 'POST', body: JSON.stringify({ answers: questions.map(q => ({ questionId: q.id, userAnswer: 'Answer' })) }),
@@ -131,6 +133,7 @@ test('QuizTaker preserves answers and re-enables submission after grading error'
   const answers = { q0: 'My answer' }; const errors = []; const states = [];
   const context = { answers, questions: [{ id: 'q0' }], quizId: 'quiz',
     setSubmitting: value => states.push(value), setError: value => errors.push(value),
+    formatAiQuotaMessage: data => data.error ?? 'Failed to submit quiz',
     router: { push: () => assert.fail('Should not navigate') },
     fetch: async () => ({ ok: false, json: async () => ({ error: 'Please submit again' }) }),
   };

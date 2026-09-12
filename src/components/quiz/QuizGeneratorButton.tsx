@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { formatAiQuotaMessage } from "@/lib/ai/usage-message"
 
 interface QuizGeneratorButtonProps {
   topicId: string
@@ -30,8 +31,13 @@ export function QuizGeneratorButton({ topicId }: QuizGeneratorButtonProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ topicId, difficulty, questionCount, questionType }),
       })
-      const data = (await res.json()) as { quizId?: string; error?: string }
-      if (!res.ok) throw new Error(data.error ?? "Failed to generate quiz")
+      const data = (await res.json()) as {
+        quizId?: string
+        error?: string
+        limitType?: "minute" | "daily"
+        resetAt?: string
+      }
+      if (!res.ok) throw new Error(formatAiQuotaMessage(data))
       router.push(`/quizzes/${data.quizId}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong")

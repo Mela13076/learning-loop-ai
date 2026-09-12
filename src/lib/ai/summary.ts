@@ -1,5 +1,6 @@
 import { isMockMode } from "./config"
 import { generateJson } from "./client"
+import type { AiUsageMetadata } from "./client"
 
 export interface SummaryInput {
   topicTitle: string
@@ -16,6 +17,7 @@ export interface SummaryResponse {
   keyTakeaways: string[]
   weakAreas: string[]
   recommendedNext: string
+  usage?: AiUsageMetadata
 }
 
 const MOCK_RESPONSE: SummaryResponse = {
@@ -53,11 +55,13 @@ Return a JSON object with this exact shape and nothing else:
   "recommendedNext": "one sentence on what to study next"
 }`
 
+  let usage: AiUsageMetadata | undefined
   const text = await generateJson({
     prompt: userContent,
     systemInstruction:
       "You generate study session summaries. Return only valid JSON with no markdown fences, preamble, or extra explanation.",
     maxOutputTokens: 512,
+    onUsage: (metadata) => { usage = metadata },
   })
 
   try {
@@ -75,6 +79,7 @@ Return a JSON object with this exact shape and nothing else:
         typeof parsed.recommendedNext === "string"
           ? parsed.recommendedNext
           : MOCK_RESPONSE.recommendedNext,
+      usage,
     }
   } catch {
     return MOCK_RESPONSE

@@ -1,5 +1,6 @@
 import { isMockMode } from "./config"
 import { generateJson } from "./client"
+import type { AiUsageMetadata } from "./client"
 import { parseFeedbackResponse } from "./feedback-schema"
 
 export interface FeedbackInput {
@@ -15,6 +16,7 @@ export interface FeedbackResponse {
   isPartiallyCorrect: boolean
   feedback: string
   score: 0 | 0.5 | 1
+  usage?: AiUsageMetadata
 }
 
 function getMockFeedback(input: FeedbackInput): FeedbackResponse {
@@ -62,13 +64,15 @@ Rules:
   "score": 0 | 0.5 | 1
 }`
 
+  let usage: AiUsageMetadata | undefined
   const text = await generateJson({
     prompt: `Student answer: ${input.userAnswer}`,
     systemInstruction: systemPrompt,
     maxOutputTokens: 512,
+    onUsage: (metadata) => { usage = metadata },
   })
 
-  return parseFeedbackResponse(text)
+  return { ...parseFeedbackResponse(text), usage }
 }
 
 export async function getAnswerFeedback(
