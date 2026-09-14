@@ -34,6 +34,8 @@ function quizGenerationHandler(mock, logs) {
     "@/lib/ai/quiz": { generateQuiz: async () => generatedQuiz },
     "@/lib/ai/quiz-schema": { InvalidQuizResponseError: class extends Error {} },
     "@/lib/ai/config": { AI_MODEL: "gemini-test", isMockMode: mock },
+    "@/lib/ai/usage-limits": { AiQuotaExceededError: class extends Error {}, aiQuotaExceededResponse: () => new Response(), reserveAiUsage: async () => {} },
+    "@/lib/ai/usage-metadata": { aiUsageLogData: () => ({}) },
   })
 }
 
@@ -48,6 +50,8 @@ function summaryHandler(mock, logs) {
     } },
     "@/lib/ai/summary": { generateSessionSummary: async () => ({ summary: "Summary" }) },
     "@/lib/ai/config": { AI_MODEL: "gemini-test", isMockMode: mock },
+    "@/lib/ai/usage-limits": { AiQuotaExceededError: class extends Error {}, aiQuotaExceededResponse: () => new Response(), reserveAiUsage: async () => {} },
+    "@/lib/ai/usage-metadata": { aiUsageLogData: () => ({}) },
   })
 }
 
@@ -72,6 +76,8 @@ function coachHandler(mock, interactions) {
     "@clerk/nextjs/server": { auth: async () => ({ userId: "clerk" }) }, zod,
     "@/lib/topic-content": { parseKeyConcepts: () => [{ title: "Concept" }] },
     "@/lib/ai/config": { AI_MODEL: "gemini-test", isMockMode: mock },
+    "@/lib/ai/usage-limits": { AiQuotaExceededError: class extends Error {}, aiQuotaExceededResponse: () => new Response(), reserveAiUsage: async () => {} },
+    "@/lib/ai/usage-metadata": { aiUsageLogData: () => ({}) },
     "@/lib/ai/coach": {
       createLearningCoachResponse: async ({ action }) => action === "quiz"
         ? { response: { type: "quiz", question: "Question" }, storedQuiz: { question: "Question", options: ["A"], correctAnswer: "A" } }

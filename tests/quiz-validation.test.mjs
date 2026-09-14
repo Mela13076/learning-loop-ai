@@ -98,6 +98,8 @@ test('generation handler rejects invalid AI output before writing; valid output 
       '@clerk/nextjs/server': { auth: async () => ({ userId: 'clerk' }) }, zod,
       '@/lib/db': { db }, '@/lib/ai/quiz': service(valid ? JSON.stringify(fixture()) : 'bad JSON'),
       '@/lib/ai/quiz-schema': schema, '@/lib/ai/config': { AI_MODEL: 'test' },
+      '@/lib/ai/usage-limits': { AiQuotaExceededError: class extends Error {}, aiQuotaExceededResponse: () => new Response(), reserveAiUsage: async () => {} },
+      '@/lib/ai/usage-metadata': { aiUsageLogData: () => ({}) },
     });
     const response = await route.POST(new Request('http://localhost/test', { method: 'POST', body: JSON.stringify({
       topicId: 'topic', difficulty: 'beginner', questionCount: 5, questionType: 'multiple_choice',

@@ -14,6 +14,8 @@
     "test:feedback-validation": "node --test tests/feedback-validation.test.mjs",
     "test:mock-interaction-logs": "node --test tests/mock-interaction-logs.test.mjs",
     "test:quiz-results-test": "node --test tests/quiz-results.test.mjs",
+    "test:ai-usage-limits": "node --test tests/ai-usage-limits.test.mjs",
+    "test:ai-usage-message": "node --test tests/ai-usage-message.test.mjs",
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",

@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { QuizQuestionCard } from "./QuizQuestionCard"
+import { formatAiQuotaMessage } from "@/lib/ai/usage-message"
 
 interface Question {
   id: string
@@ -56,8 +57,13 @@ export function QuizTaker({
           })),
         }),
       })
-      const data = (await res.json()) as { attemptId?: string; error?: string }
-      if (!res.ok) throw new Error(data.error ?? "Failed to submit quiz")
+      const data = (await res.json()) as {
+        attemptId?: string
+        error?: string
+        limitType?: "minute" | "daily"
+        resetAt?: string
+      }
+      if (!res.ok) throw new Error(formatAiQuotaMessage(data))
       router.push(`/quiz-results/${data.attemptId}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong")

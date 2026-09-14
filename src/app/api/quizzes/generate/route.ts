@@ -4,6 +4,8 @@ import { db } from "@/lib/db"
 import { generateQuiz } from "@/lib/ai/quiz"
 import { InvalidQuizResponseError } from "@/lib/ai/quiz-schema"
 import { AI_MODEL, isMockMode } from "@/lib/ai/config"
+import { AiQuotaExceededError, aiQuotaExceededResponse, reserveAiUsage } from "@/lib/ai/usage-limits"
+import { aiUsageLogData } from "@/lib/ai/usage-metadata"
 import type { QuizDifficulty, QuizQuestionType, GeneratedQuestionType } from "@/lib/ai/quiz"
 
 const bodySchema = z.object({
@@ -58,6 +60,15 @@ export async function POST(request: Request) {
     return Response.json({ error: "Topic not found" }, { status: 404 })
   }
 
+  if (!isMockMode) {
+    try {
+      await reserveAiUsage(dbUser.id, 1)
+    } catch (error) {
+      if (error instanceof AiQuotaExceededError) return aiQuotaExceededResponse(error)
+      throw error
+    }
+  }
+
   let generated
   try {
     generated = await generateQuiz({
@@ -104,6 +115,7 @@ export async function POST(request: Request) {
         prompt: `Generate ${questionCount} ${difficulty} ${questionType} questions about ${topic.title}`,
         response: JSON.stringify(generated),
         modelUsed: AI_MODEL,
+        ...aiUsageLogData(generated.usage),
       },
     })
   }

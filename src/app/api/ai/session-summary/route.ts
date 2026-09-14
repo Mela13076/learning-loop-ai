@@ -3,6 +3,8 @@ import { z } from "zod"
 import { db } from "@/lib/db"
 import { generateSessionSummary } from "@/lib/ai/summary"
 import { AI_MODEL, isMockMode } from "@/lib/ai/config"
+import { AiQuotaExceededError, aiQuotaExceededResponse, reserveAiUsage } from "@/lib/ai/usage-limits"
+import { aiUsageLogData } from "@/lib/ai/usage-metadata"
 
 const bodySchema = z.object({
   topicId: z.string().min(1),
@@ -49,6 +51,15 @@ export async function POST(request: Request) {
     masteryScore: Math.round(progress?.masteryScore ?? 0),
   }
 
+  if (!isMockMode) {
+    try {
+      await reserveAiUsage(dbUser.id, 1)
+    } catch (error) {
+      if (error instanceof AiQuotaExceededError) return aiQuotaExceededResponse(error)
+      throw error
+    }
+  }
+
   const summary = await generateSessionSummary(input)
 
   if (!isMockMode) {
@@ -60,9 +71,15 @@ export async function POST(request: Request) {
         prompt: JSON.stringify(input),
         response: JSON.stringify(summary),
         modelUsed: AI_MODEL,
+        ...aiUsageLogData(summary.usage),
       },
     })
   }
 
-  return Response.json(summary)
+  return Response.json({
+    summary: summary.summary,
+    keyTakeaways: summary.keyTakeaways,
+    weakAreas: summary.weakAreas,
+    recommendedNext: summary.recommendedNext,
+  })
 }

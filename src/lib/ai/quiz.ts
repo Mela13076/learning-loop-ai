@@ -1,5 +1,6 @@
 import { isMockMode } from "./config"
 import { generateJson } from "./client"
+import type { AiUsageMetadata } from "./client"
 import { parseGeneratedQuiz } from "./quiz-schema"
 
 export type QuizDifficulty = "beginner" | "intermediate" | "advanced"
@@ -29,6 +30,7 @@ export interface GeneratedQuestion {
 
 export interface GeneratedQuiz {
   questions: GeneratedQuestion[]
+  usage?: AiUsageMetadata
 }
 
 // ---------------------------------------------------------------------------
@@ -244,13 +246,15 @@ Rules:
 - orderIndex starts at 1 and increments by 1
 - explanations must be clear and helpful for a learner who got the question wrong`
 
+  let usage: AiUsageMetadata | undefined
   const text = await generateJson({
     prompt: `Generate ${input.questionCount} ${input.difficulty} quiz questions about ${input.topicTitle}.`,
     systemInstruction: systemPrompt,
     maxOutputTokens: 4096,
+    onUsage: (metadata) => { usage = metadata },
   })
 
-  return parseGeneratedQuiz(text, input)
+  return { ...parseGeneratedQuiz(text, input), usage }
 }
 
 // ---------------------------------------------------------------------------

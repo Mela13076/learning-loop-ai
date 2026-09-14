@@ -3,6 +3,8 @@ import { z } from "zod"
 import { db } from "@/lib/db"
 import { parseKeyConcepts } from "@/lib/topic-content"
 import { AI_MODEL, isMockMode } from "@/lib/ai/config"
+import { AiQuotaExceededError, aiQuotaExceededResponse, reserveAiUsage } from "@/lib/ai/usage-limits"
+import { aiUsageLogData } from "@/lib/ai/usage-metadata"
 import {
   createHintResponse,
   createLearningCoachResponse,
@@ -173,6 +175,15 @@ export async function POST(request: Request) {
     return Response.json(response)
   }
 
+  if (!isMockMode) {
+    try {
+      await reserveAiUsage(dbUser.id, 1)
+    } catch (error) {
+      if (error instanceof AiQuotaExceededError) return aiQuotaExceededResponse(error)
+      throw error
+    }
+  }
+
   const coachResult = await createLearningCoachResponse({
     context,
     action: payload.action,
@@ -192,6 +203,7 @@ export async function POST(request: Request) {
         }),
         response: JSON.stringify(coachResult.storedQuiz),
         modelUsed: getModelLabel(),
+        ...aiUsageLogData(coachResult.usage),
       },
       select: { id: true },
     })
@@ -217,6 +229,7 @@ export async function POST(request: Request) {
             ? coachResult.response.content
             : coachResult.response.question,
         modelUsed: getModelLabel(),
+        ...aiUsageLogData(coachResult.usage),
       },
     })
   }

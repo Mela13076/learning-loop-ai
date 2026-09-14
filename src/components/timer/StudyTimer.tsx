@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { SessionSummaryCard } from "@/components/ai/SessionSummaryCard";
+import { formatAiQuotaMessage } from "@/lib/ai/usage-message";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -126,6 +127,7 @@ export function StudyTimer({
   const [saveError, setSaveError] = useState<string>("");
   const [summaryState, setSummaryState] = useState<SummaryState>("idle");
   const [summaryData, setSummaryData] = useState<SummaryData | null>(null);
+  const [summaryError, setSummaryError] = useState("");
   const [selectedSoundId, setSelectedSoundId] = useState("magic");
 
   // Custom mode input values (in minutes)
@@ -374,6 +376,7 @@ export function StudyTimer({
     // Auto-generate AI summary only if a topic was selected AND notes were written
     if (savedInput.topicId && savedInput.notes) {
       setSummaryState("loading");
+      setSummaryError("");
       try {
         const res = await fetch("/api/ai/session-summary", {
           method: "POST",
@@ -389,9 +392,16 @@ export function StudyTimer({
           setSummaryData(data);
           setSummaryState("ready");
         } else {
+          const data = (await res.json()) as {
+            error?: string;
+            limitType?: "minute" | "daily";
+            resetAt?: string;
+          };
+          setSummaryError(formatAiQuotaMessage(data));
           setSummaryState("error");
         }
       } catch {
+        setSummaryError("Couldn't generate an AI summary for this session.");
         setSummaryState("error");
       }
     }
@@ -666,7 +676,7 @@ export function StudyTimer({
         {/* AI summary — error (silent, non-blocking) */}
         {summaryState === "error" && (
           <p className="text-xs text-muted-foreground">
-            Couldn&apos;t generate an AI summary for this session.
+            {summaryError || "Couldn't generate an AI summary for this session."}
           </p>
         )}
       </div>

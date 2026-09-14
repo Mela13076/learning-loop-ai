@@ -9,6 +9,7 @@ import type {
   LearningCoachQuizResponse,
   LearningCoachResponse,
 } from "@/lib/ai/coach-types"
+import { formatAiQuotaMessage } from "@/lib/ai/usage-message"
 
 interface AiLearningCoachProps {
   topicId: string
@@ -430,8 +431,12 @@ async function runCoachAction(
       })
 
       if (!res.ok) {
-        const data = (await res.json()) as { error?: string }
-        throw new Error(data.error ?? "Failed to load coach response")
+        const data = (await res.json()) as {
+          error?: string
+          limitType?: "minute" | "daily"
+          resetAt?: string
+        }
+        throw new Error(formatAiQuotaMessage(data))
       }
 
       const data = (await res.json()) as LearningCoachResponse
@@ -501,8 +506,12 @@ async function runCoachAction(
       })
 
       if (!res.ok) {
-        const data = (await res.json()) as { error?: string }
-        throw new Error(data.error ?? "Failed to load coach response")
+        const data = (await res.json()) as {
+          error?: string
+          limitType?: "minute" | "daily"
+          resetAt?: string
+        }
+        throw new Error(formatAiQuotaMessage(data))
       }
 
       const data = (await res.json()) as LearningCoachResponse
