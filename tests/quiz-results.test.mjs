@@ -28,14 +28,14 @@ test('partial credit explains 80 percent and remains yellow in review and breakd
   assert.match(html, /4 \/ 5 points earned/);
   assert.match(html, /Areas to Review \(2\)/);
   assert.equal((html.match(/Partially correct · 0.5 \/ 1 point/g) || []).length, 4);
-  assert.match(html, /border-yellow-200/);
+  assert.match(html, /border-yellow-600/);
   assert.doesNotMatch(html, /text-red|border-red/);
 });
 
 test('zero credit stays red and unknown older grades do not invent points', () => {
   const html = render([1, 0, null]);
   assert.match(html, /Incorrect · 0 \/ 1 point/);
-  assert.match(html, /border-red-200/);
+  assert.match(html, /border-red-600/);
   assert.match(html, /Needs review · Points unavailable for this older answer/);
   assert.match(html, /Areas to Review \(2\)/);
   assert.doesNotMatch(html, /points earned/);

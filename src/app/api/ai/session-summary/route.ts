@@ -1,6 +1,11 @@
 import { auth } from "@clerk/nextjs/server"
 import { z } from "zod"
 import { db } from "@/lib/db"
+import {
+  MAX_STUDY_NOTES_LENGTH,
+  MAX_TOPIC_LABEL_LENGTH,
+  MAX_WEAK_TOPICS,
+} from "@/lib/request-limits"
 import { generateSessionSummary } from "@/lib/ai/summary"
 import { AI_MODEL, isMockMode } from "@/lib/ai/config"
 import { AiQuotaExceededError, aiQuotaExceededResponse, reserveAiUsage } from "@/lib/ai/usage-limits"
@@ -9,9 +14,9 @@ import { aiUsageLogData } from "@/lib/ai/usage-metadata"
 const bodySchema = z.object({
   topicId: z.string().min(1),
   durationMinutes: z.number().int().positive(),
-  notes: z.string().optional(),
+  notes: z.string().max(MAX_STUDY_NOTES_LENGTH).optional(),
   quizScore: z.number().min(0).max(100).optional(),
-  incorrectTopics: z.array(z.string()).optional(),
+  incorrectTopics: z.array(z.string().max(MAX_TOPIC_LABEL_LENGTH)).max(MAX_WEAK_TOPICS).optional(),
 })
 
 export async function POST(request: Request) {

@@ -8,6 +8,8 @@ import * as zod from 'zod';
 import vm from 'node:vm';
 import ts from 'typescript';
 
+const requestLimits = { MAX_STUDY_NOTES_LENGTH: 10_000 };
+
 const root = fileURLToPath(new URL('../', import.meta.url));
 function load(file, dependencies = {}) {
   const exports = {};
@@ -79,6 +81,7 @@ function harness() {
   const route = load('src/app/api/study-sessions/route.ts', {
     '@clerk/nextjs/server': { auth: async () => ({ userId: controls.userId }) },
     zod, '@/lib/db': { db },
+    '@/lib/request-limits': requestLimits,
     '@/lib/topic-content': load('src/lib/topic-content.ts'),
     '@/lib/topic-progress': load('src/lib/topic-progress.ts'),
   });
@@ -153,12 +156,20 @@ test('unlinked sessions are also deduplicated', async () => {
 test('invalid ID, missing topic, and signed-out requests do not write', async () => {
   const h = harness();
   for (const sessionId of [undefined, 'bad']) {
-    assert.equal((await h.save({ ...input, sessionId })).status, 400);
+    assert.equal((await h.save({ ...input, sessionId })).status, 422);
   }
   assert.equal((await h.save({ ...input, topicId: 'missing' })).status, 404);
   h.controls.userId = null;
   assert.equal((await h.save()).status, 401);
   assert.equal(h.state().sessions.size, 0);
+});
+
+test('oversized study notes return 422 before a transaction starts', async () => {
+  const h = harness();
+  const response = await h.save({ ...input, notes: 'x'.repeat(requestLimits.MAX_STUDY_NOTES_LENGTH + 1) });
+  assert.equal(response.status, 422);
+  assert.equal(h.controls.transactions, 0);
+  assert.deepEqual((await response.json()).issues[0].path, ['notes']);
 });
 
 test('database conflicts retry at most three times and return retryable failure', async () => {
