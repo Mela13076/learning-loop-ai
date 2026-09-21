@@ -1,5 +1,7 @@
 "use client"
 
+import { MAX_QUIZ_ANSWER_LENGTH } from "@/lib/request-limits"
+
 interface QuizQuestionCardProps {
   questionNumber: number
   totalQuestions: number
@@ -70,13 +72,19 @@ export function QuizQuestionCard({
 
       {/* Answer area */}
       {questionType === "SHORT_ANSWER" ? (
-        <textarea
-          value={currentAnswer}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder="Type your answer here…"
-          rows={4}
-          className="w-full resize-none rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-        />
+        <div>
+          <textarea
+            value={currentAnswer}
+            onChange={(e) => onChange(e.target.value)}
+            maxLength={MAX_QUIZ_ANSWER_LENGTH}
+            placeholder="Type your answer here…"
+            rows={4}
+            className="w-full resize-none rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+          <p className="mt-1.5 text-right text-xs text-muted-foreground">
+            {currentAnswer.length.toLocaleString()} / {MAX_QUIZ_ANSWER_LENGTH.toLocaleString()} characters
+          </p>
+        </div>
       ) : (
         <div className="space-y-2.5">
           {options.map((option, i) => (
