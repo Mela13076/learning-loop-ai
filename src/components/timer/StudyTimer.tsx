@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { SessionSummaryCard } from "@/components/ai/SessionSummaryCard";
 import { formatAiQuotaMessage } from "@/lib/ai/usage-message";
+import { MAX_STUDY_NOTES_LENGTH } from "@/lib/request-limits";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -619,6 +620,7 @@ export function StudyTimer({
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
+            maxLength={MAX_STUDY_NOTES_LENGTH}
             disabled={saveState !== "idle"}
             rows={4}
             placeholder="What did you learn? Any questions? Notes for next time…"
@@ -634,6 +636,9 @@ export function StudyTimer({
                 Adding notes also unlocks an AI-generated session summary.
               </span>
             )}
+          </p>
+          <p className="mt-1.5 text-right text-xs text-muted-foreground">
+            {notes.length.toLocaleString()} / {MAX_STUDY_NOTES_LENGTH.toLocaleString()} characters
           </p>
         </div>
 
@@ -825,12 +830,16 @@ export function StudyTimer({
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
+          maxLength={MAX_STUDY_NOTES_LENGTH}
           rows={3}
           placeholder="Jot down key concepts, questions, or ideas as you go…"
           className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm resize-none"
         />
         <p className="mt-1.5 text-xs text-muted-foreground">
           Notes are saved with your session for future reference and unlock an AI summary when your session ends.
+        </p>
+        <p className="mt-1.5 text-right text-xs text-muted-foreground">
+          {notes.length.toLocaleString()} / {MAX_STUDY_NOTES_LENGTH.toLocaleString()} characters
         </p>
       </div>
     </div>

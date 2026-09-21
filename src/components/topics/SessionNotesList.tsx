@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { MAX_STUDY_NOTES_LENGTH } from "@/lib/request-limits"
 
 interface NoteEntry {
   id: string
@@ -122,9 +123,13 @@ export function SessionNotesList({ initialNotes }: SessionNotesListProps) {
                   <textarea
                     value={editText}
                     onChange={(e) => setEditText(e.target.value)}
+                    maxLength={MAX_STUDY_NOTES_LENGTH}
                     rows={4}
                     className="w-full resize-none rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                   />
+                  <p className="text-right text-xs text-muted-foreground">
+                    {editText.length.toLocaleString()} / {MAX_STUDY_NOTES_LENGTH.toLocaleString()} characters
+                  </p>
                   <div className="flex gap-2">
                     <button
                       onClick={() => void handleSaveEdit(note.id)}

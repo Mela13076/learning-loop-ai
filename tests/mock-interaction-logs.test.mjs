@@ -5,6 +5,15 @@ import vm from "node:vm"
 import ts from "typescript"
 import * as zod from "zod"
 
+const requestLimits = {
+  MAX_STUDY_NOTES_LENGTH: 10_000,
+  MAX_CONCEPT_DESCRIPTION_LENGTH: 5_000,
+  MAX_QUIZ_ANSWER_LENGTH: 5_000,
+  MAX_TOPIC_LABEL_LENGTH: 200,
+  MAX_WEAK_TOPICS: 20,
+  MAX_RECENT_QUIZ_SCORES: 50,
+}
+
 function load(file, dependencies = {}) {
   const exports = {}
   const source = fs.readFileSync(new URL(file, import.meta.url), "utf8")
@@ -42,6 +51,7 @@ function quizGenerationHandler(mock, logs) {
 function summaryHandler(mock, logs) {
   return load("../src/app/api/ai/session-summary/route.ts", {
     "@clerk/nextjs/server": { auth: async () => ({ userId: "clerk" }) }, zod,
+    "@/lib/request-limits": requestLimits,
     "@/lib/db": { db: {
       user: { findUnique: async () => ({ id: "user" }) },
       topic: { findUnique: async () => ({ id: "topic", title: "Topic", learningPath: { title: "Path" } }) },
@@ -58,6 +68,7 @@ function summaryHandler(mock, logs) {
 function recommendationHandler(mock, logs) {
   return load("../src/app/api/ai/recommendation/route.ts", {
     "@clerk/nextjs/server": { auth: async () => ({ userId: "clerk" }) }, zod,
+    "@/lib/request-limits": requestLimits,
     "@/lib/db": { db: {
       user: { findUnique: async () => ({ id: "user" }) },
       topic: { findUnique: async () => ({ id: "topic", title: "Topic", learningPathId: "path", orderIndex: 1, learningPath: { title: "Path" } }) },
@@ -74,6 +85,7 @@ function coachHandler(mock, interactions) {
   let index = 0
   return load("../src/app/api/ai/coach/route.ts", {
     "@clerk/nextjs/server": { auth: async () => ({ userId: "clerk" }) }, zod,
+    "@/lib/request-limits": requestLimits,
     "@/lib/topic-content": { parseKeyConcepts: () => [{ title: "Concept" }] },
     "@/lib/ai/config": { AI_MODEL: "gemini-test", isMockMode: mock },
     "@/lib/ai/usage-limits": { AiQuotaExceededError: class extends Error {}, aiQuotaExceededResponse: () => new Response(), reserveAiUsage: async () => {} },
@@ -143,4 +155,22 @@ test("real coach retains lesson, quiz-state, and hint audit records", async () =
   await route.POST(new Request("http://localhost", { method: "POST", body: JSON.stringify({ ...base, action: "hint", interactionId: quiz.interactionId }) }))
   assert.equal(interactions.length, 3)
   assert(interactions.every(item => item.modelUsed === "gemini-test"))
+})
+
+test("oversized AI route inputs return 422 before provider or audit logging", async () => {
+  const summaryLogs = []
+  const summary = summaryHandler(false, summaryLogs)
+  assert.equal((await summary.POST(new Request("http://localhost", { method: "POST", body: JSON.stringify({ ...summaryBody, notes: "x".repeat(requestLimits.MAX_STUDY_NOTES_LENGTH + 1) }) }))).status, 422)
+  assert.deepEqual(summaryLogs, [])
+
+  const recommendationLogs = []
+  const recommendation = recommendationHandler(false, recommendationLogs)
+  assert.equal((await recommendation.POST(new Request("http://localhost", { method: "POST", body: JSON.stringify({ ...recommendationBody, weakTopics: Array(requestLimits.MAX_WEAK_TOPICS + 1).fill("Topic") }) }))).status, 422)
+  assert.equal((await recommendation.POST(new Request("http://localhost", { method: "POST", body: JSON.stringify({ ...recommendationBody, recentQuizScores: Array(requestLimits.MAX_RECENT_QUIZ_SCORES + 1).fill(50) }) }))).status, 422)
+  assert.deepEqual(recommendationLogs, [])
+
+  const interactions = []
+  const coach = coachHandler(false, interactions)
+  assert.equal((await coach.POST(new Request("http://localhost", { method: "POST", body: JSON.stringify({ action: "start", topicId: "topic", conceptTitle: "Concept", conceptDescription: "x".repeat(requestLimits.MAX_CONCEPT_DESCRIPTION_LENGTH + 1) }) }))).status, 422)
+  assert.deepEqual(interactions, [])
 })

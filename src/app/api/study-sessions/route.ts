@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
+import { MAX_STUDY_NOTES_LENGTH } from "@/lib/request-limits";
 import { parseKeyConcepts } from "@/lib/topic-content";
 import {
   computeTopicMastery,
@@ -16,7 +17,7 @@ const CreateSessionSchema = z.object({
   durationMinutes: z.number().int().min(1),
   timerMode: z.enum(["POMODORO", "DEEP_WORK", "CUSTOM"]),
   topicId: z.string().optional(),
-  notes: z.string().optional(),
+  notes: z.string().max(MAX_STUDY_NOTES_LENGTH).optional(),
   startedAt: z.string().datetime(),
   endedAt: z.string().datetime(),
 });
@@ -42,7 +43,7 @@ export async function POST(request: Request) {
   if (!parsed.success) {
     return Response.json(
       { error: "Invalid request", issues: parsed.error.issues },
-      { status: 400 }
+      { status: 422 }
     );
   }
 

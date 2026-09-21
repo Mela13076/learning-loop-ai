@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server"
 import { z } from "zod"
 import { db } from "@/lib/db"
+import { MAX_QUIZ_ANSWERS, MAX_QUIZ_ANSWER_LENGTH } from "@/lib/request-limits"
 import { getAnswerFeedback } from "@/lib/ai/feedback"
 import { InvalidFeedbackResponseError } from "@/lib/ai/feedback-schema"
 import { AI_MODEL, isMockMode } from "@/lib/ai/config"
@@ -17,9 +18,9 @@ const bodySchema = z.object({
   answers: z.array(
     z.object({
       questionId: z.string().min(1),
-      userAnswer: z.string(),
+      userAnswer: z.string().max(MAX_QUIZ_ANSWER_LENGTH),
     })
-  ),
+  ).max(MAX_QUIZ_ANSWERS),
 })
 
 export async function POST(

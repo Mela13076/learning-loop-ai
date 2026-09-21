@@ -1,6 +1,11 @@
 import { auth } from "@clerk/nextjs/server"
 import { z } from "zod"
 import { db } from "@/lib/db"
+import {
+  MAX_CONCEPT_DESCRIPTION_LENGTH,
+  MAX_QUIZ_ANSWER_LENGTH,
+  MAX_TOPIC_LABEL_LENGTH,
+} from "@/lib/request-limits"
 import { parseKeyConcepts } from "@/lib/topic-content"
 import { AI_MODEL, isMockMode } from "@/lib/ai/config"
 import { AiQuotaExceededError, aiQuotaExceededResponse, reserveAiUsage } from "@/lib/ai/usage-limits"
@@ -19,11 +24,11 @@ const bodySchema = z
   .object({
     action: z.enum(["start", "explain", "example", "quiz", "hint", "answer"]),
     topicId: z.string().min(1),
-    conceptTitle: z.string().min(1),
-    conceptDescription: z.string().optional(),
+    conceptTitle: z.string().min(1).max(MAX_TOPIC_LABEL_LENGTH),
+    conceptDescription: z.string().max(MAX_CONCEPT_DESCRIPTION_LENGTH).optional(),
     interactionId: z.string().optional(),
     quizIndex: z.number().int().min(0).optional(),
-    selectedAnswer: z.string().min(1).optional(),
+    selectedAnswer: z.string().min(1).max(MAX_QUIZ_ANSWER_LENGTH).optional(),
   })
   .superRefine((value, ctx) => {
     if ((value.action === "hint" || value.action === "answer") && !value.interactionId) {

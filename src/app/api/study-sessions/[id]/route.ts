@@ -6,6 +6,9 @@ import {
   computeTopicMastery,
   sanitizeCoveredConceptTitles,
 } from "@/lib/topic-progress";
+import {
+  MAX_STUDY_NOTES_LENGTH,
+} from "@/lib/request-limits"
 
 export async function GET(
   _request: Request,
@@ -43,7 +46,7 @@ export async function GET(
 }
 
 const patchSchema = z.object({
-  notes: z.string(),
+  notes: z.string().max(MAX_STUDY_NOTES_LENGTH),
 })
 
 export async function PATCH(

@@ -1,13 +1,18 @@
 import { auth } from "@clerk/nextjs/server"
 import { z } from "zod"
 import { db } from "@/lib/db"
+import {
+  MAX_RECENT_QUIZ_SCORES,
+  MAX_TOPIC_LABEL_LENGTH,
+  MAX_WEAK_TOPICS,
+} from "@/lib/request-limits"
 import { getRecommendation } from "@/lib/ai/recommendation"
 import { isMockMode } from "@/lib/ai/config"
 
 const bodySchema = z.object({
   topicId: z.string().min(1),
-  recentQuizScores: z.array(z.number().min(0).max(100)).optional().default([]),
-  weakTopics: z.array(z.string()).optional().default([]),
+  recentQuizScores: z.array(z.number().min(0).max(100)).max(MAX_RECENT_QUIZ_SCORES).optional().default([]),
+  weakTopics: z.array(z.string().max(MAX_TOPIC_LABEL_LENGTH)).max(MAX_WEAK_TOPICS).optional().default([]),
 })
 
 export async function POST(request: Request) {

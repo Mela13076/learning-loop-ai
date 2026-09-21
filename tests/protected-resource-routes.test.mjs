@@ -80,6 +80,7 @@ test("study-session read, edit, and deletion are restricted to the session owner
   const route = load("../src/app/api/study-sessions/[id]/route.ts", {
     "@clerk/nextjs/server": { auth: async () => ({ userId: controls.clerkId }) },
     zod,
+    "@/lib/request-limits": { MAX_STUDY_NOTES_LENGTH: 10_000 },
     "@/lib/db": { db: {
       user: { findUnique: async () => ({ id: "user-a" }) },
       studySession: {

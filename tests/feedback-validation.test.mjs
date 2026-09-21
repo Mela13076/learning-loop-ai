@@ -5,6 +5,8 @@ import vm from 'node:vm';
 import ts from 'typescript';
 import * as zod from 'zod';
 
+const requestLimits = { MAX_QUIZ_ANSWERS: 15, MAX_QUIZ_ANSWER_LENGTH: 5_000 };
+
 function load(file, dependencies = {}) {
   const exports = {};
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(new URL(file, import.meta.url), 'utf8'), {
@@ -77,14 +79,15 @@ function submissionHarness(provider, previous = false, mock = false) {
   };
   const route = load('../src/app/api/quizzes/[id]/submit/route.ts', {
     '@clerk/nextjs/server': { auth: async () => ({ userId: 'clerk' }) }, zod,
+    '@/lib/request-limits': requestLimits,
     '@/lib/db': { db }, '@/lib/ai/feedback': service(provider), '@/lib/ai/feedback-schema': schema,
     '@/lib/ai/config': { AI_MODEL: 'test', isMockMode: mock }, '@/lib/topic-content': load('../src/lib/topic-content.ts'),
     '@/lib/topic-progress': load('../src/lib/topic-progress.ts'),
     '@/lib/ai/usage-limits': { AiQuotaExceededError: class extends Error {}, aiQuotaExceededResponse: () => new Response(), reserveAiUsage: async () => {} },
     '@/lib/ai/usage-metadata': { aiUsageLogData: () => ({}) },
   });
-  return { writes, logs, saved: () => saved, progress: () => progress, submit: () => route.POST(new Request('http://localhost/test', {
-    method: 'POST', body: JSON.stringify({ answers: questions.map(q => ({ questionId: q.id, userAnswer: 'Answer' })) }),
+  return { writes, logs, saved: () => saved, progress: () => progress, submit: (answers = questions.map(q => ({ questionId: q.id, userAnswer: 'Answer' }))) => route.POST(new Request('http://localhost/test', {
+    method: 'POST', body: JSON.stringify({ answers }),
   }), { params: Promise.resolve({ id: 'quiz' }) }) };
 }
 
@@ -122,6 +125,16 @@ test('mock answer grading persists quiz results but does not create audit logs',
   assert.equal(h.saved().score, 100);
   assert.equal(h.progress().averageQuizScore, 100);
   assert.deepEqual(h.logs, []);
+});
+
+test('oversized quiz answer payloads return 422 before grading or persistence', async () => {
+  let providerCalls = 0;
+  const h = submissionHarness(async () => { providerCalls++; return JSON.stringify(valid(1)); });
+  const tooMany = Array.from({ length: requestLimits.MAX_QUIZ_ANSWERS + 1 }, (_, i) => ({ questionId: `q${i}`, userAnswer: 'Answer' }));
+  assert.equal((await h.submit(tooMany)).status, 422);
+  assert.equal((await h.submit([{ questionId: 'q0', userAnswer: 'x'.repeat(requestLimits.MAX_QUIZ_ANSWER_LENGTH + 1) }])).status, 422);
+  assert.equal(providerCalls, 0);
+  assert.deepEqual(h.writes, []);
 });
 
 test('QuizTaker preserves answers and re-enables submission after grading error', async () => {
